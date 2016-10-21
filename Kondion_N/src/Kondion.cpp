@@ -10,7 +10,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include <cml/cml.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -30,7 +31,8 @@ namespace Kondion {
 	std::vector<KObj_Node *> world;
 
 	void KObj_Oriented::parentTransform() {
-		parent->wurla = 0;
+		std::cout << "hey";
+		//parent->wurla = 0;
 		//transform[23] = 0;
 		if (parentOrient) {
 
@@ -39,15 +41,28 @@ namespace Kondion {
 
 	void Launch() {
 		cout << "Hello World\n";
-		cml::vector4f f(0.0f, 5.0f, 0.0f, 1.0f);
-		cml::matrix44f m;
+		glm::vec4 f(0.0f, 1.4f, 0.0f, 1.0f);
+		glm::mat4 m(1.0);
 
-		cml::matrix_rotate_about_local_z(m, 1.0f);
+		Debug::printMatrix(m);
 
-		cml::transform_vector_4D(m, f);
+		//cml::matrix_rotate_about_local_x(m, 2.0f);
+		//cml::matrix_rotate
+
+		//m.operator =(glm::rotate(m, 1.0f, glm::vec3(1.0f, 0.0f, 0.0f)));
+		m.operator =(glm::translate(m, glm::vec3(0.1f, 0.2f, 0.3f)));
+		Debug::printMatrix(m);
+
+		//cml::matrix_translation(m, 0.0f, 2.0f, 0.0f);
+		//Debug::printMatrix(m);
+		//cml::matrix_rotate_about_local_x(m, 2.0f);
+		//f = cml::transform_vector_4D(m, f);
+
 		//cml::transform
 
-		cout << f[1] << "\n";
+		//cout << f[1] << "\n";
+
+		//Debug::printMatrix(m);
 
 		Kondion::Window::Initialize();
 		Kondion::Window::CreateWindow(800, 600);
@@ -79,15 +94,27 @@ namespace Kondion {
 		glLoadIdentity();									// Reset The Projection Matrix
 
 		// Calculate The Aspect Ratio Of The Window
-		gluPerspective(45.0f,(GLfloat)640/(GLfloat)480,0.1f,100.0f);
+		gluPerspective(45.0f,(GLfloat)800/(GLfloat)600,0.1f,100.0f);
 
 		glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
 		glLoadIdentity();									//
 
 		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+
+		OKO_Camera_ a;
+
 		float f = 0.1f;
 		while (Kondion::Window::Active()) {
+
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			a.parentTransform();
+			Renderer::Three(&a, 800, 600);
+
+			if (glfwGetKey(Kondion::Window::w, GLFW_KEY_A)) {
+				a.transform = glm::rotate(a.transform, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
+			}
+
 			glLoadIdentity();
 			f += 0.001f;
 			glTranslatef(-1.5f, 0,-6.0f + f);	//

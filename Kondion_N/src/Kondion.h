@@ -8,7 +8,9 @@
 #ifndef KONDION_H_
 #define KONDION_H_
 
-#include <cml/cml.h>
+#include <glm/glm.hpp>
+#include <glm/vec3.hpp>
+#include <GLFW/glfw3.h>
 
 #include <iostream>
 #include <vector>
@@ -26,6 +28,8 @@ namespace Kondion {
 
 	class KObj_Oriented: public KObj_Node {
 	public:
+		glm::mat4x4 offset;
+		glm::mat4x4 transform;
 		int woot = 0;
 		long signed int longX;
 		long signed int longY;
@@ -44,8 +48,9 @@ namespace Kondion {
 
 	class OKO_Camera_: public KObj_Oriented {
 	public:
-		cml::vector3f center;
-		cml::vector3f up;
+
+		glm::vec3 center;
+		glm::vec3 up;
 		void prespective();
 		void parentTransform();
 	};
@@ -58,12 +63,15 @@ namespace Kondion {
 	namespace Renderer {
 
 		void Setup();
-		void Three(Kondion::OKO_Camera_ cam, int width, int height);
+		void Three(OKO_Camera_* camera, int width, int height);
 
 
 	}
 
 	namespace Window {
+
+		extern GLFWwindow* w;
+
 		int Initialize();
 		int CreateWindow(int width, int height);
 		int SwitchWindow(int index);
@@ -73,7 +81,12 @@ namespace Kondion {
 	}
 
 	namespace Math {
-		void transform3f(const cml::matrix44f& a, const cml::vector4f b);
+		void transform3f(const glm::mat4& a, const glm::vec3& b);
+
+	}
+
+	namespace Debug {
+		void printMatrix(const glm::mat4& a);
 
 	}
 
