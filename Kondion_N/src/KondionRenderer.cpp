@@ -21,6 +21,7 @@ namespace Kondion {
 		}
 
 		void Three(OKO_Camera_* camera, int width, int height) {
+
 			//glViewport(0, 0, width, height);
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
@@ -31,6 +32,7 @@ namespace Kondion {
 			// glCullFace(GL_BACK);
 			glEnable(GL_BLEND);
 			// glEnable(GL_CULL_FACE);
+
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_POINT_SMOOTH);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

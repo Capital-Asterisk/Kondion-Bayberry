@@ -65,7 +65,10 @@ namespace Kondion {
 		//Debug::printMatrix(m);
 
 		Kondion::Window::Initialize();
+
 		Kondion::Window::CreateWindow(800, 600);
+
+		Kondion::Resources::Setup();
 		Kondion::GameLoop();
 
 		Kondion::world.insert(Kondion::world.end(), new Kondion::KObj_Node());
@@ -81,6 +84,7 @@ namespace Kondion {
 	void GameLoop() {
 
 		// Most of this is from NeHe, only temporary
+		glEnable(GL_TEXTURE_2D);
 		glShadeModel(GL_SMOOTH);
 		glClearColor(0.0f, 0.0f, 0.0f, 0.5f);				// Black Background
 		glClearDepth(1.0f);									// Depth Buffer Setup
@@ -99,7 +103,7 @@ namespace Kondion {
 		glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
 		glLoadIdentity();									//
 
-		glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+		glClearColor(0.5f, 0.0f, 0.0f, 1.0f);
 
 		OKO_Camera_ a;
 
@@ -112,18 +116,57 @@ namespace Kondion {
 			Renderer::Three(&a, 800, 600);
 
 			if (glfwGetKey(Kondion::Window::w, GLFW_KEY_A)) {
-				a.transform = glm::rotate(a.transform, 0.01f, glm::vec3(0.0f, 1.0f, 0.0f));
+				a.transform = glm::rotate(a.transform, 0.03f, glm::vec3(0.0f, 1.0f, 0.0f));
+			}
+			if (glfwGetKey(Kondion::Window::w, GLFW_KEY_D)) {
+				a.transform = glm::rotate(a.transform, -0.03f, glm::vec3(0.0f, 1.0f, 0.0f));
+			}
+
+			if (glfwGetKey(Kondion::Window::w, GLFW_KEY_W)) {
+				a.transform = glm::translate(a.transform, glm::vec3(0.0f, 0.0f, -0.06f));
+			}
+
+			if (glfwGetKey(Kondion::Window::w, GLFW_KEY_S)) {
+				a.transform = glm::translate(a.transform, glm::vec3(0.0f, 0.0f, 0.06f));
 			}
 
 			glLoadIdentity();
-			f += 0.001f;
-			glTranslatef(-1.5f, 0,-6.0f + f);	//
-			glBegin(GL_QUADS);                      // Draw A Quad
-			glVertex3f(-1.0f, 1.0f, 0.0f);              // Top Left
-			        glVertex3f( 1.0f, 1.0f, 0.0f);              // Top Right
-			        glVertex3f( 1.0f,-1.0f, 0.0f);              // Bottom Right
-			        glVertex3f(-1.0f,-1.0f, 0.0f);              // Bottom Left
-			    glEnd();                            // Done Drawing The Quad
+			f += 0.01f;
+			Kondion::Resources::textures[0]->Bind();
+			glTranslatef(0.0f, 0.0f, -6.0f + f);
+			glRotatef(f * 80.0f, 0.0f, 1.0f, 0.0f);
+			glBegin(GL_QUADS);
+				// Front Face
+				glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);
+				glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);
+				glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);
+				glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);
+				// Back Face
+				glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
+				glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);
+				glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);
+				glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);
+				// Top Face
+				glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);
+				glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f,  1.0f,  1.0f);
+				glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f,  1.0f,  1.0f);
+				glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);
+				// Bottom Face
+				glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
+				glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f, -1.0f, -1.0f);
+				glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);
+				glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);
+				// Right face
+				glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);
+				glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);
+				glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);
+				glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);
+				// Left Face
+				glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
+				glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);
+				glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);
+				glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);
+			glEnd();
 			Kondion::Window::Update();
 		}
 	}
