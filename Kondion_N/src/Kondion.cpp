@@ -31,12 +31,21 @@ namespace Kondion {
 	std::vector<KObj_Node *> world;
 
 	void KObj_Oriented::parentTransform() {
-		std::cout << "hey";
+		//std::cout << "hey";
+		transform = glm::mat4x4(); // identity
 		//parent->wurla = 0;
 		//transform[23] = 0;
-		if (parentOrient) {
+		//std::cout << "pork " << parent << "\n";
+		if (parent) {
+			if (parent->getType() == 2)
+				transform *= (dynamic_cast<KObj_Oriented*>(parent))->transform;
 
+			//if (!transferScale) {
+				//actTransform.normalize3x3();
+			//}
 		}
+		transform *= offset;
+		//actTransform.mul(transform);
 	}
 
 	void Launch() {
@@ -65,7 +74,6 @@ namespace Kondion {
 		//Debug::printMatrix(m);
 
 		Kondion::Window::Initialize();
-
 		Kondion::Window::CreateWindow(800, 600);
 
 		Kondion::Resources::Setup();
@@ -82,6 +90,8 @@ namespace Kondion {
 	}
 
 	void GameLoop() {
+
+		Kondion::Renderer::Setup();
 
 		// Most of this is from NeHe, only temporary
 		glEnable(GL_TEXTURE_2D);
@@ -112,30 +122,58 @@ namespace Kondion {
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			a.parentTransform();
 			Renderer::Three(&a, 800, 600);
 
-			if (glfwGetKey(Kondion::Window::w, GLFW_KEY_A)) {
-				a.transform = glm::rotate(a.transform, 0.03f, glm::vec3(0.0f, 1.0f, 0.0f));
-			}
-			if (glfwGetKey(Kondion::Window::w, GLFW_KEY_D)) {
-				a.transform = glm::rotate(a.transform, -0.03f, glm::vec3(0.0f, 1.0f, 0.0f));
-			}
-
 			if (glfwGetKey(Kondion::Window::w, GLFW_KEY_W)) {
-				a.transform = glm::translate(a.transform, glm::vec3(0.0f, 0.0f, -0.06f));
+				a.offset = glm::translate(a.offset, glm::vec3(0.0f, 0.0f, -0.06f));
 			}
 
 			if (glfwGetKey(Kondion::Window::w, GLFW_KEY_S)) {
-				a.transform = glm::translate(a.transform, glm::vec3(0.0f, 0.0f, 0.06f));
+				a.offset = glm::translate(a.offset, glm::vec3(0.0f, 0.0f, 0.06f));
 			}
+			if (glfwGetKey(Kondion::Window::w, GLFW_KEY_A)) {
+				a.offset = glm::rotate(a.offset, 0.03f, glm::vec3(0.0f, 1.0f, 0.0f));
+			}
+			if (glfwGetKey(Kondion::Window::w, GLFW_KEY_D)) {
+				a.offset = glm::rotate(a.offset, -0.03f, glm::vec3(0.0f, 1.0f, 0.0f));
+			}
+
+			//for (size_t i = 0; i < world.size(); i ++) {
+			//	world[i]->updateA();
+			//}
+
+			//for (size_t i = 0; i < world.size(); i ++) {
+			//	if (world[i]->getType() == 2) {
+			//		dynamic_cast<KObj_Oriented*>(world[i])->parentTransform();
+			//	}
+			//}
+
+			// do collisions here
+			// DoCollisions
+
+			//for (size_t i = 0; i < world.size(); i ++) {
+			//	world[i]->updateB();
+			//}
+
+			//for (size_t i = 0; i < world.size(); i ++) {
+			//	if (world[i]->getType() == 3) {
+			//		dynamic_cast<KObj_Entity*>(world[i])->render();
+			//	} else if (world[i]->getType() == 4) {
+			//		dynamic_cast<KObj_Instance*>(world[i])->render();
+			//	}
+
+			//}
+
+
+			a.parentTransform();
 
 			glLoadIdentity();
 			f += 0.01f;
 			Kondion::Resources::textures[0]->Bind();
 			glTranslatef(0.0f, 0.0f, -6.0f + f);
 			glRotatef(f * 80.0f, 0.0f, 1.0f, 0.0f);
-			glBegin(GL_QUADS);
+			Renderer::RenderCube(1.0f);
+			/*glBegin(GL_QUADS);
 				// Front Face
 				glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);
 				glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);
@@ -166,7 +204,7 @@ namespace Kondion {
 				glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);
 				glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);
 				glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);
-			glEnd();
+			glEnd();*/
 			Kondion::Window::Update();
 		}
 	}
@@ -175,7 +213,7 @@ namespace Kondion {
 
 }
 
-/*class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
+class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
  public:
   virtual void* Allocate(size_t length) {
     void* data = AllocateUninitialized(length);
@@ -183,12 +221,10 @@ namespace Kondion {
   }
   virtual void* AllocateUninitialized(size_t length) { return malloc(length); }
   virtual void Free(void* data, size_t) { free(data); }
-};*/
+};
 
 int main(int argc, char* argv[]) {
-
-	Kondion::Launch();
-	/* This part was taken out of google examples and glfw examples
+	// This part was taken out of google examples and glfw examples
 	cout << "Hello world from the binary" << endl;
 
 	V8::InitializeICU();
@@ -230,8 +266,10 @@ int main(int argc, char* argv[]) {
 	    printf("%s\n", *utf8);
 	  }
 
+	  Kondion::Launch();
 
-	GLFWwindow* w;
+
+	/*GLFWwindow* w;
 
 	if (!glfwInit())
 	return -1;

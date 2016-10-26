@@ -23,11 +23,13 @@ namespace Kondion {
 	// Node, type 0
 	class KObj_Node {
 	public:
-		int wurla = 0;
+		std::string name;
 		virtual int getType() {return 0;};
+		void updateA() {};
+		void updateB() {};
 		virtual ~KObj_Node() {};
 	protected:
-		KObj_Node* parent;
+		KObj_Node* parent = NULL;
 	};
 
 	// GKO, type 1
@@ -44,14 +46,32 @@ namespace Kondion {
 		virtual void parentTransform();
 		//virtual ~KObj_Oriented() {};
 	protected:
-		KObj_Oriented* parentOrient;
+		bool parentOrient = false;
+	};
+
+	// Component part
+	class KComponent {
+	public:
+		bool collide;
+		bool renderable;
+		glm::mat4x4 offset;
+		virtual ~KComponent() {};
+		virtual void render();
 	};
 
 	// Entity, type 3
 	class KObj_Entity: public KObj_Oriented {
 	public:
-		int woot = 0;
+		std::vector<KComponent> components;
 		int getType() {return 3;};
+		void render() {};
+	};
+
+	// Instance, type 4
+	class KObj_Instance: public KObj_Oriented {
+	public:
+		int getType() {return 4;};
+		void render() {};
 	};
 
 	// OKO - Oriented objects
@@ -74,7 +94,7 @@ namespace Kondion {
 
 		void Setup();
 		void Three(OKO_Camera_* camera, int width, int height);
-
+		void RenderCube(float scale);
 
 	}
 
