@@ -20,6 +20,8 @@ namespace Kondion {
 
 	// Base kobj classes
 
+	class KComponent; // avoiding a circular dependency
+
 	// Node, type 0
 	class KObj_Node {
 	public:
@@ -49,22 +51,13 @@ namespace Kondion {
 		bool parentOrient = false;
 	};
 
-	// Component part
-	class KComponent {
-	public:
-		bool collide;
-		bool renderable;
-		glm::mat4x4 offset;
-		virtual ~KComponent() {};
-		virtual void render();
-	};
-
 	// Entity, type 3
 	class KObj_Entity: public KObj_Oriented {
 	public:
-		std::vector<KComponent> components;
+		std::vector<KComponent*> components;
 		int getType() {return 3;};
-		void render() {};
+		void render();
+		void parentTransform();
 	};
 
 	// Instance, type 4
@@ -74,16 +67,46 @@ namespace Kondion {
 		void render() {};
 	};
 
+	// Component part
+	class KComponent {
+	public:
+		bool collide;
+		bool renderable;
+		KObj_Entity* parent; // this caused my first circular dependency
+		glm::mat4x4 offset;
+		virtual void render() {};
+		virtual ~KComponent() {};
+	protected:
+
+	};
+
 	// OKO - Oriented objects
 
-	class OKO_Camera_: public KObj_Oriented {
-	public:
+	namespace Object {
 
-		glm::vec3 center;
-		glm::vec3 up;
-		void prespective();
-		void parentTransform();
-	};
+		class OKO_Camera_: public KObj_Oriented {
+		public:
+
+			glm::vec3 center;
+			glm::vec3 up;
+			void prespective();
+			void parentTransform();
+		};
+
+	}
+
+	namespace Component {
+
+		class CPN_Cube: public Kondion::KComponent {
+		public:
+			void render();
+		};
+
+		class CPN_InfinitePlane: public Kondion::KComponent {
+		public:
+			void render();
+		};
+	}
 
 	extern std::vector<KObj_Node *> world;
 
@@ -91,11 +114,11 @@ namespace Kondion {
 	void GameLoop();
 
 	namespace Renderer {
-
+		extern Object::OKO_Camera_* currentCamera;
 		void Setup();
-		void Three(OKO_Camera_* camera, int width, int height);
+		void Three(int width, int height);
 		void RenderCube(float scale);
-
+		void RenderQuad(float width, float height);
 	}
 
 	namespace Window {

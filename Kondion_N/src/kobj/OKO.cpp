@@ -11,9 +11,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
-#include "Kondion.h"
+#include "../Kondion.h"
 
-namespace Kondion {
+namespace Kondion { namespace Object {
 
 	void OKO_Camera_::prespective()  {
 		gluLookAt(glm::value_ptr(transform)[12], glm::value_ptr(transform)[13], glm::value_ptr(transform)[14],
@@ -42,4 +42,4 @@ namespace Kondion {
 		//Kondion::Math::transform3f(transform, center);
 	}
 
-}
+}}

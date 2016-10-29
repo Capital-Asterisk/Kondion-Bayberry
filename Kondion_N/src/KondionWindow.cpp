@@ -8,6 +8,7 @@
 #include <iostream>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <ctype.h>
 
 #include "Kondion.h"
 
@@ -27,8 +28,15 @@ namespace Kondion { namespace Window {
 
 	void KeyCallback(GLFWwindow* linuxisbetter, int k, int sc, int a, int m) {
 		if (a == GLFW_PRESS) {
-			cout << "Key press: " << char(k) << "(" << k << ")" << "\n";
+
+			// interpert key typed
+			//cout << "Key press: " << char(k) << "(" << k << ")" << "\n";
+
 		}
+	}
+
+	void CharCallback(GLFWwindow* linuxisbetter, unsigned int c) {
+			cout << "Typed: " << char(c) << "\n";
 	}
 
 	int CreateWindow(int width, int height) {
@@ -43,6 +51,7 @@ namespace Kondion { namespace Window {
 		}
 		glfwMakeContextCurrent(w);
 		glfwSetKeyCallback(w, KeyCallback);
+		glfwSetCharCallback(w, CharCallback);
 		if (glewInit() != GLEW_OK)
 			std::cout << "rip\n";
 		return 0;

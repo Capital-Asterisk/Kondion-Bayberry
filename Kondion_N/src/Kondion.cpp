@@ -12,6 +12,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -30,6 +31,7 @@ namespace Kondion {
 
 	std::vector<KObj_Node *> world;
 
+
 	void KObj_Oriented::parentTransform() {
 		//std::cout << "hey";
 		transform = glm::mat4x4(); // identity
@@ -45,7 +47,25 @@ namespace Kondion {
 			//}
 		}
 		transform *= offset;
+
 		//actTransform.mul(transform);
+	}
+
+	void KObj_Entity::parentTransform() {
+		KObj_Oriented::parentTransform();
+		for (unsigned short i; i < components.size(); i ++) {
+			components[i]->parent = this;
+		}
+	}
+
+	void KObj_Entity::render() {
+		glMultMatrixf(glm::value_ptr(transform));
+		for (unsigned short i; i < components.size(); i ++) {
+			if (components[i]->renderable) {
+				components[i]->render();
+			}
+
+		}
 	}
 
 	void Launch() {
@@ -70,16 +90,16 @@ namespace Kondion {
 		//cml::transform
 
 		//cout << f[1] << "\n";
-
 		//Debug::printMatrix(m);
 
 		Kondion::Window::Initialize();
 		Kondion::Window::CreateWindow(800, 600);
 
 		Kondion::Resources::Setup();
+		Kondion::Renderer::Setup();
 		Kondion::GameLoop();
 
-		Kondion::world.insert(Kondion::world.end(), new Kondion::KObj_Node());
+		//Kondion::world.insert(Kondion::world.end(), new Kondion::KObj_Node());
 		//Kondion::world.insert(Kondion::world.end(), new Kondion::KObj_Entity());
 
 		//Kondion::world[0]->wurla ++;
@@ -91,62 +111,47 @@ namespace Kondion {
 
 	void GameLoop() {
 
-		Kondion::Renderer::Setup();
+		Object::OKO_Camera_ *a = new Object::OKO_Camera_;
+		KObj_Entity *b = new KObj_Entity;
+		b->components.insert(b->components.end(), new Component::CPN_InfinitePlane);
+		b->components[0]->offset = glm::rotate(b->components[0]->offset, 3.14159f / 2, glm::vec3(1, 0, 0));
+		Renderer::currentCamera = a;
 
-		// Most of this is from NeHe, only temporary
-		glEnable(GL_TEXTURE_2D);
-		glShadeModel(GL_SMOOTH);
-		glClearColor(0.0f, 0.0f, 0.0f, 0.5f);				// Black Background
-		glClearDepth(1.0f);									// Depth Buffer Setup
-		glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
-		glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
-		glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	//
+		world.insert(world.end(), a);
+		world.insert(world.end(), b);
 
-		glViewport(0,0,800,600);						// Reset The Current Viewport
+		b->offset = glm::translate(b->offset, glm::vec3(0.0f, -0.2f, 0.0f));
 
-		glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
-		glLoadIdentity();									// Reset The Projection Matrix
-
-		// Calculate The Aspect Ratio Of The Window
-		gluPerspective(45.0f,(GLfloat)800/(GLfloat)600,0.1f,100.0f);
-
-		glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
-		glLoadIdentity();									//
-
-		glClearColor(0.5f, 0.0f, 0.0f, 1.0f);
-
-		OKO_Camera_ a;
-
-		float f = 0.1f;
-		while (Kondion::Window::Active()) {
+		//float f = 0.1f;
+		while (Window::Active()) {
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			Renderer::Three(&a, 800, 600);
+			Renderer::Three(800, 600);
 
-			if (glfwGetKey(Kondion::Window::w, GLFW_KEY_W)) {
-				a.offset = glm::translate(a.offset, glm::vec3(0.0f, 0.0f, -0.06f));
+			if (glfwGetKey(Window::w, GLFW_KEY_W)) {
+				a->offset = glm::translate(a->offset, glm::vec3(0.0f, 0.0f, -0.06f));
 			}
 
-			if (glfwGetKey(Kondion::Window::w, GLFW_KEY_S)) {
-				a.offset = glm::translate(a.offset, glm::vec3(0.0f, 0.0f, 0.06f));
+			if (glfwGetKey(Window::w, GLFW_KEY_S)) {
+				a->offset = glm::translate(a->offset, glm::vec3(0.0f, 0.0f, 0.06f));
 			}
-			if (glfwGetKey(Kondion::Window::w, GLFW_KEY_A)) {
-				a.offset = glm::rotate(a.offset, 0.03f, glm::vec3(0.0f, 1.0f, 0.0f));
+			if (glfwGetKey(Window::w, GLFW_KEY_A)) {
+				a->offset = glm::rotate(a->offset, 0.03f, glm::vec3(0.0f, 1.0f, 0.0f));
 			}
-			if (glfwGetKey(Kondion::Window::w, GLFW_KEY_D)) {
-				a.offset = glm::rotate(a.offset, -0.03f, glm::vec3(0.0f, 1.0f, 0.0f));
+			if (glfwGetKey(Window::w, GLFW_KEY_D)) {
+				a->offset = glm::rotate(a->offset, -0.03f, glm::vec3(0.0f, 1.0f, 0.0f));
 			}
 
-			//for (size_t i = 0; i < world.size(); i ++) {
-			//	world[i]->updateA();
-			//}
+			for (size_t i = 0; i < world.size(); i ++) {
+				world[i]->updateA();
+			}
 
-			//for (size_t i = 0; i < world.size(); i ++) {
-			//	if (world[i]->getType() == 2) {
-			//		dynamic_cast<KObj_Oriented*>(world[i])->parentTransform();
-			//	}
-			//}
+			for (size_t i = 0; i < world.size(); i ++) {
+				if (world[i]->getType() == 2 || world[i]->getType() == 3) {
+					dynamic_cast<KObj_Oriented*>(world[i])->parentTransform();
+				}
+			}
 
 			// do collisions here
 			// DoCollisions
@@ -155,24 +160,25 @@ namespace Kondion {
 			//	world[i]->updateB();
 			//}
 
-			//for (size_t i = 0; i < world.size(); i ++) {
-			//	if (world[i]->getType() == 3) {
-			//		dynamic_cast<KObj_Entity*>(world[i])->render();
-			//	} else if (world[i]->getType() == 4) {
-			//		dynamic_cast<KObj_Instance*>(world[i])->render();
-			//	}
+			for (size_t i = 0; i < world.size(); i ++) {
+				if (world[i]->getType() == 3) {
+					dynamic_cast<KObj_Entity*>(world[i])->render();
+				} else if (world[i]->getType() == 4) {
+					dynamic_cast<KObj_Instance*>(world[i])->render();
+				}
 
-			//}
+			}
 
 
-			a.parentTransform();
+			//a.parentTransform();
 
 			glLoadIdentity();
-			f += 0.01f;
-			Kondion::Resources::textures[0]->Bind();
-			glTranslatef(0.0f, 0.0f, -6.0f + f);
-			glRotatef(f * 80.0f, 0.0f, 1.0f, 0.0f);
-			Renderer::RenderCube(1.0f);
+
+			//f += 0.01f;
+			//Kondion::Resources::textures[0]->Bind();
+			//glTranslatef(0.0f, 0.0f, -6.0f + f);
+			//glRotatef(f * 80.0f, 0.0f, 1.0f, 0.0f);
+			//Renderer::RenderCube(1.0f);
 			/*glBegin(GL_QUADS);
 				// Front Face
 				glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);
@@ -213,7 +219,7 @@ namespace Kondion {
 
 }
 
-class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
+/*class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
  public:
   virtual void* Allocate(size_t length) {
     void* data = AllocateUninitialized(length);
@@ -221,13 +227,13 @@ class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
   }
   virtual void* AllocateUninitialized(size_t length) { return malloc(length); }
   virtual void Free(void* data, size_t) { free(data); }
-};
+};*/
 
 int main(int argc, char* argv[]) {
 	// This part was taken out of google examples and glfw examples
 	cout << "Hello world from the binary" << endl;
 
-	V8::InitializeICU();
+	/*V8::InitializeICU();
 	  V8::InitializeExternalStartupData(argv[0]);
 	  Platform* platform = platform::CreateDefaultPlatform();
 	  V8::InitializePlatform(platform);
@@ -264,7 +270,7 @@ int main(int argc, char* argv[]) {
 	    // Convert the result to an UTF8 string and print it.
 	    String::Utf8Value utf8(result);
 	    printf("%s\n", *utf8);
-	  }
+	  }*/
 
 	  Kondion::Launch();
 
