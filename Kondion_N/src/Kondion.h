@@ -132,6 +132,10 @@ namespace Kondion {
 
 	}
 
+	namespace Input {
+
+	}
+
 	namespace Math {
 		void transform3f(const glm::mat4& a, const glm::vec3& b);
 

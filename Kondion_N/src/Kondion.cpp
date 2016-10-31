@@ -127,8 +127,6 @@ namespace Kondion {
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			Renderer::Three(800, 600);
-
 			if (glfwGetKey(Window::w, GLFW_KEY_W)) {
 				a->offset = glm::translate(a->offset, glm::vec3(0.0f, 0.0f, -0.06f));
 			}
@@ -159,6 +157,8 @@ namespace Kondion {
 			//for (size_t i = 0; i < world.size(); i ++) {
 			//	world[i]->updateB();
 			//}
+
+			Renderer::Three(800, 600);
 
 			for (size_t i = 0; i < world.size(); i ++) {
 				if (world[i]->getType() == 3) {

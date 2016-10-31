@@ -28,13 +28,13 @@ namespace Kondion {
 		void CPN_InfinitePlane::render() {
 			glPushMatrix();
 			glMultMatrixf(glm::value_ptr(offset));
-			int amt = 32;
-			float size = 0.1;
+			int amt = 12;
+			float size = 8.0;
 
 			glm::vec3 eye = glm::vec3(Kondion::Renderer::currentCamera->transform[3]);
 			eye = glm::inverse(offset) * glm::vec4(eye, 1);
 			//glm::vec3
-
+			glTranslatef(glm::round(eye.x / size) * size, glm::round(eye.y / size) * size, 0);
 			glTranslatef(-size * amt / 2 - size / 2, -size * amt / 2 - size / 2, 0);
 			for (unsigned int i = 0; i < amt; i ++) {
 				glTranslatef(size, 0, 0);
