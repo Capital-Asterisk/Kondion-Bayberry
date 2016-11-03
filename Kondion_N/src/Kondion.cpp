@@ -31,6 +31,9 @@ namespace Kondion {
 
 	std::vector<KObj_Node *> world;
 
+	void KObj_Node::setParent(KObj_Node* node) {
+		parent = node;
+	}
 
 	void KObj_Oriented::parentTransform() {
 		//std::cout << "hey";
@@ -39,7 +42,7 @@ namespace Kondion {
 		//transform[23] = 0;
 		//std::cout << "pork " << parent << "\n";
 		if (parent) {
-			if (parent->getType() == 2)
+			if (parent->getType() >= 2)
 				transform *= (dynamic_cast<KObj_Oriented*>(parent))->transform;
 
 			//if (!transferScale) {
@@ -112,34 +115,66 @@ namespace Kondion {
 	void GameLoop() {
 
 		Object::OKO_Camera_ *a = new Object::OKO_Camera_;
+		a->offset = glm::translate(a->offset, glm::vec3(0.0f, 0.7f, 0.0f));
+		a->offset = glm::rotate(a->offset, 0.3f, glm::vec3(1.0f, 0.0f, 0.0f));
 		KObj_Entity *b = new KObj_Entity;
 		b->components.insert(b->components.end(), new Component::CPN_InfinitePlane);
 		b->components[0]->offset = glm::rotate(b->components[0]->offset, 3.14159f / 2, glm::vec3(1, 0, 0));
+
+		KObj_Entity *player = new KObj_Entity;
+		player->components.insert(player->components.end(), new Component::CPN_Cube);
+		player->offset = glm::translate(player->offset, glm::vec3(0.0f, 0.2f, 0.0f));
+		//player->offset = glm::rotate(player->offset, 0.1f, glm::vec3(1.0f, 0.0f, 0.0f));
+		a->setParent(player);
 		Renderer::currentCamera = a;
 
-		world.insert(world.end(), a);
 		world.insert(world.end(), b);
+		world.insert(world.end(), player);
+		world.insert(world.end(), a);
 
 		b->offset = glm::translate(b->offset, glm::vec3(0.0f, -0.2f, 0.0f));
+
+		Input::Setup();
+
+		Input::AddControl("MOUSE_X", Input::INPUT_SYSTEM, Input::MOUSE_POSX);
+		Input::AddControl("MOUSE_Y", Input::INPUT_SYSTEM, Input::MOUSE_POSY);
+		Input::AddControl("MOUSE_BUTTON0", Input::INPUT_SYSTEM, Input::MOUSE_BUTTON);
+		//Input::AddControl("MOVE_X", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 0);
+		//Input::AddControl("MOVE_Y", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 1);
+		Input::AddControl("MOVE_X", Input::INPUT_SYSTEM, 'A');
+		Input::AddControl("MOVE_Y", Input::INPUT_SYSTEM, 'W');
+
+		Input::MouseLock(true);
 
 		//float f = 0.1f;
 		while (Window::Active()) {
 
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			if (glfwGetKey(Window::w, GLFW_KEY_W)) {
-				a->offset = glm::translate(a->offset, glm::vec3(0.0f, 0.0f, -0.06f));
+			Input::Update();
+			//Input::DebugPrint();
+
+			player->offset = glm::translate(player->offset, glm::vec3(0.0f, 0.0f, Input::Get(Input::ControlIndex("MOVE_Y"))->x * 0.1f));
+			player->offset = glm::rotate(player->offset, (Input::Get(Input::ControlIndex("MOUSE_X"))->delta()) * -0.001f, glm::vec3(0.0f, 1.0f, 0.0f));
+			a->offset = glm::mat4x4(glm::mat3x3(a->offset));
+			a->offset = glm::rotate(a->offset, Input::Get(Input::ControlIndex("MOUSE_Y"))->delta() * 0.001f, glm::vec3(1.0f, 0.0f, 0.0f));
+			glm::value_ptr(a->offset)[13] = 0.7f;
+			//Debug::PrintMatrix)
+			//a->offset = glm::translate(a->offset, glm::vec3(0.0, 0.7, 0.0));
+			//a->offset += glm::vec4(0.0f, 0.001f, 0.0f, 0.0f);
+			/*if (glfwGetKey(Window::w, GLFW_KEY_W)) {
+				player->offset = glm::translate(player->offset, glm::vec3(0.0f, 0.0f, -0.1f));
 			}
 
 			if (glfwGetKey(Window::w, GLFW_KEY_S)) {
-				a->offset = glm::translate(a->offset, glm::vec3(0.0f, 0.0f, 0.06f));
+				a->offset = glm::translate(a->offset, glm::vec3(0.0f, 0.0f, 0.1f));
 			}
 			if (glfwGetKey(Window::w, GLFW_KEY_A)) {
-				a->offset = glm::rotate(a->offset, 0.03f, glm::vec3(0.0f, 1.0f, 0.0f));
+				a->offset = glm::rotate(a->offset, 0.09f, glm::vec3(0.0f, 1.0f, 0.0f));
 			}
 			if (glfwGetKey(Window::w, GLFW_KEY_D)) {
-				a->offset = glm::rotate(a->offset, -0.03f, glm::vec3(0.0f, 1.0f, 0.0f));
-			}
+				a->offset = glm::rotate(a->offset, -0.09f, glm::vec3(0.0f, 1.0f, 0.0f));
+			}*/
 
 			for (size_t i = 0; i < world.size(); i ++) {
 				world[i]->updateA();
@@ -211,8 +246,10 @@ namespace Kondion {
 				glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);
 				glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);
 			glEnd();*/
-			Kondion::Window::Update();
+			Window::Update();
+
 		}
+
 	}
 
 

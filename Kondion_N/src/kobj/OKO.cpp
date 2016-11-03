@@ -33,7 +33,7 @@ namespace Kondion { namespace Object {
 		up.x = 0.0f;
 		up.y = 1.0f;
 		up.z = 0.0f;
-		up = glm::vec3(glm::vec4(up, 0.0f) * transform);
+		up = glm::vec3(transform * glm::vec4(up, 0.0f));
 		//std::cout << center.x << ", " << center.y << ", " << center.z << ", " << glm::vec4(center, 1.0f).w << " | " << up.x << ", " << up.y << ", " << up.z << "\n";
 		//center.vector(0.0f, 0.0f, 6.0f);
 		//center.

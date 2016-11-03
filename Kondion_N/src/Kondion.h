@@ -27,6 +27,7 @@ namespace Kondion {
 	public:
 		std::string name;
 		virtual int getType() {return 0;};
+		void setParent(KObj_Node* node);
 		void updateA() {};
 		void updateB() {};
 		virtual ~KObj_Node() {};
@@ -47,8 +48,6 @@ namespace Kondion {
 		int getType() {return 2;};
 		virtual void parentTransform();
 		//virtual ~KObj_Oriented() {};
-	protected:
-		bool parentOrient = false;
 	};
 
 	// Entity, type 3
@@ -133,7 +132,41 @@ namespace Kondion {
 	}
 
 	namespace Input {
+		const unsigned char
+				INPUT_SYSTEM = 0,
+				INPUT_VIRTUAL = 1,
+				INPUT_CONTROLLER = 10;
 
+		const unsigned short
+				MOUSE_BUTTON = 400,
+				MOUSE_POSX = 409,
+				MOUSE_POSY = 410,
+				MOUSE_INSIDE = 411,
+				MOUSE_SCROLLX = 412,
+				MOUSE_SCROLLY = 413,
+				CONTROLLER_AXIS = 100,
+				CONTROLLER_BUTTON = 0;
+
+		struct Control {
+			std::string name;
+			bool alternate;
+			unsigned char device;
+			unsigned short button;
+			//float x, y, px, py;
+			float x, px;
+			float delta() {
+				return px - x;
+			};
+		};
+
+		void AddControl(std::string name, unsigned char device, unsigned short button);
+		void MouseLock(bool a);
+		Control* Get(unsigned short i);
+		void Setup();
+		void Update();
+		unsigned short ControlIndex(std::string name);
+
+		void DebugPrint();
 	}
 
 	namespace Math {
@@ -161,6 +194,12 @@ namespace Kondion {
 
 		extern std::vector<KTexture *> textures;
 
+	}
+
+	namespace JS {
+		void Setup();
+		void Eval(std::string s);
+		void UpdateInput();
 	}
 
 	namespace Debug {
