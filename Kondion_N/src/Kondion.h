@@ -8,6 +8,9 @@
 #ifndef KONDION_H_
 #define KONDION_H_
 
+// or Bristlecone
+#define KONDION_VERSION "0.1.0 Bayberry"
+
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
 #include <GLFW/glfw3.h>
@@ -107,6 +110,7 @@ namespace Kondion {
 		};
 	}
 
+	extern char* dir;
 	extern std::vector<KObj_Node *> world;
 
 	void Launch();
@@ -197,8 +201,10 @@ namespace Kondion {
 	}
 
 	namespace JS {
-		void Setup();
+		void CallFunction(std::string s);
+		void Destroy();
 		void Eval(std::string s);
+		void Setup();
 		void UpdateInput();
 	}
 
