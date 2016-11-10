@@ -1,0 +1,28 @@
+{
+	"GameName": "KONDION TEST GAME 1: Something",
+	"Id": "ktg2",
+	"Description": "A Kondion game",
+	"Vendor": "Vendalenger",
+	"Version": "0.0.1 Acacia",
+	"Date": "Thu Jan 21 22:16:59 PST 2016",
+	"Cover": "nullthing",
+	"Traits": ["IncludeDefaultButtons"],
+	"Buttons": {
+		
+	},
+	"Graphics": {
+	
+	},
+	"OBJ": {
+		
+	},
+	"Audio": {
+	
+	},
+	"SAudio": {
+		"monkeyR": ["random", "monkey0", "monkey1"]
+	},
+	"Materials": {
+		
+	}
+}

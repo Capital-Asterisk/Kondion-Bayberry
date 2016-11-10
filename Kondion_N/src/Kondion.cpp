@@ -81,10 +81,9 @@ namespace Kondion {
 		Window::Initialize();
 		Window::CreateWindow(800, 600);
 
-		Resources::Setup();
 		Renderer::Setup();
 		Input::Setup();
-		JS::Setup();
+		Resources::Setup();
 
 		Kondion::GameLoop();
 
@@ -154,7 +153,7 @@ namespace Kondion {
 			}*/
 
 			if (Input::Get(Input::ControlIndex("MOUSE_BUTTON0"))->x > 0.5f) {
-				JS::CallFunction("");
+				JS::CallFunction("birds");
 			}
 
 			for (size_t i = 0; i < world.size(); i ++) {
@@ -239,10 +238,24 @@ namespace Kondion {
 }
 
 int main(int argc, const char* argv[]) {
+	{
 	char buf[256];
 	Kondion::dir = strcat(getcwd(buf, sizeof(buf)), "/");
 	printf("Kondion %s | %s %s\nDirectory:%s\n", KONDION_VERSION, __DATE__, __TIME__, Kondion::dir);
+	Kondion::JS::Setup();
 
+	unsigned char mode = 1; // 0: none, 1: carton
+	for (int i = 1; i < argc; i ++) {
+		switch (mode) {
+		case 1:
+			Kondion::Resources::AddCarton(std::string(argv[i]));
+			break;
+
+		}
+		//Xprintf("arg: %i: %s\n", i, argv[i]);
+	}
+
+	}
 	// object oriented at its best
 	Kondion::Launch();
 	printf("Exit successful!");

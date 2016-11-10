@@ -5,6 +5,17 @@
  *      Author: neal
  */
 
+#ifdef _WIN32
+	#define SEPARATOR '\\'
+#else
+	#define SEPARATOR '/'
+#endif
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <iostream>
+#include <fstream>
+
 #include <glm/glm.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -14,8 +25,70 @@
 
 namespace Kondion { namespace Resources {
 
-	std::vector<KTexture *> textures;
+	const unsigned char
+		CARTON_KCA = 0,
+		CARTON_FOLDER = 1,
+		CARTON_ZIP = 2;
 
+	struct Carton;
+
+	std::vector<KTexture *> textures;
+	std::vector<Carton *> cartons;
+
+	struct Carton {
+		std::string name;
+		std::string filepath;
+		unsigned char type;
+	};
+
+	void AddCarton(std::string path) {
+
+		printf("adding carton: %s\n", path.c_str());
+
+		Carton* c = new Carton;
+		cartons.insert(cartons.end(), c);
+		c->filepath = path;
+
+		struct stat buf;
+		int st = stat(path.c_str(), &buf);
+
+		if (st == 0) {
+			printf("carton exists\n");
+			if (buf.st_mode & S_IFDIR) { // all sources say &
+				printf("carton is folder\n");
+				// now get the name and stuff
+				// if the path doesn't end with a separator, add one
+				c->type = CARTON_FOLDER;
+				if (c->filepath[c->filepath.length() - 1] != SEPARATOR)
+					c->filepath += SEPARATOR;
+				// get name
+
+				std::ifstream json(c->filepath + "kondion.json");
+				JS::ON::Parse(&json, c->filepath + "kondion.json");
+
+				//if (json.is_open()) {
+				//while ( getline (json, line)) {
+				//cout << line << '\n';
+				//}
+				//json.close();
+				//} else std::cout << "Unable to open file";
+
+
+
+			} else if (buf.st_mode & S_IFREG) {
+				printf("carton is file\n");
+				//c->type = CARTON_KCA; // or zip
+			} else {
+				perror(("Invalid carton: " + path + "\n").c_str());
+				delete c;
+				cartons.erase(cartons.end());
+			}
+		} else {
+			perror(("Unable to access carton: " + path + "\n").c_str());
+			delete c;
+			cartons.erase(cartons.end());
+		}
+	}
 
 	void Setup() {
 
@@ -49,6 +122,12 @@ namespace Kondion { namespace Resources {
 
 	}
 
+	std::istream* Get(const std::string& url) {
+
+
+
+		return NULL;
+	}
 
 	// Internal
 	KTexture::KTexture(GLint id, unsigned short awidth, unsigned short aheight,

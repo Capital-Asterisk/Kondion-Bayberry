@@ -179,6 +179,7 @@ namespace Kondion {
 	}
 
 	namespace Resources {
+		void AddCarton(std::string path);
 		void Setup();
 		std::istream* Get(const std::string& url);
 
@@ -206,6 +207,13 @@ namespace Kondion {
 		void Eval(std::string s);
 		void Setup();
 		void UpdateInput();
+
+		namespace ON {
+			int Parse(std::string s);
+			int Parse(std::ifstream* s, std::string path);
+			std::string GetString(int id, std::string key);
+			void Dispose(int id);
+		}
 	}
 
 	namespace Debug {
