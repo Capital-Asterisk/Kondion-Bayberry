@@ -1,11 +1,13 @@
 {
-	"GameName": "KONDION TEST GAME 1: Something",
-	"Id": "ktg2",
+	"Name": "KONDION TEST GAME 2: Something Else",
+	"Game": true,
+	"Id": "kotega_2",
 	"Description": "A Kondion game",
 	"Vendor": "Vendalenger",
-	"Version": "0.0.1 Acacia",
-	"Date": "Thu Jan 21 22:16:59 PST 2016",
-	"Cover": "nullthing",
+	"Version": "0.1.0 Bayberry",
+	"Date": "Nov 9 2016",
+	"Cover": "nullthing.png",
+	"StartTitle": "Kondion Test Game 2",
 	"Traits": ["IncludeDefaultButtons"],
 	"Buttons": {
 		

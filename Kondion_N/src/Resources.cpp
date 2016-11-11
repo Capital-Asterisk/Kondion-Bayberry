@@ -16,6 +16,7 @@
 #include <iostream>
 #include <fstream>
 
+#include <tinydir/tinydir.h>
 #include <glm/glm.hpp>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
@@ -36,9 +37,19 @@ namespace Kondion { namespace Resources {
 	std::vector<Carton *> cartons;
 
 	struct Carton {
-		std::string name;
-		std::string filepath;
+
 		unsigned char type;
+		std::string filepath;
+
+		bool isGame;
+		std::string id;
+		std::string name;
+		std::string desc;
+		std::string startTitle;
+		std::string version;
+		std::string vendor;
+		std::vector<std::string> traits;
+
 	};
 
 	void AddCarton(std::string path) {
@@ -63,17 +74,30 @@ namespace Kondion { namespace Resources {
 					c->filepath += SEPARATOR;
 				// get name
 
-				std::ifstream json(c->filepath + "kondion.json");
-				JS::ON::Parse(&json, c->filepath + "kondion.json");
+				std::ifstream file(c->filepath + "kondion.json");
+				int json = JS::ON::Parse(&file, c->filepath + "kondion.json");
 
+				//c->isGame = JS::ON::GetString(json, "Game") == "true";
+				c->id = JS::ON::GetString(json, "Id");
+				c->name = JS::ON::GetString(json, "Name");
+				c->desc = JS::ON::GetString(json, "Description");
+				c->version = JS::ON::GetString(json, "Version");
+
+				if (c->isGame) {
+					c->startTitle = JS::ON::GetString(json, "StartTitle");
+				}
+
+				JS::ON::Dispose(json);
+
+				if (c->id.length() > 8 || c->id.length() < 3) {
+					perror(("It is recommended that a carton ID must be 3 to 8 characters\nCarton: '" + c->id + "' is considered invalid. Kondion will continue launching\n").c_str());
+				}
 				//if (json.is_open()) {
 				//while ( getline (json, line)) {
 				//cout << line << '\n';
 				//}
 				//json.close();
 				//} else std::cout << "Unable to open file";
-
-
 
 			} else if (buf.st_mode & S_IFREG) {
 				printf("carton is file\n");
@@ -120,11 +144,70 @@ namespace Kondion { namespace Resources {
 		textures.insert(textures.end(), new KTexture(textureId, 32, 32,
 				GL_LINEAR, GL_NEAREST, GL_REPEAT, GL_REPEAT, false));
 
+		std::istream* f = Get("kotega_2:masterscript");
+
+		printf("masterscript stream open?: %i\n", f);
+
+
+		delete f;
+
 	}
 
 	std::istream* Get(const std::string& url) {
 
+		int found = url.find(':');
+		std::string id = url.substr(0, found);
+		std::string current = url.substr(found + 1, url.size() - 1);
 
+		//printf("%s \n", current.c_str());
+
+		for (unsigned int i = 0; i < cartons.size(); i ++) {
+			if (cartons[i]->id == id) {
+				if (cartons[i]->type == CARTON_FOLDER) {
+
+					tinydir_dir dir;
+					tinydir_open(&dir, cartons[i]->filepath.c_str());
+
+					while (dir.has_next) {
+
+						tinydir_file file;
+						tinydir_readfile(&dir, &file);
+
+						printf("%s\n", file.name);
+
+						tinydir_next(&dir);
+
+						// reusing the found variable
+						found = url.find('/');
+
+						if (found == -1) {
+							// looking for the final file
+							if (!file.is_dir) { //if (file.is_reg) // i think this would support symlinks and fancy things
+								std::string name(file.name);
+								name = name.substr(0, name.find('.'));
+								if (name == current) {
+									printf("Resource found: %s\n", file.path);
+									//return std::ifstream file(c->filepath + "kondion.json");
+									//in = std::ifstream(file.path);
+									//static_cast<std::ifstream>(in).open(file.path);
+
+									return new std::ifstream(std::string(file.path));
+								}
+							}
+						} else {
+							// looking for the next directory TODO
+
+						}
+
+
+					}
+
+					tinydir_close(&dir);
+				}
+
+			}
+
+		}
 
 		return NULL;
 	}

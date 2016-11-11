@@ -53,10 +53,10 @@ namespace Kondion { namespace JS {
 			printf("%s", s.c_str());
 			Local<String> str = String::NewFromUtf8(isolate, s.c_str(), NewStringType::kNormal).ToLocalChecked();
 			//Local<String> str = String::NewFromUtf8(isolate, "{}", NewStringType::kNormal).ToLocalChecked();
-			printf("empty: %i \n", str.IsEmpty());
+			//printf("empty: %i \n", str.IsEmpty());
 			MaybeLocal<Value> json = JSON::Parse(isolate, str);
-			printf("empty: %i \n", json.IsEmpty());
-			printf("%s\n", *String::Utf8Value(json.ToLocalChecked()->ToObject(isolate)->Get(context, String::NewFromUtf8(isolate, "Id")).ToLocalChecked()->ToString(context).ToLocalChecked()));
+			//printf("empty: %i \n", json.IsEmpty());
+			//printf("%s\n", *String::Utf8Value(json.ToLocalChecked()->ToObject(isolate)->Get(context, String::NewFromUtf8(isolate, "Id")).ToLocalChecked()->ToString(context).ToLocalChecked()));
 			//objects.insert(objects.end(), Persistent<Value, CopyablePersistentTraits<Value>>(isolate, json.ToLocalChecked()->ToObject(isolate)));
 			Persistent<Value, CopyablePersistentTraits<Value>> *obj = new Persistent<Value, CopyablePersistentTraits<Value>>(isolate, json.ToLocalChecked()->ToObject(isolate));
 			unsigned int j = 0;
@@ -86,11 +86,41 @@ namespace Kondion { namespace JS {
 		}
 
 		std::string GetString(int id, std::string key) {
-			return "";
+			if (id >= 0 && objects.size() >= id) {
+				if (objects[id]) {
+					Isolate::Scope isolate_scope(isolate);
+					HandleScope handle_scope(isolate);
+					//Local<Context> context = Local<Context>::New(isolate, contextp);
+					Local<Value> json = Local<Value>::New(isolate, *objects[id]);
+					if (!json.IsEmpty()) {
+						if (json->ToObject(isolate)->Has(String::NewFromUtf8(isolate, key.c_str()))) {
+							printf("return: %s\n", *String::Utf8Value(json->ToObject(isolate)->Get(String::NewFromUtf8(isolate, key.c_str()))));
+							return std::string(*String::Utf8Value(json->ToObject(isolate)->Get(String::NewFromUtf8(isolate, key.c_str()))));
+						} else {
+							perror("JSON: no such key");
+							return "error";
+						}
+					} else {
+						perror("JSON: attempted to access an empty whatever");
+						return "error";
+					}
+				} else {
+					perror("JSON: object at x id does not exist");
+					return "error";
+				}
+			} else {
+				perror("JSON: invalid Id");
+				return "error";
+			}
 		}
 
 		void Dispose(int id) {
-
+			if (id >= 0 && objects.size() >= id) {
+				if (objects[id]) {
+					objects[id]->Reset();
+				}
+				objects[id] = NULL;
+			}
 		}
 
 	}
