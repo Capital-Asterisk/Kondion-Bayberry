@@ -91,6 +91,7 @@ namespace Kondion {
 
 	void GameLoop() {
 
+		JS::Start();
 		Object::OKO_Camera_ *a = new Object::OKO_Camera_;
 		a->offset = glm::translate(a->offset, glm::vec3(0.0f, 0.7f, 0.0f));
 		a->offset = glm::rotate(a->offset, 0.3f, glm::vec3(1.0f, 0.0f, 0.0f));

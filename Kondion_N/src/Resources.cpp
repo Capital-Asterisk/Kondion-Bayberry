@@ -13,8 +13,11 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <iostream>
+
 #include <fstream>
+#include <istream>
+#include <iostream>
+#include <sstream>
 
 #include <tinydir/tinydir.h>
 #include <glm/glm.hpp>
@@ -144,16 +147,21 @@ namespace Kondion { namespace Resources {
 		textures.insert(textures.end(), new KTexture(textureId, 32, 32,
 				GL_LINEAR, GL_NEAREST, GL_REPEAT, GL_REPEAT, false));
 
-		std::istream* f = Get("kotega_2:masterscript");
+		Raw* f = Get("kotega_2:masterscript");
 
-		printf("masterscript stream open?: %i\n", f);
+		//printf("masterscript stream open?: %i\n", f->stream);
+		//while (*f->stream)
+		//	std::cout << char(f->stream->get());
 
+		std::ostringstream ostring;
+		ostring << f->stream->rdbuf();
+
+		Kondion::JS::Eval(ostring.str());
 
 		delete f;
-
 	}
 
-	std::istream* Get(const std::string& url) {
+	Raw* Get(const std::string& url) {
 
 		int found = url.find(':');
 		std::string id = url.substr(0, found);
@@ -191,7 +199,7 @@ namespace Kondion { namespace Resources {
 									//in = std::ifstream(file.path);
 									//static_cast<std::ifstream>(in).open(file.path);
 
-									return new std::ifstream(std::string(file.path));
+									return new Raw(std::string(file.path));
 								}
 							}
 						} else {

@@ -15,31 +15,11 @@
 #include "include/v8.h"
 
 #include "Kondion.h"
+#include "FunctionsV8.h"
 
 using namespace v8;
 
 namespace Kondion { namespace JS {
-
-	class ArrayBufferAllocator;
-
-	Platform* platform;
-	Isolate* isolate;
-	ArrayBufferAllocator* allocator;
-	Persistent<Context, CopyablePersistentTraits<Context>> contextp;
-
-	class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
-	public:
-		virtual void* Allocate(size_t length) {
-			void* data = AllocateUninitialized(length);
-			return data == NULL ? data : memset(data, 0, length);
-		};
-		virtual void* AllocateUninitialized(size_t length) {
-			return malloc(length);
-		};
-		virtual void Free(void* data, size_t) {
-			free(data);
-		};
-	};
 
 	namespace ON {
 
@@ -125,13 +105,6 @@ namespace Kondion { namespace JS {
 
 	}
 
-	void Callback_Kdion_Log(const v8::FunctionCallbackInfo<v8::Value>& args) {
-		if (args.Length() < 1) return;
-		HandleScope handle_scope(isolate);
-		printf("%s", *String::Utf8Value(args[0]));
-	}
-
-
 	void CallFunction(std::string s) {
 		Isolate::Scope isolate_scope(isolate);
 		HandleScope handle_scope(isolate);
@@ -164,7 +137,26 @@ namespace Kondion { namespace JS {
 	}
 
 	void Eval(std::string s) {
+		Eval(s.c_str());
+	}
 
+	void Eval(const char* s) {
+		Isolate::Scope isolate_scope(isolate);
+		HandleScope handle_scope(isolate);
+		Local<Context> context = Local<Context>::New(isolate, contextp);
+		Context::Scope context_scope(context);
+		//std::cout << s << "\n";
+		Local<String> source = String::NewFromUtf8(isolate, s, NewStringType::kNormal).ToLocalChecked();
+		MaybeLocal<Script> script = Script::Compile(context, source);
+		if (script.IsEmpty()) {
+			printf("something went wrong\n");
+		} else {
+			MaybeLocal<Value> mayberesult = script.ToLocalChecked()->Run(context);
+			if (mayberesult.IsEmpty()) {
+				printf("Error!\n");
+			} else
+				Local<Value> result = mayberesult.ToLocalChecked();
+		}
 	}
 
 	void Setup() {
@@ -201,6 +193,8 @@ namespace Kondion { namespace JS {
 		// Create kdion object
 		Local<ObjectTemplate> kdion = ObjectTemplate::New(isolate);
 		kdion->Set(String::NewFromUtf8(isolate, "log"), FunctionTemplate::New(isolate, Callback_Kdion_Log));
+		kdion->Set(String::NewFromUtf8(isolate, "initialize"), FunctionTemplate::New(isolate, Callback_Kdion_Initialize));
+		kdion->Set(String::NewFromUtf8(isolate, "Bird"), FunctionTemplate::New(isolate, Callback_Kdion_Bird));
 
 		global->Set(String::NewFromUtf8(isolate, "kdion"), kdion);
 
@@ -219,9 +213,11 @@ namespace Kondion { namespace JS {
 					"    kdion.log(\"bird says: \" + a + \" bunny says: \" + bunny + \", but do turtles say other things?\\n\");"
 					"    return  \"bird says: \" + a + \" bunny says: \" + bunny;"
 					"};"
-					""
+					"eval(\"false\");"
 					"birds('yeah! ' + Math.random())",
 								NewStringType::kNormal).ToLocalChecked();
+
+
 
 		// Compile the source code.
 		Local<Script> script = Script::Compile(context, source).ToLocalChecked();
@@ -235,6 +231,18 @@ namespace Kondion { namespace JS {
 
 
 		//objects.Size();
+	}
+
+	void Start() {
+		Isolate::Scope isolate_scope(isolate);
+		HandleScope handle_scope(isolate);
+		Local<Context> context = Local<Context>::New(isolate, contextp);
+		Context::Scope context_scope(context);
+
+		Local<Function> init = Local<Function>::New(isolate, initialize);
+		Local<Value> args[1] = {String::NewFromUtf8(isolate, "arg")};
+		Local<Value> res = init->Call(context, context->Global(), 1, args).ToLocalChecked();
+		initialize.Reset();
 	}
 
 	void UpdateInput() {

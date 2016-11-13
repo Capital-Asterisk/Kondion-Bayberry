@@ -15,6 +15,7 @@
 #include <glm/vec3.hpp>
 #include <GLFW/glfw3.h>
 
+#include <fstream>
 #include <istream>
 #include <iostream>
 #include <vector>
@@ -23,9 +24,11 @@ namespace Kondion {
 
 	// Base kobj classes
 
-	class KComponent; // avoiding a circular dependency
+	class KComponent; // avoiding a circular dependency for the first time
 
-	// Node, type 0
+	/** Base class for all KObjs, only a node in the tree.
+	 *  type: 0
+	 */
 	class KObj_Node {
 	public:
 		std::string name;
@@ -41,7 +44,9 @@ namespace Kondion {
 	// GKO, type 1
 
 
-	// OKO, type 2
+	/** Base class for Entity and Instance, has an orientation in the world.
+	 *  type: 2
+	 */
 	class KObj_Oriented: public KObj_Node {
 	public:
 		glm::mat4x4 offset;
@@ -53,7 +58,9 @@ namespace Kondion {
 		//virtual ~KObj_Oriented() {};
 	};
 
-	// Entity, type 3
+	/** Used to represent actual objects in the game world through Components;
+	 *  type: 3
+	 */
 	class KObj_Entity: public KObj_Oriented {
 	public:
 		std::vector<KComponent*> components;
@@ -62,7 +69,10 @@ namespace Kondion {
 		void parentTransform();
 	};
 
-	// Instance, type 4
+	/** Refers to an entity, but still its own object; use this so
+	 * that entities do not have to be copied multiple times.
+	 *  type: 3
+	 */
 	class KObj_Instance: public KObj_Oriented {
 	public:
 		int getType() {return 4;};
@@ -81,8 +91,6 @@ namespace Kondion {
 	protected:
 
 	};
-
-	// OKO - Oriented objects
 
 	namespace Object {
 
@@ -179,9 +187,6 @@ namespace Kondion {
 	}
 
 	namespace Resources {
-		void AddCarton(std::string path);
-		void Setup();
-		std::istream* Get(const std::string& url);
 
 		class KTexture {
 		public:
@@ -197,6 +202,28 @@ namespace Kondion {
 			void Bind();
 		};
 
+		class Raw {
+		public:
+			std::istream* stream;
+			std::filebuf* fb;
+			Raw(std::string file) {
+				fb = new std::filebuf;
+
+				fb->open(file.c_str(),std::ios::in);
+				stream = new std::istream(fb);
+			};
+			~Raw() {
+				printf("raw deleted\n");
+				fb->close();
+				delete stream;
+				delete fb;
+			};
+		};
+
+		void AddCarton(std::string path);
+		void Setup();
+		Raw* Get(const std::string& url);
+
 		extern std::vector<KTexture *> textures;
 
 	}
@@ -204,8 +231,10 @@ namespace Kondion {
 	namespace JS {
 		void CallFunction(std::string s);
 		void Destroy();
+		void Eval(const char* s);
 		void Eval(std::string s);
 		void Setup();
+		void Start();
 		void UpdateInput();
 
 		namespace ON {
