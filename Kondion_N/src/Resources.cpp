@@ -14,13 +14,12 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include <fstream>
-#include <istream>
-#include <iostream>
 #include <sstream>
 
 #include <tinydir/tinydir.h>
+
 #include <glm/glm.hpp>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -41,7 +40,7 @@ namespace Kondion { namespace Resources {
 
 	struct Carton {
 
-		unsigned char type;
+		uint8_t type;
 		std::string filepath;
 
 		bool isGame;
@@ -55,7 +54,7 @@ namespace Kondion { namespace Resources {
 
 	};
 
-	void AddCarton(std::string path) {
+	void AddCarton(const std::string& path) {
 
 		printf("adding carton: %s\n", path.c_str());
 
@@ -221,7 +220,7 @@ namespace Kondion { namespace Resources {
 	}
 
 	// Internal
-	KTexture::KTexture(GLint id, unsigned short awidth, unsigned short aheight,
+	KTexture::KTexture(GLint id, uint16_t awidth, uint16_t aheight,
 				GLint miFilter, GLint maFilter, GLint awrapS, GLint awrapT, bool mipped) {
 		source = "INTERNAL";
 		isLoaded = true;

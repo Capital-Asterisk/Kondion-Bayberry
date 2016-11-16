@@ -39,7 +39,7 @@ namespace Kondion { namespace Window {
 			cout << "Typed: " << char(c) << "\n";
 	}
 
-	int CreateWindow(int width, int height) {
+	int CreateWindow(uint16_t width, uint16_t height) {
 		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 		//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

@@ -58,7 +58,7 @@ namespace Kondion { namespace Input {
 
 	std::vector<Control*> controls;
 
-	void AddControl(std::string name, unsigned char device, unsigned short button) {
+	void AddControl(std::string name, uint8_t device, uint16_t button) {
 		printf("birdddd\n");
 		Control* f = new Control;
 		f->button = button;
@@ -87,7 +87,7 @@ namespace Kondion { namespace Input {
 		return controls.size();
 	}
 
-	Control* Get(unsigned short i) {
+	Control* Get(uint16_t i) {
 		return controls[i];
 	}
 

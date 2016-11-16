@@ -14,11 +14,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <iostream>
-
 #ifdef _WIN32
 	#include <direct.h>
 #else

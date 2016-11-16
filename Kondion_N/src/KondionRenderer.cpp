@@ -106,7 +106,7 @@ namespace Kondion {
 			std::cout << "oh yeah, " << beef << "beef\n";
 		}
 
-		void Three(int width, int height) {
+		void Three(uint16_t width, uint16_t height) {
 
 			//glViewport(0, 0, width, height);
 			glMatrixMode(GL_PROJECTION);

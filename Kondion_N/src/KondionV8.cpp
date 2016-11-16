@@ -11,8 +11,8 @@
 #include <iostream>
 #include <fstream>
 
-#include "include/libplatform/libplatform.h"
-#include "include/v8.h"
+#include <include/libplatform/libplatform.h>
+#include <include/v8.h>
 
 #include "Kondion.h"
 #include "FunctionsV8.h"
@@ -25,7 +25,7 @@ namespace Kondion { namespace JS {
 
 		std::vector<Persistent<Value, CopyablePersistentTraits<Value>>*> objects;
 
-		int Parse(std::string s) {
+		int Parse(const std::string& s) {
 			Isolate::Scope isolate_scope(isolate);
 			HandleScope handle_scope(isolate);
 			Local<Context> context = Local<Context>::New(isolate, contextp);
@@ -53,7 +53,7 @@ namespace Kondion { namespace JS {
 			return j;
 		}
 
-		int Parse(std::ifstream* s, std::string path) {
+		int Parse(std::ifstream* s, const std::string& path) {
 			std::string res = "";
 			std::string line;
 			if (s->is_open()) {
@@ -65,7 +65,7 @@ namespace Kondion { namespace JS {
 			return Parse(res);
 		}
 
-		std::string GetString(int id, std::string key) {
+		std::string GetString(size_t id, const std::string& key) {
 			if (id >= 0 && objects.size() >= id) {
 				if (objects[id]) {
 					Isolate::Scope isolate_scope(isolate);
@@ -94,7 +94,7 @@ namespace Kondion { namespace JS {
 			}
 		}
 
-		void Dispose(int id) {
+		void Dispose(size_t id) {
 			if (id >= 0 && objects.size() >= id) {
 				if (objects[id]) {
 					objects[id]->Reset();
@@ -105,7 +105,7 @@ namespace Kondion { namespace JS {
 
 	}
 
-	void CallFunction(std::string s) {
+	void CallFunction(const std::string& s) {
 		Isolate::Scope isolate_scope(isolate);
 		HandleScope handle_scope(isolate);
 
@@ -136,7 +136,7 @@ namespace Kondion { namespace JS {
 		delete platform;
 	}
 
-	void Eval(std::string s) {
+	void Eval(const std::string& s) {
 		Eval(s.c_str());
 	}
 
@@ -210,7 +210,7 @@ namespace Kondion { namespace JS {
 		Local<String> source =
 			String::NewFromUtf8(isolate,
 					"birds = function(a) {"
-					"    kdion.log(\"bird says: \" + a + \" bunny says: \" + bunny + \", but do turtles say other things?\\n\");"
+					"    kdion.log(\"bird says: \" + a + \" bunny says: \" + bunny + \", but do turtles say other things?\");"
 					"    return  \"bird says: \" + a + \" bunny says: \" + bunny;"
 					"};"
 					"eval(\"false\");"
