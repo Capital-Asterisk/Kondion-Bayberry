@@ -181,12 +181,12 @@ struct Control {
   }
 };
 
-void AddControl(std::string name, uint8_t device, uint16_t button);
+void AddControl(const std::string& name, uint8_t device, uint16_t button);
 void MouseLock(bool a);
 Control* Get(uint16_t i);
 void Setup();
 void Update();
-unsigned short ControlIndex(std::string name);
+uint16_t ControlIndex(const std::string& name);
 
 void DebugPrint();
 }

@@ -15,60 +15,62 @@
 using namespace std;
 
 //namespace Kondion::Window {
-namespace Kondion { namespace Window {
+namespace Kondion {
+namespace Window {
 
-	GLFWwindow* w;
+GLFWwindow* w;
 
-	int Initialize() {
-		if (!glfwInit())
-			return -1;
+int Initialize() {
+  if (!glfwInit())
+    return -1;
 
-		return 0;
-	}
+  return 0;
+}
 
-	void KeyCallback(GLFWwindow* linuxisbetter, int k, int sc, int a, int m) {
-		if (a == GLFW_PRESS) {
+void KeyCallback(GLFWwindow* linuxisbetter, int k, int sc, int a, int m) {
+  if (a == GLFW_PRESS) {
 
-			// interpert key typed
-			//cout << "Key press: " << char(k) << "(" << k << ")" << "\n";
+    // interpert key typed
+    //cout << "Key press: " << char(k) << "(" << k << ")" << "\n";
 
-		}
-	}
+  }
+}
 
-	void CharCallback(GLFWwindow* linuxisbetter, unsigned int c) {
-			cout << "Typed: " << char(c) << "\n";
-	}
+void CharCallback(GLFWwindow* linuxisbetter, uint32_t c) {
+  cout << "Typed: " << char(c) << "\n";
+}
 
-	int CreateWindow(uint16_t width, uint16_t height) {
-		//glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-		//glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		//glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		//glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-		w = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
-		if (!w) {
-			glfwTerminate();
-			return -1;
-		}
-		glfwMakeContextCurrent(w);
-		glfwSetKeyCallback(w, KeyCallback);
-		glfwSetCharCallback(w, CharCallback);
-		if (glewInit() != GLEW_OK)
-			std::cout << "rip\n";
-		return 0;
-	}
+int CreateWindow(uint16_t width, uint16_t height) {
+  //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+  //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+  w = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
+  if (!w) {
+    glfwTerminate();
+    return -1;
+  }
+  glfwMakeContextCurrent(w);
+  glfwSetKeyCallback(w, KeyCallback);
+  glfwSetCharCallback(w, CharCallback);
+  if (glewInit() != GLEW_OK)
+    perror("GLFW Initialization error\n");
+  return 0;
+}
 
-	int SwitchWindow(int index) {
-		return 0;
-	}
+int SwitchWindow(size_t index) {
+  return 0;
+}
 
-	bool Active() {
-		return !glfwWindowShouldClose(w);
-	}
+bool Active() {
+  return !glfwWindowShouldClose(w);
+}
 
-	void Update() {
+void Update() {
 
-		glfwSwapBuffers(w);
-		glfwPollEvents();
-	}
-}}
+  glfwSwapBuffers(w);
+  glfwPollEvents();
+}
+}
+}
 
