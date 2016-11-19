@@ -59,25 +59,33 @@ namespace Input {
 
 std::vector<Control*> controls;
 
-void AddControl(const std::string& name, uint8_t device, uint16_t button) {
-  printf("birdddd\n");
+/**
+ * Add a new control.
+ * @param name What you want the name of the control to be.
+ * @param device The device the control with be connected to.
+ * @param button The button or axis of the device.
+ * @return The index of the new control.
+ */
+uint16_t AddControl(const std::string& name, uint8_t device, uint16_t button) {
+
   Control* f = new Control;
   f->button = button;
   f->device = device;
   f->name = name;
-  signed char c = -1;
-  unsigned short i = 0;
+  int8_t compared = -1;
+  uint16_t i = 0;
   if (controls.size() != 0) {
     i = controls.size() - 1;
-    while (i != 0 && (c = name.compare(controls[i]->name)) < 0) {
+    while (i != 0 && (compared = name.compare(controls[i]->name)) < 0) {
       printf("birds: %i\n", i);
       i--;
     }
   }
-  printf("birds: %i\n", i);
-  f->alternate = (c == 0);
+
+  f->alternate = (compared == 0);
   controls.insert(controls.begin() + i, f);
   printf("birds: %i\n", i);
+  return i;
 }
 
 uint16_t ControlIndex(const std::string& name) {

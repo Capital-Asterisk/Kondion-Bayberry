@@ -20,9 +20,6 @@
 #include <unistd.h>
 #endif
 
-#include "include/libplatform/libplatform.h"
-#include "include/v8.h"
-
 #include "Kondion.h"
 
 namespace Kondion {

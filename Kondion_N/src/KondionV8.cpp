@@ -212,8 +212,13 @@ void Setup() {
              FunctionTemplate::New(isolate, Callback_Kdion_Log));
   kdion->Set(String::NewFromUtf8(isolate, "initialize"),
              FunctionTemplate::New(isolate, Callback_Kdion_Initialize));
-  kdion->Set(String::NewFromUtf8(isolate, "Bird"),
-             FunctionTemplate::New(isolate, Callback_Kdion_Bird));
+
+  // Object constructors
+
+  Local<FunctionTemplate> bird = FunctionTemplate::New(isolate, Callback_Kdion_Bird);
+  bird->InstanceTemplate()->SetInternalFieldCount(1);
+  bird->InstanceTemplate()->SetAccessor(String::NewFromUtf8(isolate, "integrity"), Callback_Bird_GetIntegrity, Callback_Bird_SetIntegrity);
+  kdion->Set(String::NewFromUtf8(isolate, "Bird"), bird);
 
   global->Set(String::NewFromUtf8(isolate, "kdion"), kdion);
 
