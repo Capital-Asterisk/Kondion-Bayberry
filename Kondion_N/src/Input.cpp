@@ -57,6 +57,7 @@ namespace Input {
  *     100-199 - Axis
  */
 
+// I don't know how to avoid these
 std::vector<Control*> controls;
 
 /**

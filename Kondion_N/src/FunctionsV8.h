@@ -58,6 +58,30 @@ void Callback_Kdion_Bird(const v8::FunctionCallbackInfo<v8::Value>& args) {
   }
 }
 
+void Callback_Kdion_Entity(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  HandleScope handle_scope(isolate);
+  if (args.IsConstructCall()) {
+    printf("New Entity\n");
+    KObj_Entity* f = new KObj_Entity();
+    f->components.push_back(new Component::CPN_Cube);
+    Kondion::world.push_back(f);
+    args.This()->SetInternalField(0, External::New(isolate, f));
+    args.GetReturnValue().Set(args.This());
+  }
+}
+
+void Callback_Kdion_Blank(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  //HandleScope handle_scope(isolate);
+  if (args.IsConstructCall()) {
+    //KObj_Entity* f = new KObj_Entity();
+    //f->components.push_back(new Component::CPN_Cube);
+    //Kondion::world.push_back(f);
+    //args.This()->SetInternalField(0, External::New(isolate, f));
+    args.GetReturnValue().Set(args.This());
+  }
+}
+
+
 void Callback_Bird_GetIntegrity(Local<String> property,
       const PropertyCallbackInfo<Value>& info) {
   Local<External> wrap = Local<External>::Cast(info.Holder()->GetInternalField(0));

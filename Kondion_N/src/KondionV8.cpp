@@ -213,14 +213,29 @@ void Setup() {
   kdion->Set(String::NewFromUtf8(isolate, "initialize"),
              FunctionTemplate::New(isolate, Callback_Kdion_Initialize));
 
-  // Object constructors
+  // constructor functions
 
   Local<FunctionTemplate> bird = FunctionTemplate::New(isolate, Callback_Kdion_Bird);
   bird->InstanceTemplate()->SetInternalFieldCount(1);
   bird->InstanceTemplate()->SetAccessor(String::NewFromUtf8(isolate, "integrity"), Callback_Bird_GetIntegrity, Callback_Bird_SetIntegrity);
   kdion->Set(String::NewFromUtf8(isolate, "Bird"), bird);
 
+
+  Local<FunctionTemplate> chicken = FunctionTemplate::New(isolate, Callback_Kdion_Bird);
+  chicken->Inherit(bird);
+  chicken->InstanceTemplate()->SetInternalFieldCount(1);
+
+  // KObj
+
+  Local<FunctionTemplate> kobj_entity = FunctionTemplate::New(isolate, Callback_Kdion_Entity);
+  kobj_entity->InstanceTemplate()->SetInternalFieldCount(1);
+
+  //bird->InstanceTemplate()->SetAccessor(String::NewFromUtf8(isolate, "integrity"), Callback_Bird_GetIntegrity, Callback_Bird_SetIntegrity);
+  kdion->Set(String::NewFromUtf8(isolate, "Bird"), bird);
+  kdion->Set(String::NewFromUtf8(isolate, "Chicken"), chicken);
+
   global->Set(String::NewFromUtf8(isolate, "kdion"), kdion);
+  global->Set(String::NewFromUtf8(isolate, "KObj_Entity"), kobj_entity);
 
   // Create a new context.
   Local<Context> context = Context::New(Isolate::GetCurrent(), NULL, global);

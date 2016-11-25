@@ -24,6 +24,7 @@
 
 namespace Kondion {
 
+// I really don't know how to avoid these
 std::vector<KObj_Node *> world;
 char* dir;
 

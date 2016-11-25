@@ -15,6 +15,15 @@ kdion.initialize(function() {
 	f.integrity = 5.5;
 	kdion.log("Bird is crushed: " + f.crushed);
 	kdion.log("Bird is integrity: " + f.integrity);
-	
+	var c = new kdion.Chicken();
+	kdion.log("Bird: " + c);
+	kdion.log("Bird is crushed: " + c.crushed);
+	kdion.log("Bird integrity: " + c.integrity);
+	kdion.log("Crushing bird...");
+	c.crushed = true;
+	c.integrity = 5.5;
+	kdion.log("Bird is crushed: " + c.crushed);
+	kdion.log("Bird is integrity: " + c.integrity);
+	var e = new KObj_Entity();
 });
 
