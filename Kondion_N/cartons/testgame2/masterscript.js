@@ -25,5 +25,6 @@ kdion.initialize(function() {
 	kdion.log("Bird is crushed: " + c.crushed);
 	kdion.log("Bird is integrity: " + c.integrity);
 	var e = new KObj_Entity();
+	e.setParent(e, "hey theretttt", 5, 5, 8);
 });
 

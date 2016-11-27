@@ -38,10 +38,15 @@ class KComponent;
 class KObj_Node {
  public:
   std::string name;
+  void* jsObject;
+
   virtual int getType() {
     return 0;
   }
   void setParent(KObj_Node* node);
+  KObj_Node* getParent() {
+    return parent;
+  }
   virtual void updateA() {
   }
   virtual void updateB() {
@@ -113,6 +118,10 @@ class KComponent {
 };
 
 namespace Object {
+
+class GKO_World : public KObj_Node {
+
+};
 
 class OKO_Camera_ : public KObj_Oriented {
  public:

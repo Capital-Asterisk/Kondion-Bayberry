@@ -18,11 +18,16 @@ class ArrayBufferAllocator;
 
 // I'm not changing these so is it ok to use global vars?
 
+ArrayBufferAllocator* allocator;
+
 Platform* platform;
 Isolate* isolate;
-ArrayBufferAllocator* allocator;
-Persistent<Context, CopyablePersistentTraits<Context>> contextp;
-Persistent<Function, CopyablePersistentTraits<Function>> initialize;
+
+Persistent<Context, CopyablePersistentTraits<Context>> p_context;
+Persistent<Function, CopyablePersistentTraits<Function>> p_initialize;
+
+Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_kobj_node;
+
 
 class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
  public:
@@ -58,14 +63,16 @@ void Callback_Kdion_Bird(const v8::FunctionCallbackInfo<v8::Value>& args) {
   }
 }
 
-void Callback_Kdion_Entity(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void Callback_KObj_Entity(const FunctionCallbackInfo<v8::Value>& args) {
   HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {
     printf("New Entity\n");
-    KObj_Entity* f = new KObj_Entity();
-    f->components.push_back(new Component::CPN_Cube);
-    Kondion::world.push_back(f);
-    args.This()->SetInternalField(0, External::New(isolate, f));
+    KObj_Entity* o = new KObj_Entity();
+    o->components.push_back(new Component::CPN_Cube);
+    o->jsObject = new Persistent<v8::Object,
+        CopyablePersistentTraits<v8::Object>>(isolate, args.This());
+    Kondion::world.push_back(o);
+    args.This()->SetInternalField(0, External::New(isolate, o));
     args.GetReturnValue().Set(args.This());
   }
 }
@@ -81,21 +88,64 @@ void Callback_Kdion_Blank(const v8::FunctionCallbackInfo<v8::Value>& args) {
   }
 }
 
+void Callback_KObj_GetParent(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  //HandleScope handle_scope(isolate);
+  if (!args.IsConstructCall()) {
+    //printf("%s\n", static_cast<Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>>(static_cast<KObj_Node*>(args.This()->GetInternalField(0)->Value())->getParent()->jsObject)->name);
+    Local<External> wrap = Local<External>::Cast(
+        args.This()->GetInternalField(0));
+    KObj_Node* pointer = static_cast<KObj_Node*>(wrap->Value());
+    Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>* p;
+    p =
+        static_cast<Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>*>(pointer
+            ->jsObject);
+    Local<v8::Object> o = Local<v8::Object>::New(isolate, *p);
+    args.GetReturnValue().Set(o);
+  }
+}
+
+void Callback_KObj_SetParent(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (args.IsConstructCall() || args.Length() == 0)
+    return;
+  // A mess
+  //Local<FunctionTemplate> f;
+  //Local<FunctionTemplate> f = args.GetIsolate()->GetCallingContext()->Global()->Get(
+  //    String::NewFromUtf8(isolate, "KObj_Node"));
+  //Local<Function> b = args.GetIsolate()->GetCallingContext()->Global()->Get(
+  //        String::NewFromUtf8(isolate, "KObj_Node"));
+  //args[0].Cast(f);
+  //if (!Local<FunctionTemplate>::Cast(
+  //    args.GetIsolate()->GetCallingContext()->Global()->Get(
+  //        String::NewFromUtf8(isolate, "KObj_Node")))->HasInstance(args[0]))
+  //  // Test if arg[0] is a kobj_node
+  //  return;
+  //KObj_Node* pointer = static_cast<KObj_Node*>(Local<External>::Cast(
+  //    args.This()->GetInternalField(0))->Value());
+  //printf("args: %i\n", args.Length());
+  //pointer->setParent(node);
+  //Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>* p;
+  //p = static_cast<Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>*>(pointer->jsObject);
+  //Local<v8::Object> o = Local<v8::Object>::New(isolate, *p);
+  //args.GetReturnValue().Set(o);
+  Local<FunctionTemplate> f = Local<FunctionTemplate>::New(isolate, p_kobj_node);
+  printf("Arg0 is kobj_node: %i\n", f->HasInstance(args[0]));
+}
 
 void Callback_Bird_GetIntegrity(Local<String> property,
-      const PropertyCallbackInfo<Value>& info) {
-  Local<External> wrap = Local<External>::Cast(info.Holder()->GetInternalField(0));
+                                const PropertyCallbackInfo<Value>& info) {
+  Local<External> wrap = Local<External>::Cast(
+      info.Holder()->GetInternalField(0));
   void* pointer = wrap->Value();
   info.GetReturnValue().Set(static_cast<Bird*>(pointer)->integrity);
 }
 
-void Callback_Bird_SetIntegrity(Local<String> property,
-      Local<Value> value, const PropertyCallbackInfo<void>& info) {
-  Local<External> wrap = Local<External>::Cast(info.Holder()->GetInternalField(0));
+void Callback_Bird_SetIntegrity(Local<String> property, Local<Value> value,
+                                const PropertyCallbackInfo<void>& info) {
+  Local<External> wrap = Local<External>::Cast(
+      info.Holder()->GetInternalField(0));
   void* pointer = wrap->Value();
   static_cast<Bird*>(pointer)->integrity = value->Int32Value();
 }
-
 
 void Callback_Kdion_Log(const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (args.Length() < 1)
@@ -111,8 +161,8 @@ void Callback_Kdion_Initialize(
   HandleScope handle_scope(isolate);
   Local<Value> arg0 = args[0];
   if (arg0->IsFunction()) {
-    initialize.Reset();
-    initialize = Persistent<Function, CopyablePersistentTraits<Function>>(
+    p_initialize.Reset();
+    p_initialize = Persistent<Function, CopyablePersistentTraits<Function>>(
         isolate, Local<Function>::Cast(arg0));
   }
 }

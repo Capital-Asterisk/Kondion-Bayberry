@@ -29,7 +29,7 @@ std::vector<Persistent<Value, CopyablePersistentTraits<Value>>*> objects;
 int Parse(const std::string& s) {
   Isolate::Scope isolate_scope(isolate);
   HandleScope handle_scope(isolate);
-  Local<Context> context = Local<Context>::New(isolate, contextp);
+  Local<Context> context = Local<Context>::New(isolate, p_context);
   Context::Scope context_scope(context);
   printf("%s", s.c_str());
   Local<String> str =
@@ -129,7 +129,7 @@ void CallFunction(const std::string& s) {
   //Context::Scope context_scope(isolate->GetCallingContext());
   //printf("Is empty: %i\n", isolate->GetCurrentContext().IsEmpty());
   //printf("Is empty?: %i\n", contextp.IsEmpty());
-  Local<Context> context = Local<Context>::New(isolate, contextp);
+  Local<Context> context = Local<Context>::New(isolate, p_context);
   Local<Value> birds = context->Global()->Get(
       context, String::NewFromUtf8(isolate, s.c_str())).ToLocalChecked();
   //printf("Is context empty?: %i\n", context.IsEmpty());
@@ -143,7 +143,8 @@ void CallFunction(const std::string& s) {
 
 void Destroy() {
   //Isolate::Scope isolate_scope(isolate);
-  contextp.Reset();
+  p_kobj_node.Reset();
+  p_context.Reset();
   printf("current isolate: %p\n", Isolate::GetCurrent());
   isolate->Dispose();
   V8::Dispose();
@@ -159,7 +160,7 @@ void Eval(const std::string& s) {
 void Eval(const char* s) {
   Isolate::Scope isolate_scope(isolate);
   HandleScope handle_scope(isolate);
-  Local<Context> context = Local<Context>::New(isolate, contextp);
+  Local<Context> context = Local<Context>::New(isolate, p_context);
   Context::Scope context_scope(context);
   //std::cout << s << "\n";
   Local<String> source = String::NewFromUtf8(isolate, s, NewStringType::kNormal)
@@ -191,11 +192,7 @@ void Setup() {
   Isolate::CreateParams create_params;
   create_params.array_buffer_allocator = allocator;
   isolate = Isolate::New(create_params);
-  printf("current isolate: %p\n", Isolate::GetCurrent());
-
   Isolate::Scope isolate_scope(isolate);
-
-  printf("current isolate: %p\n", Isolate::GetCurrent());
 
   // Create a stack-allocated handle scope.
   HandleScope handle_scope(isolate);
@@ -203,6 +200,7 @@ void Setup() {
   // Make global object for the context
   Local<ObjectTemplate> global = ObjectTemplate::New(isolate);
 
+  // This is a test
   global->Set(String::NewFromUtf8(isolate, "bunny"),
               String::NewFromUtf8(isolate, "chirp chirp"));
 
@@ -213,35 +211,64 @@ void Setup() {
   kdion->Set(String::NewFromUtf8(isolate, "initialize"),
              FunctionTemplate::New(isolate, Callback_Kdion_Initialize));
 
-  // constructor functions
+  // constructor functions, bird chicken test
 
   Local<FunctionTemplate> bird = FunctionTemplate::New(isolate, Callback_Kdion_Bird);
   bird->InstanceTemplate()->SetInternalFieldCount(1);
   bird->InstanceTemplate()->SetAccessor(String::NewFromUtf8(isolate, "integrity"), Callback_Bird_GetIntegrity, Callback_Bird_SetIntegrity);
   kdion->Set(String::NewFromUtf8(isolate, "Bird"), bird);
 
-
   Local<FunctionTemplate> chicken = FunctionTemplate::New(isolate, Callback_Kdion_Bird);
   chicken->Inherit(bird);
   chicken->InstanceTemplate()->SetInternalFieldCount(1);
 
-  // KObj
+  // KObj constructors
 
-  Local<FunctionTemplate> kobj_entity = FunctionTemplate::New(isolate, Callback_Kdion_Entity);
+  Local<FunctionTemplate> kobj_node = FunctionTemplate::New(isolate);
+  kobj_node->InstanceTemplate()->SetInternalFieldCount(1);
+  kobj_node->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "getParent"), FunctionTemplate::New(isolate, Callback_KObj_GetParent));
+  kobj_node->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "setParent"), FunctionTemplate::New(isolate, Callback_KObj_SetParent));
+  //kobj_node->HasInstance(object)
+
+  Local<FunctionTemplate> kobj_oriented = FunctionTemplate::New(isolate);
+  kobj_oriented->InstanceTemplate()->SetInternalFieldCount(1);
+  kobj_oriented->Inherit(kobj_node);
+
+  Local<FunctionTemplate> kobj_entity = FunctionTemplate::New(isolate, Callback_KObj_Entity);
   kobj_entity->InstanceTemplate()->SetInternalFieldCount(1);
+  kobj_entity->Inherit(kobj_oriented);
+
+  Local<FunctionTemplate> kobj_instance = FunctionTemplate::New(isolate, Callback_KObj_Entity);
+  kobj_instance->InstanceTemplate()->SetInternalFieldCount(1);
+  kobj_instance->Inherit(kobj_oriented);
 
   //bird->InstanceTemplate()->SetAccessor(String::NewFromUtf8(isolate, "integrity"), Callback_Bird_GetIntegrity, Callback_Bird_SetIntegrity);
+
+  // Add everything together
+
   kdion->Set(String::NewFromUtf8(isolate, "Bird"), bird);
   kdion->Set(String::NewFromUtf8(isolate, "Chicken"), chicken);
 
   global->Set(String::NewFromUtf8(isolate, "kdion"), kdion);
-  global->Set(String::NewFromUtf8(isolate, "KObj_Entity"), kobj_entity);
 
-  // Create a new context.
+  global->Set(String::NewFromUtf8(isolate, "KObj_Node"), kobj_node);
+  global->Set(String::NewFromUtf8(isolate, "KObj_Oriented"), kobj_oriented);
+  global->Set(String::NewFromUtf8(isolate, "KObj_Entity"), kobj_entity);
+  global->Set(String::NewFromUtf8(isolate, "KObj_Instance"), kobj_instance);
+
+  global->Set(String::NewFromUtf8(isolate, "GKO_World"), kobj_instance);
+
+  // Create a new context with global included
   Local<Context> context = Context::New(Isolate::GetCurrent(), NULL, global);
 
-  contextp = Persistent<Context, CopyablePersistentTraits<Context>>(isolate,
-                                                                    context);
+  // Make persistent handles
+
+  p_context = Persistent<Context,
+      CopyablePersistentTraits<Context>>(isolate, context);
+  p_kobj_node = Persistent<FunctionTemplate,
+      CopyablePersistentTraits<FunctionTemplate>>(isolate, kobj_node);
+
+  // Run a test script
 
   // Enter the context for compiling and running the hello world script.
   Context::Scope context_scope(context);
@@ -267,21 +294,19 @@ void Setup() {
   // Convert the result to an UTF8 string and print it.
   String::Utf8Value utf8(result);
   printf("%s\n", *utf8);
-
-  //objects.Size();
 }
 
 void Start() {
   Isolate::Scope isolate_scope(isolate);
   HandleScope handle_scope(isolate);
-  Local<Context> context = Local<Context>::New(isolate, contextp);
+  Local<Context> context = Local<Context>::New(isolate, p_context);
   Context::Scope context_scope(context);
 
-  Local<Function> init = Local<Function>::New(isolate, initialize);
+  Local<Function> init = Local<Function>::New(isolate, p_initialize);
   Local<Value> args[1] = { String::NewFromUtf8(isolate, "arg") };
   Local<Value> res = init->Call(context, context->Global(), 1, args)
       .ToLocalChecked();
-  initialize.Reset();
+  p_initialize.Reset();
 }
 
 void UpdateInput() {
