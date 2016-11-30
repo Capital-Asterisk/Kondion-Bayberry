@@ -38,15 +38,14 @@ class KComponent;
 class KObj_Node {
  public:
   std::string name;
+  std::vector<KObj_Node*> children;
+  uint16_t myIndex;
   void* jsObject;
-
   virtual int getType() {
     return 0;
   }
   void setParent(KObj_Node* node);
-  KObj_Node* getParent() {
-    return parent;
-  }
+  KObj_Node* getParent();
   virtual void updateA() {
   }
   virtual void updateB() {
@@ -117,7 +116,7 @@ class KComponent {
  protected:
 };
 
-namespace Object {
+namespace KObj {
 
 class GKO_World : public KObj_Node {
 
@@ -148,12 +147,13 @@ class CPN_InfinitePlane : public Kondion::KComponent {
 
 extern char* dir;
 extern std::vector<KObj_Node *> world;
+extern KObj::GKO_World* worldObject;
 
 void Launch();
 void GameLoop();
 
 namespace Renderer {
-extern Object::OKO_Camera_* currentCamera;
+extern KObj::OKO_Camera_* currentCamera;
 void Setup();
 void Three(uint16_t width, uint16_t height);
 void RenderCube(float scale);

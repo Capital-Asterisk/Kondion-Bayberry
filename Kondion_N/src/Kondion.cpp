@@ -26,10 +26,31 @@ namespace Kondion {
 
 // I really don't know how to avoid these
 std::vector<KObj_Node *> world;
+KObj::GKO_World* worldObject;
 char* dir;
 
+KObj_Node* KObj_Node::getParent() {
+  return parent;
+}
+
 void KObj_Node::setParent(KObj_Node* node) {
+  if (node == this) {
+    perror("An object will never be parented to itself.\n");
+    return;
+  }
+  if (parent != NULL) {
+    parent->children[myIndex] = NULL;
+  }
   parent = node;
+  for (uint16_t i = 0; i < parent->children.size(); i ++) {
+    if (parent->children[i] == NULL) {
+      parent->children[i] = this;
+      printf("parent has been set, the other way.\n");
+      return;
+    }
+  }
+  printf("parent has been set.\n");
+  parent->children.push_back(this);
 }
 
 void KObj_Oriented::parentTransform() {
@@ -69,10 +90,12 @@ void KObj_Entity::render() {
 }
 
 void Launch() {
-  std::cout << "Hello World\n";
+  printf("Hello World\n");
 
   Window::Initialize();
   Window::CreateWindow(800, 600);
+
+  //worldObject = new KObj::GKO_World;
 
   Renderer::Setup();
   Input::Setup();
@@ -85,26 +108,29 @@ void Launch() {
 void GameLoop() {
 
   JS::Start();
-  Object::OKO_Camera_ *a = new Object::OKO_Camera_;
-  a->offset = glm::translate(a->offset, glm::vec3(0.0f, 0.7f, 0.0f));
+  printf("objects in world: %i\n", worldObject->children.size());
+  KObj::OKO_Camera_ *a = new KObj::OKO_Camera_;
+  a->offset = glm::translate(a->offset, glm::vec3(0.0f, 9.7f, 0.0f));
   a->offset = glm::rotate(a->offset, 0.3f, glm::vec3(1.0f, 0.0f, 0.0f));
   KObj_Entity *b = new KObj_Entity;
   b->components.insert(b->components.end(), new Component::CPN_InfinitePlane);
   b->components[0]->offset = glm::rotate(b->components[0]->offset, 3.14159f / 2,
                                          glm::vec3(1, 0, 0));
-
-  KObj_Entity *player = new KObj_Entity;
-  player->components.insert(player->components.end(), new Component::CPN_Cube);
-  player->offset = glm::translate(player->offset, glm::vec3(0.0f, 0.2f, 0.0f));
+  b->offset = glm::translate(b->offset, glm::vec3(0.0f, -0.2f, 0.0f));
+  //printf("type: %i\n", a->getType());
+  //KObj_Entity *player = new KObj_Entity;
+  //player->components.insert(player->components.end(), new Component::CPN_Cube);
+  //player->offset = glm::translate(player->offset, glm::vec3(0.0f, 0.25f, 0.0f));
   //player->offset = glm::rotate(player->offset, 0.1f, glm::vec3(1.0f, 0.0f, 0.0f));
-  a->setParent(player);
+  //a->setParent(player);
   Renderer::currentCamera = a;
 
-  world.insert(world.end(), b);
-  world.insert(world.end(), player);
-  world.insert(world.end(), a);
-
-  b->offset = glm::translate(b->offset, glm::vec3(0.0f, -0.2f, 0.0f));
+  b->setParent(worldObject);
+  //player->setParent(worldObject);
+  a->setParent(worldObject);
+  //w.insert(world.end(), b);
+  //world.insert(world.end(), player);
+  //world.insert(world.end(), a);
 
   Input::AddControl("MOUSE_X", Input::INPUT_SYSTEM, Input::MOUSE_POSX);
   Input::AddControl("MOUSE_Y", Input::INPUT_SYSTEM, Input::MOUSE_POSY);
@@ -116,7 +142,8 @@ void GameLoop() {
 
   Input::MouseLock(true);
 
-  //float f = 0.1f;
+  //float yaw = 0.0f;
+  //float pitch = 0.0f
   while (Window::Active()) {
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -124,19 +151,27 @@ void GameLoop() {
     Input::Update();
     //Input::DebugPrint();
 
-    player->offset = glm::translate(
-        player->offset,
-        glm::vec3(0.0f, 0.0f,
-                  Input::Get(Input::ControlIndex("MOVE_Y"))->x * -0.1f));
-    player->offset = glm::rotate(
-        player->offset,
-        (Input::Get(Input::ControlIndex("MOUSE_X"))->delta()) * 0.001f,
-        glm::vec3(0.0f, 1.0f, -0.000000f));
-    a->offset = glm::mat4x4(glm::mat3x3(a->offset));
+    //player->offset = glm::translate(
+    //    player->offset,
+    //    glm::vec3(0.0f, 0.0f,
+    //              Input::Get(Input::ControlIndex("MOVE_Y"))->x * -0.1f));
+    //player->offset = glm::rotate(
+    //    player->offset,
+    //    (Input::Get(Input::ControlIndex("MOUSE_X"))->delta()) * 0.001f,
+    //    glm::vec3(0.0f, 1.0f, -0.000000f));
+
+    glm::vec3 trans = glm::vec3(a->offset[3]);
+    a->offset = glm::mat4x4();
+    a->offset = glm::translate(a->offset, trans);
     a->offset = glm::rotate(
-        a->offset, Input::Get(Input::ControlIndex("MOUSE_Y"))->delta() * 0.001f,
+            a->offset, Input::Get(Input::ControlIndex("MOUSE_X"))->x * -0.001f,
+            glm::vec3(0.0f, 1.0f, 0.0f));
+    a->offset = glm::rotate(
+        a->offset, Input::Get(Input::ControlIndex("MOUSE_Y"))->x * -0.001f,
         glm::vec3(1.0f, -0.0f, -0.0f));
-    glm::value_ptr(a->offset)[13] = 0.7f;
+
+    //glm::value_ptr(a->offset)[13] = 0.7f;
+    a->offset = glm::translate(a->offset, glm::vec3(0, 0, -Input::Get(Input::ControlIndex("MOVE_Y"))->x * 0.4));
 
     //Debug::PrintMatrix)
     //a->offset = glm::translate(a->offset, glm::vec3(0.0, 0.7, 0.0));
@@ -159,13 +194,13 @@ void GameLoop() {
       JS::CallFunction("birds");
     }
 
-    for (size_t i = 0; i < world.size(); i++) {
-      world[i]->updateA();
+    for (size_t i = 0; i < worldObject->children.size(); i++) {
+      worldObject->children[i]->updateA();
     }
 
-    for (size_t i = 0; i < world.size(); i++) {
-      if (world[i]->getType() == 2 || world[i]->getType() == 3) {
-        dynamic_cast<KObj_Oriented*>(world[i])->parentTransform();
+    for (size_t i = 0; i < worldObject->children.size(); i++) {
+      if (worldObject->children[i]->getType() == 2 || worldObject->children[i]->getType() == 3) {
+        dynamic_cast<KObj_Oriented*>(worldObject->children[i])->parentTransform();
       }
     }
 
@@ -178,11 +213,12 @@ void GameLoop() {
 
     Renderer::Three(800, 600);
 
-    for (size_t i = 0; i < world.size(); i++) {
-      if (world[i]->getType() == 3) {
-        dynamic_cast<KObj_Entity*>(world[i])->render();
-      } else if (world[i]->getType() == 4) {
-        dynamic_cast<KObj_Instance*>(world[i])->render();
+    for (size_t i = 0; i < worldObject->children.size(); i++) {
+      //printf("c: %s\n", worldObject->children[i]->name.c_str());
+      if (worldObject->children[i]->getType() == 3) {
+        dynamic_cast<KObj_Entity*>(worldObject->children[i])->render();
+      } else if (worldObject->children[i]->getType() == 4) {
+        dynamic_cast<KObj_Instance*>(worldObject->children[i])->render();
       }
 
     }

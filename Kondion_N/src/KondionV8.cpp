@@ -242,6 +242,11 @@ void Setup() {
   kobj_instance->InstanceTemplate()->SetInternalFieldCount(1);
   kobj_instance->Inherit(kobj_oriented);
 
+  // GKO
+  Local<FunctionTemplate> gko_world = FunctionTemplate::New(isolate, Callback_GKO_World);
+  gko_world->InstanceTemplate()->SetInternalFieldCount(1);
+  gko_world->Inherit(kobj_node);
+
   //bird->InstanceTemplate()->SetAccessor(String::NewFromUtf8(isolate, "integrity"), Callback_Bird_GetIntegrity, Callback_Bird_SetIntegrity);
 
   // Add everything together
@@ -256,22 +261,27 @@ void Setup() {
   global->Set(String::NewFromUtf8(isolate, "KObj_Entity"), kobj_entity);
   global->Set(String::NewFromUtf8(isolate, "KObj_Instance"), kobj_instance);
 
-  global->Set(String::NewFromUtf8(isolate, "GKO_World"), kobj_instance);
+  global->Set(String::NewFromUtf8(isolate, "GKO_World"), gko_world);
+
+  //global->Set(String::NewFromUtf8(isolate, "GKO_World"), gko_world);
+
+  // Run a test script
 
   // Create a new context with global included
   Local<Context> context = Context::New(Isolate::GetCurrent(), NULL, global);
 
-  // Make persistent handles
-
-  p_context = Persistent<Context,
-      CopyablePersistentTraits<Context>>(isolate, context);
-  p_kobj_node = Persistent<FunctionTemplate,
-      CopyablePersistentTraits<FunctionTemplate>>(isolate, kobj_node);
-
-  // Run a test script
-
-  // Enter the context for compiling and running the hello world script.
   Context::Scope context_scope(context);
+
+  // World
+  printf("something\n");
+  Local<Value> o = gko_world->GetFunction()->CallAsConstructor(context, 0, NULL).ToLocalChecked();
+  printf("something else\n");
+  Local<Object> world = o->ToObject(isolate);
+  printf("woot\n");
+  Kondion::worldObject = static_cast<KObj::GKO_World*>(Local<External>::Cast(world->GetInternalField(0))->Value());
+  // really?
+  context->Global()->Get(context, String::NewFromUtf8(isolate, "kdion")).ToLocalChecked()
+      ->ToObject()->Set(String::NewFromUtf8(isolate, "World"), world);
 
   // Create a string containing the JavaScript source code.
   Local<String> source =
@@ -281,6 +291,7 @@ void Setup() {
           "    kdion.log(\"bird says: \" + a + \" bunny says: \" + bunny + \", but do turtles say other things?\");"
           "    return  \"bird says: \" + a + \" bunny says: \" + bunny;"
           "};"
+          "//kdion.World = new GKO_World();"
           "eval(\"false\");"
           "birds('yeah! ' + Math.random())",
           NewStringType::kNormal).ToLocalChecked();
@@ -292,8 +303,16 @@ void Setup() {
   Local<Value> result = script->Run(context).ToLocalChecked();
 
   // Convert the result to an UTF8 string and print it.
-  String::Utf8Value utf8(result);
-  printf("%s\n", *utf8);
+  //String::Utf8Value utf8(result);
+  //printf("%s\n", *utf8);
+
+  // Make persistent handles
+
+  p_context = Persistent<Context,
+      CopyablePersistentTraits<Context>>(isolate, context);
+  p_kobj_node = Persistent<FunctionTemplate,
+      CopyablePersistentTraits<FunctionTemplate>>(isolate, kobj_node);
+
 }
 
 void Start() {

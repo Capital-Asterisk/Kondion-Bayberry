@@ -16,7 +16,7 @@ namespace Kondion {
 namespace Renderer {
 
 // Camera used for the current render pass
-Kondion::Object::OKO_Camera_* currentCamera;
+Kondion::KObj::OKO_Camera_* currentCamera;
 
 GLuint beef;
 GLuint bacon;
@@ -26,8 +26,8 @@ void Setup() {
 
   glEnable(GL_TEXTURE_2D);
   glShadeModel(GL_SMOOTH);
-  glClearColor(0.0f, 0.0f, 0.0f, 0.5f);				// Black Background
-  glClearDepth(1.0f);									// Depth Buffer Setup
+  glClearColor(0.0f, 0.0f, 0.0f, 0.5f);// Black Background
+  glClearDepth(1.0f);	// Depth Buffer Setup
   glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
   glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	//

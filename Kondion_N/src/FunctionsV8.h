@@ -77,6 +77,20 @@ void Callback_KObj_Entity(const FunctionCallbackInfo<v8::Value>& args) {
   }
 }
 
+void Callback_GKO_World(const FunctionCallbackInfo<v8::Value>& args) {
+  HandleScope handle_scope(isolate);
+  if (args.IsConstructCall()) {
+    printf("New Entity\n");
+    KObj::GKO_World* o = new KObj::GKO_World();
+    //o->components.push_back(new Component::CPN_Cube);
+    o->jsObject = new Persistent<v8::Object,
+        CopyablePersistentTraits<v8::Object>>(isolate, args.This());
+    Kondion::world.push_back(o);
+    args.This()->SetInternalField(0, External::New(isolate, o));
+    args.GetReturnValue().Set(args.This());
+  }
+}
+
 void Callback_Kdion_Blank(const v8::FunctionCallbackInfo<v8::Value>& args) {
   //HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {
@@ -129,6 +143,15 @@ void Callback_KObj_SetParent(const v8::FunctionCallbackInfo<v8::Value>& args) {
   //args.GetReturnValue().Set(o);
   Local<FunctionTemplate> f = Local<FunctionTemplate>::New(isolate, p_kobj_node);
   printf("Arg0 is kobj_node: %i\n", f->HasInstance(args[0]));
+
+  if (!f->HasInstance(args[0]))
+    return;
+  KObj_Node* pointer_this = static_cast<KObj_Node*>(Local<External>::Cast(
+        args.This()->GetInternalField(0))->Value());
+  KObj_Node* pointer_arg0 = static_cast<KObj_Node*>(Local<External>::Cast(
+        Local<Object>::Cast(args[0])->GetInternalField(0))->Value());
+
+  pointer_this->setParent(pointer_arg0);
 }
 
 void Callback_Bird_GetIntegrity(Local<String> property,
