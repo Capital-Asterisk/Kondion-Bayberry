@@ -29,3 +29,10 @@ kdion.initialize(function() {
 	e.setParent(kdion.World, "hey theretttt", 5, 5, 8);
 });
 
+kdion.globalUpdate(function() {
+	//kdion.log("");
+	
+	
+	
+});
+

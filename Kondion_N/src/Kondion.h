@@ -257,6 +257,7 @@ void CallFunction(const std::string& s);
 void Destroy();
 void Eval(const char* s);
 void Eval(const std::string& s);
+void GlobalUpdate();
 void Setup();
 void Start();
 void UpdateInput();

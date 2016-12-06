@@ -25,6 +25,7 @@ Isolate* isolate;
 
 Persistent<Context, CopyablePersistentTraits<Context>> p_context;
 Persistent<Function, CopyablePersistentTraits<Function>> p_initialize;
+Persistent<Array, CopyablePersistentTraits<Array>> p_gupdate;
 
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_kobj_node;
 
@@ -187,6 +188,18 @@ void Callback_Kdion_Initialize(
     p_initialize.Reset();
     p_initialize = Persistent<Function, CopyablePersistentTraits<Function>>(
         isolate, Local<Function>::Cast(arg0));
+  }
+}
+
+void Callback_Kdion_GlobalUpdate(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (args.Length() < 1)
+    return;
+  HandleScope handle_scope(isolate);
+  Local<Value> arg0 = args[0];
+  if (arg0->IsFunction()) {
+    Local<Array> a = Local<Array>::New(isolate, p_gupdate);
+    a->Set(a->Length(), arg0);
   }
 }
 

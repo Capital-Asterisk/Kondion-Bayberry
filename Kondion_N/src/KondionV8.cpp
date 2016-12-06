@@ -145,6 +145,7 @@ void Destroy() {
   //Isolate::Scope isolate_scope(isolate);
   p_kobj_node.Reset();
   p_context.Reset();
+  p_gupdate.Reset();
   printf("current isolate: %p\n", Isolate::GetCurrent());
   isolate->Dispose();
   V8::Dispose();
@@ -172,8 +173,19 @@ void Eval(const char* s) {
     MaybeLocal<Value> mayberesult = script.ToLocalChecked()->Run(context);
     if (mayberesult.IsEmpty()) {
       printf("Error!\n");
-    } else
-      Local<Value> result = mayberesult.ToLocalChecked();
+    } //else
+      //Local<Value> result = mayberesult.ToLocalChecked();
+  }
+}
+
+void GlobalUpdate() {
+  Isolate::Scope isolate_scope(isolate);
+  HandleScope handle_scope(isolate);
+  Local<Context> context = Local<Context>::New(isolate, p_context);
+  Context::Scope context_scope(context);
+  Local<Array> a = Local<Array>::New(isolate, p_gupdate);
+  for (uint16_t i = 0; i < a->Length(); i ++) {
+    Local<Function>::Cast(a->Get(i))->Call(context, context->Global(), 0, NULL);
   }
 }
 
@@ -210,6 +222,8 @@ void Setup() {
              FunctionTemplate::New(isolate, Callback_Kdion_Log));
   kdion->Set(String::NewFromUtf8(isolate, "initialize"),
              FunctionTemplate::New(isolate, Callback_Kdion_Initialize));
+  kdion->Set(String::NewFromUtf8(isolate, "globalUpdate"),
+             FunctionTemplate::New(isolate, Callback_Kdion_GlobalUpdate));
 
   // constructor functions, bird chicken test
 
@@ -300,7 +314,8 @@ void Setup() {
   Local<Script> script = Script::Compile(context, source).ToLocalChecked();
 
   // Run the script to get the result.
-  Local<Value> result = script->Run(context).ToLocalChecked();
+  //Local<Value> result =
+  script->Run(context).ToLocalChecked();
 
   // Convert the result to an UTF8 string and print it.
   //String::Utf8Value utf8(result);
@@ -312,6 +327,8 @@ void Setup() {
       CopyablePersistentTraits<Context>>(isolate, context);
   p_kobj_node = Persistent<FunctionTemplate,
       CopyablePersistentTraits<FunctionTemplate>>(isolate, kobj_node);
+  p_gupdate = Persistent<Array,
+      CopyablePersistentTraits<Array>>(isolate, Array::New(isolate, 0));
 
 }
 
@@ -323,7 +340,7 @@ void Start() {
 
   Local<Function> init = Local<Function>::New(isolate, p_initialize);
   Local<Value> args[1] = { String::NewFromUtf8(isolate, "arg") };
-  Local<Value> res = init->Call(context, context->Global(), 1, args)
+  init->Call(context, context->Global(), 1, args)
       .ToLocalChecked();
   p_initialize.Reset();
 }

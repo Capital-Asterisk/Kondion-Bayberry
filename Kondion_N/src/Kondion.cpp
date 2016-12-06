@@ -108,7 +108,7 @@ void Launch() {
 void GameLoop() {
 
   JS::Start();
-  printf("objects in world: %i\n", worldObject->children.size());
+  //printf("objects in world: %i\n", worldObject->children.size());
   KObj::OKO_Camera_ *a = new KObj::OKO_Camera_;
   a->offset = glm::translate(a->offset, glm::vec3(0.0f, 9.7f, 0.0f));
   a->offset = glm::rotate(a->offset, 0.3f, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -116,7 +116,7 @@ void GameLoop() {
   b->components.insert(b->components.end(), new Component::CPN_InfinitePlane);
   b->components[0]->offset = glm::rotate(b->components[0]->offset, 3.14159f / 2,
                                          glm::vec3(1, 0, 0));
-  b->offset = glm::translate(b->offset, glm::vec3(0.0f, -0.2f, 0.0f));
+  b->offset = glm::translate(b->offset, glm::vec3(0.0f, -0.0f, 0.0f));
   //printf("type: %i\n", a->getType());
   //KObj_Entity *player = new KObj_Entity;
   //player->components.insert(player->components.end(), new Component::CPN_Cube);
@@ -149,6 +149,7 @@ void GameLoop() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     Input::Update();
+    JS::UpdateInput();
     //Input::DebugPrint();
 
     //player->offset = glm::translate(
@@ -190,9 +191,11 @@ void GameLoop() {
      a->offset = glm::rotate(a->offset, -0.09f, glm::vec3(0.0f, 1.0f, 0.0f));
      }*/
 
-    if (Input::Get(Input::ControlIndex("MOUSE_BUTTON0"))->x > 0.5f) {
-      JS::CallFunction("birds");
-    }
+    //if (Input::Get(Input::ControlIndex("MOUSE_BUTTON0"))->x > 0.5f) {
+    //  JS::CallFunction("birds");
+    //}
+    JS::GlobalUpdate();
+
 
     for (size_t i = 0; i < worldObject->children.size(); i++) {
       worldObject->children[i]->updateA();
