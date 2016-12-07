@@ -196,6 +196,8 @@ Control* Get(uint16_t i);
 void Setup();
 void Update();
 uint16_t ControlIndex(const std::string& name);
+float Value(uint16_t i);
+float ValuePrev(uint16_t i);
 
 void DebugPrint();
 }

@@ -38,8 +38,8 @@ namespace Input {
  *
  * -Game input:
  * All input is in numbers
- * js: (input["key_f"].x >= 0.5) is when button is down
- * js: (input["axis name"].y * forward) for axis
+ * js: (input["key_shoot"].x >= 0.5) is when button is down
+ * js: (input["move_lr"].y * forward) for axis
  *
  * device:
  * 0: system input (mouse, keyboard, touchscreen?)
@@ -73,19 +73,28 @@ uint16_t AddControl(const std::string& name, uint8_t device, uint16_t button) {
   f->button = button;
   f->device = device;
   f->name = name;
-  int8_t compared = -1;
+  int compared = -1;
   uint16_t i = 0;
   if (controls.size() != 0) {
-    i = controls.size() - 1;
-    while (i != 0 && (compared = name.compare(controls[i]->name)) < 0) {
-      printf("birds: %i\n", i);
-      i--;
-    }
+    i = controls.size(); // last element
+    //printf("chirp chirp %i\n", name.compare(controls[i]->name));
+    //while (i != 0 && (compared = name.compare(controls[i]->name)) > 0) {
+      //printf("birds: %i, compared: %i\n", i, compared);
+      //i--;
+    //}
+    printf("BIRDS! %s\n", name.c_str());
+    while (i != 0 && compared != 0) {
+      i --;
+      compared = name.compare(controls[i]->name);
+      //compared = strcmp(name.c_str(), controls[i]->name.c_str());
+      printf("%s -- %s comparison: %i\n", name.c_str(), controls[i]->name.c_str(), compared);
+    };
+    i ++;
   }
 
   f->alternate = (compared == 0);
   controls.insert(controls.begin() + i, f);
-  printf("birds: %i\n", i);
+  //printf("birds: %i\n", i);
   return i;
 }
 
@@ -99,6 +108,34 @@ uint16_t ControlIndex(const std::string& name) {
 
 Control* Get(uint16_t i) {
   return controls[i];
+}
+
+float Value(uint16_t i) {
+  //printf("poop %f\n", controls[i]->x);
+  if (i >= controls.size())
+    return 0.0f;
+
+  float r = controls[i]->x;
+  i ++;
+  while (i < controls.size() && controls[i]->alternate) {
+    r = (std::abs(r) < std::abs(controls[i]->x)) ? controls[i]->x : r;
+    i ++;
+    //r = std::max(r, controls[i]->px);
+  }
+  return r;
+}
+
+float ValuePrev(uint16_t i) {
+  if (i >= controls.size())
+    return 0.0f;
+  float r = controls[i]->px;
+  i ++;
+  while (i < controls.size() && controls[i]->alternate) {
+    r = (std::abs(r) < std::abs(controls[i]->px)) ? controls[i]->px : r;
+    i ++;
+    //r = std::max(r, controls[i]->px);
+  }
+  return r;
 }
 
 void MouseLock(bool a) {

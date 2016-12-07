@@ -26,6 +26,7 @@ Isolate* isolate;
 Persistent<Context, CopyablePersistentTraits<Context>> p_context;
 Persistent<Function, CopyablePersistentTraits<Function>> p_initialize;
 Persistent<Array, CopyablePersistentTraits<Array>> p_gupdate;
+Persistent<Object, CopyablePersistentTraits<Object>> p_input;
 
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_kobj_node;
 

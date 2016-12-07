@@ -146,6 +146,7 @@ void Destroy() {
   p_kobj_node.Reset();
   p_context.Reset();
   p_gupdate.Reset();
+  p_input.Reset();
   printf("current isolate: %p\n", Isolate::GetCurrent());
   isolate->Dispose();
   V8::Dispose();
@@ -283,8 +284,15 @@ void Setup() {
 
   // Create a new context with global included
   Local<Context> context = Context::New(Isolate::GetCurrent(), NULL, global);
-
   Context::Scope context_scope(context);
+
+  // Input, somehow objects can only be made after the context is created
+
+  Local<Object> input = Object::New(isolate);
+  //kdion->Set(String::NewFromUtf8(isolate, "input"), input);
+  // really? (second actually, bottom one came first)
+  context->Global()->Get(context, String::NewFromUtf8(isolate, "kdion")).ToLocalChecked()
+      ->ToObject()->Set(String::NewFromUtf8(isolate, "input"), input);
 
   // World
   printf("something\n");
@@ -329,6 +337,8 @@ void Setup() {
       CopyablePersistentTraits<FunctionTemplate>>(isolate, kobj_node);
   p_gupdate = Persistent<Array,
       CopyablePersistentTraits<Array>>(isolate, Array::New(isolate, 0));
+  p_input = Persistent<Object,
+        CopyablePersistentTraits<Object>>(isolate, input);
 
 }
 
@@ -346,6 +356,7 @@ void Start() {
 }
 
 void UpdateInput() {
+  //Local<Object> input = Local<Object>::New(isolate, p_input);
 
 }
 

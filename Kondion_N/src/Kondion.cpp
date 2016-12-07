@@ -138,6 +138,7 @@ void GameLoop() {
   //Input::AddControl("MOVE_X", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 0);
   //Input::AddControl("MOVE_Y", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 1);
   Input::AddControl("MOVE_X", Input::INPUT_SYSTEM, 'A');
+  Input::AddControl("MOVE_Y", Input::INPUT_SYSTEM, '2');
   Input::AddControl("MOVE_Y", Input::INPUT_SYSTEM, 'W');
 
   Input::MouseLock(true);
@@ -150,7 +151,7 @@ void GameLoop() {
 
     Input::Update();
     JS::UpdateInput();
-    //Input::DebugPrint();
+    Input::DebugPrint();
 
     //player->offset = glm::translate(
     //    player->offset,
@@ -172,7 +173,7 @@ void GameLoop() {
         glm::vec3(1.0f, -0.0f, -0.0f));
 
     //glm::value_ptr(a->offset)[13] = 0.7f;
-    a->offset = glm::translate(a->offset, glm::vec3(0, 0, -Input::Get(Input::ControlIndex("MOVE_Y"))->x * 0.4));
+    a->offset = glm::translate(a->offset, glm::vec3(0, 0, -Input::Value(Input::ControlIndex("MOVE_Y")) * 0.4));
 
     //Debug::PrintMatrix)
     //a->offset = glm::translate(a->offset, glm::vec3(0.0, 0.7, 0.0));
