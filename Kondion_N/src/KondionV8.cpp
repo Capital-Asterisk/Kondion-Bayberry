@@ -356,7 +356,22 @@ void Start() {
 }
 
 void UpdateInput() {
-  //Local<Object> input = Local<Object>::New(isolate, p_input);
+  Isolate::Scope isolate_scope(isolate);
+  HandleScope handle_scope(isolate);
+  Local<Context> context = Local<Context>::New(isolate, p_context);
+  Context::Scope context_scope(context);
+
+  Local<Object> input = Local<Object>::New(isolate, p_input);
+  for (uint16_t i = 0; i < Input::Count(); i ++) {
+    if (!Input::Get(i)->alternate) {
+      Local<String> s = String::NewFromUtf8(isolate, Input::Get(i)->name.c_str());
+      // check if input has name registered already
+      //if (input->HasOwnProperty(s)) {
+        //if (input->Get(s)->ToNumber()->)
+      //}
+      input->Set(s, Number::New(isolate, Input::Value(i)));
+    }
+  }
 
 }
 

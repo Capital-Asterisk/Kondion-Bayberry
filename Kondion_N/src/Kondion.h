@@ -193,6 +193,7 @@ struct Control {
 uint16_t AddControl(const std::string& name, uint8_t device, uint16_t button);
 void MouseLock(bool a);
 Control* Get(uint16_t i);
+uint16_t Count();
 void Setup();
 void Update();
 uint16_t ControlIndex(const std::string& name);

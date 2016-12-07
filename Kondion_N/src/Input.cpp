@@ -110,6 +110,10 @@ Control* Get(uint16_t i) {
   return controls[i];
 }
 
+uint16_t Count() {
+  return controls.size();
+}
+
 float Value(uint16_t i) {
   //printf("poop %f\n", controls[i]->x);
   if (i >= controls.size())

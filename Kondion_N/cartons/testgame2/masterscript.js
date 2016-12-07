@@ -31,7 +31,7 @@ kdion.initialize(function() {
 
 kdion.globalUpdate(function() {
 	//kdion.log("");
-	
+	kdion.log(kdion.input["MOUSE_X"]);
 	
 	
 });

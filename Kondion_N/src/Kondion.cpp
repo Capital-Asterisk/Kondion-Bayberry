@@ -151,7 +151,7 @@ void GameLoop() {
 
     Input::Update();
     JS::UpdateInput();
-    Input::DebugPrint();
+    //Input::DebugPrint();
 
     //player->offset = glm::translate(
     //    player->offset,
