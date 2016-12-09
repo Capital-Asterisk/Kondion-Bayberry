@@ -4,6 +4,9 @@
  *  Created on: Nov 11, 2016
  *      Author: neal
  */
+
+#include <glm/gtc/type_ptr.hpp>
+
 #include "include/libplatform/libplatform.h"
 #include "include/v8.h"
 
@@ -16,7 +19,7 @@ namespace JS {
 
 class ArrayBufferAllocator;
 
-// I'm not changing these so is it ok to use global vars?
+// Is this a bad thing?
 
 ArrayBufferAllocator* allocator;
 
@@ -170,6 +173,24 @@ void Callback_Bird_SetIntegrity(Local<String> property, Local<Value> value,
       info.Holder()->GetInternalField(0));
   void* pointer = wrap->Value();
   static_cast<Bird*>(pointer)->integrity = value->Int32Value();
+}
+
+void Callback_Oriented_SetOffsetPosition(const FunctionCallbackInfo<v8::Value>& args) {
+  if (args.IsConstructCall() || args.Length() == 0)
+    return;
+  if (!args[0]->IsArray())
+    return;
+  Local<Array> a = Local<Array>::Cast(args[0]);
+  KObj_Oriented* pointer_this = static_cast<KObj_Oriented*>(Local<External>::Cast(
+        args.This()->GetInternalField(0))->Value());
+  pointer_this->offset[3][0] = a->Get(0)->NumberValue();
+  pointer_this->offset[3][1] = a->Get(1)->NumberValue();
+  pointer_this->offset[3][2] = a->Get(2)->NumberValue();
+  //const float* b = glm::value_ptr(pointer_this->offset);
+  //b[12] = a->Get(0)->NumberValue();
+  //b[13] = a->Get(1)->NumberValue();
+  //b[14] = a->Get(2)->NumberValue();
+  //pointer_this->transform;
 }
 
 void Callback_Kdion_Log(const v8::FunctionCallbackInfo<v8::Value>& args) {

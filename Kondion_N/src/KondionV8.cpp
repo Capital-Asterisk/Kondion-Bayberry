@@ -248,6 +248,7 @@ void Setup() {
   Local<FunctionTemplate> kobj_oriented = FunctionTemplate::New(isolate);
   kobj_oriented->InstanceTemplate()->SetInternalFieldCount(1);
   kobj_oriented->Inherit(kobj_node);
+  kobj_oriented->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "setPosition"), FunctionTemplate::New(isolate, Callback_Oriented_SetOffsetPosition));
 
   Local<FunctionTemplate> kobj_entity = FunctionTemplate::New(isolate, Callback_KObj_Entity);
   kobj_entity->InstanceTemplate()->SetInternalFieldCount(1);
@@ -330,7 +331,6 @@ void Setup() {
   //printf("%s\n", *utf8);
 
   // Make persistent handles
-
   p_context = Persistent<Context,
       CopyablePersistentTraits<Context>>(isolate, context);
   p_kobj_node = Persistent<FunctionTemplate,

@@ -26,13 +26,14 @@ kdion.initialize(function() {
 	kdion.log("Bird is integrity: " + c.integrity);
 	kdion.log("World: " + kdion.World)
 	var e = new KObj_Entity();
+	kdion.e = e;
 	e.setParent(kdion.World, "hey theretttt", 5, 5, 8);
 });
 
 kdion.globalUpdate(function() {
 	//kdion.log("");
-	kdion.log(kdion.input["MOUSE_X"]);
-	
+	//kdion.log(kdion.input["MOUSE_X"]);
+	kdion.e.setPosition([0, Math.random(), 0]);
 	
 });
 

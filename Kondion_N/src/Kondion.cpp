@@ -175,6 +175,7 @@ void GameLoop() {
     //glm::value_ptr(a->offset)[13] = 0.7f;
     a->offset = glm::translate(a->offset, glm::vec3(0, 0, -Input::Value(Input::ControlIndex("MOVE_Y")) * 0.4));
 
+    Debug::printMatrix(a->offset);
     //Debug::PrintMatrix)
     //a->offset = glm::translate(a->offset, glm::vec3(0.0, 0.7, 0.0));
     //a->offset += glm::vec4(0.0f, 0.001f, 0.0f, 0.0f);
@@ -219,12 +220,13 @@ void GameLoop() {
 
     for (size_t i = 0; i < worldObject->children.size(); i++) {
       //printf("c: %s\n", worldObject->children[i]->name.c_str());
+      glPushMatrix();
       if (worldObject->children[i]->getType() == 3) {
         dynamic_cast<KObj_Entity*>(worldObject->children[i])->render();
       } else if (worldObject->children[i]->getType() == 4) {
         dynamic_cast<KObj_Instance*>(worldObject->children[i])->render();
       }
-
+      glPopMatrix();
     }
 
     //a.parentTransform();
