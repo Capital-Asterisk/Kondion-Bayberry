@@ -25,7 +25,7 @@
 namespace Kondion {
 
 // I really don't know how to avoid these
-std::vector<KObj_Node *> world;
+std::vector<KObj_Node *> world; // move this to kobj_node as static
 KObj::GKO_World* worldObject;
 char* dir;
 
@@ -175,7 +175,7 @@ void GameLoop() {
     //glm::value_ptr(a->offset)[13] = 0.7f;
     a->offset = glm::translate(a->offset, glm::vec3(0, 0, -Input::Value(Input::ControlIndex("MOVE_Y")) * 0.4));
 
-    Debug::printMatrix(a->offset);
+    //Debug::printMatrix(a->offset);
     //Debug::PrintMatrix)
     //a->offset = glm::translate(a->offset, glm::vec3(0.0, 0.7, 0.0));
     //a->offset += glm::vec4(0.0f, 0.001f, 0.0f, 0.0f);

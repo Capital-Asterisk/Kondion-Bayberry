@@ -29,8 +29,9 @@ namespace Kondion {
 
 // Base kobj classes
 
-class KComponent;
 // avoiding a circular dependency for the first time
+class KComponent;
+class KMaterial;
 
 /** Base class for all KObjs, only a node in the tree.
  *  type: 0
@@ -114,6 +115,15 @@ class KComponent {
 
   }
  protected:
+};
+
+class KMaterial {
+  //
+  //
+  //
+  std::string source;
+  GLuint vert;
+  GLuint frag;
 };
 
 namespace KObj {

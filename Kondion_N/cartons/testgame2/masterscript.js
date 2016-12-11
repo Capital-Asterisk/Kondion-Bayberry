@@ -33,7 +33,8 @@ kdion.initialize(function() {
 kdion.globalUpdate(function() {
 	//kdion.log("");
 	//kdion.log(kdion.input["MOUSE_X"]);
-	kdion.e.setPosition([0, Math.random(), 0]);
+	if (kdion.input["MOVE_X"])
+		kdion.e.setPosition([0, Math.random(), 0]);
 	
 });
 

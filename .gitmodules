@@ -1,0 +1,3 @@
+[submodule "Kondion_N/lib/nanovg"]
+	path = Kondion_N/lib/nanovg
+	url = https://github.com/memononen/nanovg.git
