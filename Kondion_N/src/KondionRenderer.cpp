@@ -9,10 +9,9 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
-#include "Kondion.h"
+#include "Kondion.h"[]
 
 namespace Kondion {
-
 namespace Renderer {
 
 // Camera used for the current render pass
@@ -177,6 +176,31 @@ void RenderQuad(float width, float height) {
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
   glPopMatrix();
+}
+
+GLint neat(GLuint tex, uint16_t width, uint16_t height, GLint internal, int format, GLenum thisiscppthistime) {
+  glBindTexture(GL_TEXTURE_2D, tex);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexImage2D(GL_TEXTURE_2D, 0, internal, width,
+      height, 0, format, thisiscppthistime, NULL);
+
+  return tex;
+}
+
+void RenderPass::render() {
+
+}
+
+RenderPass::RenderPass(uint8_t typ, uint32_t layer, uint16_t w, uint16_t h, bool autoscn) {
+  type = typ;
+  camera = NULL;
+  ids = {};
+  width = (w == 0) ? Window::GetWidth(0) : w;
+  height = (h == 0) ? Window::GetHeight(0) : h;
+  autoscan = autoscn;
 }
 
 }

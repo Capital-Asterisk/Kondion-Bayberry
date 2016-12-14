@@ -58,8 +58,20 @@ int CreateWindow(uint16_t width, uint16_t height) {
   return 0;
 }
 
-int SwitchWindow(size_t index) {
+int SwitchWindow(uint8_t index) {
   return 0;
+}
+
+uint16_t GetWidth(uint8_t i) {
+  int width, height;
+  glfwGetWindowSize(w, &width, &height);
+  return width;
+}
+
+uint16_t GetHeight(uint8_t i) {
+  int width, height;
+  glfwGetWindowSize(w, &width, &height);
+  return height;
 }
 
 bool Active() {

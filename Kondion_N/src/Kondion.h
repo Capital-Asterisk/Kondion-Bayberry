@@ -164,6 +164,34 @@ void GameLoop();
 
 namespace Renderer {
 extern KObj::OKO_Camera_* currentCamera;
+
+class RenderPass {
+ public:
+
+  static const unsigned char
+   DEFAULT   = 0,
+   FORWARD   = 1,
+   DIFFUSE   = 2,
+   DEPTH   = 3,
+   NORMALS   = 4,
+   LIGHT  = 5,
+   HDR     = 6,
+   GUI     = 20;
+  static const std::vector<RenderPass> passes;
+
+  bool autoscan;
+  KObj::OKO_Camera_* camera;
+  uint16_t width, height;
+  uint8_t type;
+
+  void render();
+  RenderPass(uint8_t typ, uint32_t layer, uint16_t w, uint16_t h, bool autoscn);
+
+ protected:
+  GLuint* ids;
+
+};
+
 void Setup();
 void Three(uint16_t width, uint16_t height);
 void RenderCube(float scale);
@@ -175,7 +203,9 @@ namespace Window {
 extern GLFWwindow* w;
 int Initialize();
 int CreateWindow(uint16_t width, uint16_t height);
-int SwitchWindow(size_t index);
+int SwitchWindow(uint8_t index);
+uint16_t GetWidth(uint8_t i);
+uint16_t GetHeight(uint8_t i);
 bool Active();
 void Update();
 
