@@ -5,11 +5,11 @@
  *      Author: neal
  */
 
-#include <iostream>
 #include <GL/glew.h>
+#include <GL/glext.h>
 #include <GLFW/glfw3.h>
 
-#include "Kondion.h"[]
+#include "Kondion.h"
 
 namespace Kondion {
 namespace Renderer {
@@ -178,6 +178,12 @@ void RenderQuad(float width, float height) {
   glPopMatrix();
 }
 
+void RenderPass::generate() {
+  // ids: fboId, brightnessTexture, depth.., diffuse, norms, final
+  ids = new GLuint[5];
+
+}
+
 GLint neat(GLuint tex, uint16_t width, uint16_t height, GLint internal, int format, GLenum thisiscppthistime) {
   glBindTexture(GL_TEXTURE_2D, tex);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -191,7 +197,17 @@ GLint neat(GLuint tex, uint16_t width, uint16_t height, GLint internal, int form
 }
 
 void RenderPass::render() {
+  if (!ready) {
+    if (!framebuffered) {
+      generate();
+      framebuffered = true;
+    }
+    //glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,
+    //    GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, drbId);
+    glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+    //ready = EXTFramebufferObject.glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) == EXTFramebufferObject.GL_FRAMEBUFFER_COMPLETE_EXT;
 
+  }
 }
 
 RenderPass::RenderPass(uint8_t typ, uint32_t layer, uint16_t w, uint16_t h, bool autoscn) {

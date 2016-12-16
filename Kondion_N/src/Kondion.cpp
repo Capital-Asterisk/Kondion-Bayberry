@@ -25,9 +25,17 @@
 namespace Kondion {
 
 // I really don't know how to avoid these
-std::vector<KObj_Node *> world; // move this to kobj_node as static
-KObj::GKO_World* worldObject;
 char* dir;
+
+std::vector<KObj_Node *> KObj_Node::all;
+KObj::GKO_World* KObj_Node::worldObject;
+
+KObj_Node::KObj_Node() {
+  jsObject = NULL;
+  myIndex = 0;
+  printf("hey there\n");
+  all.push_back(this);
+}
 
 KObj_Node* KObj_Node::getParent() {
   return parent;
@@ -125,9 +133,9 @@ void GameLoop() {
   //a->setParent(player);
   Renderer::currentCamera = a;
 
-  b->setParent(worldObject);
+  b->setParent(KObj_Node::worldObject);
   //player->setParent(worldObject);
-  a->setParent(worldObject);
+  a->setParent(KObj_Node::worldObject);
   //w.insert(world.end(), b);
   //world.insert(world.end(), player);
   //world.insert(world.end(), a);
@@ -199,13 +207,13 @@ void GameLoop() {
     JS::GlobalUpdate();
 
 
-    for (size_t i = 0; i < worldObject->children.size(); i++) {
-      worldObject->children[i]->updateA();
+    for (size_t i = 0; i < KObj_Node::worldObject->children.size(); i++) {
+      KObj_Node::worldObject->children[i]->updateA();
     }
 
-    for (size_t i = 0; i < worldObject->children.size(); i++) {
-      if (worldObject->children[i]->getType() == 2 || worldObject->children[i]->getType() == 3) {
-        dynamic_cast<KObj_Oriented*>(worldObject->children[i])->parentTransform();
+    for (size_t i = 0; i < KObj_Node::worldObject->children.size(); i++) {
+      if (KObj_Node::worldObject->children[i]->getType() == 2 || KObj_Node::worldObject->children[i]->getType() == 3) {
+        dynamic_cast<KObj_Oriented*>(KObj_Node::worldObject->children[i])->parentTransform();
       }
     }
 
@@ -218,13 +226,13 @@ void GameLoop() {
 
     Renderer::Three(800, 600);
 
-    for (size_t i = 0; i < worldObject->children.size(); i++) {
+    for (size_t i = 0; i < KObj_Node::worldObject->children.size(); i++) {
       //printf("c: %s\n", worldObject->children[i]->name.c_str());
       glPushMatrix();
-      if (worldObject->children[i]->getType() == 3) {
-        dynamic_cast<KObj_Entity*>(worldObject->children[i])->render();
-      } else if (worldObject->children[i]->getType() == 4) {
-        dynamic_cast<KObj_Instance*>(worldObject->children[i])->render();
+      if (KObj_Node::worldObject->children[i]->getType() == 3) {
+        dynamic_cast<KObj_Entity*>(KObj_Node::worldObject->children[i])->render();
+      } else if (KObj_Node::worldObject->children[i]->getType() == 4) {
+        dynamic_cast<KObj_Instance*>(KObj_Node::worldObject->children[i])->render();
       }
       glPopMatrix();
     }

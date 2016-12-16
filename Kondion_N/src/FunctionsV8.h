@@ -76,7 +76,7 @@ void Callback_KObj_Entity(const FunctionCallbackInfo<v8::Value>& args) {
     o->components.push_back(new Component::CPN_Cube);
     o->jsObject = new Persistent<v8::Object,
         CopyablePersistentTraits<v8::Object>>(isolate, args.This());
-    Kondion::world.push_back(o);
+    //Kondion::world.push_back(o);
     args.This()->SetInternalField(0, External::New(isolate, o));
     args.GetReturnValue().Set(args.This());
   }
@@ -90,7 +90,7 @@ void Callback_GKO_World(const FunctionCallbackInfo<v8::Value>& args) {
     //o->components.push_back(new Component::CPN_Cube);
     o->jsObject = new Persistent<v8::Object,
         CopyablePersistentTraits<v8::Object>>(isolate, args.This());
-    Kondion::world.push_back(o);
+    //Kondion::world.push_back(o);
     args.This()->SetInternalField(0, External::New(isolate, o));
     args.GetReturnValue().Set(args.This());
   }

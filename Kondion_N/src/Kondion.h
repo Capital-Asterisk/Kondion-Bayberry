@@ -27,17 +27,28 @@
 
 namespace Kondion {
 
-// Base kobj classes
+class KObj_Node;
+class KObj_Oriented;
+class KObj_Renderable;
+class KObj_Entity;
+class KObj_Instance;
 
-// avoiding a circular dependency for the first time
+namespace KObj {
+  class GKO_World;
+};
+
 class KComponent;
 class KMaterial;
+
+// Base kobj classes
 
 /** Base class for all KObjs, only a node in the tree.
  *  type: 0
  */
 class KObj_Node {
  public:
+  static std::vector<KObj_Node *> all;
+  static KObj::GKO_World* worldObject;
   std::string name;
   std::vector<KObj_Node*> children;
   uint16_t myIndex;
@@ -51,6 +62,7 @@ class KObj_Node {
   }
   virtual void updateB() {
   }
+  KObj_Node();
   virtual ~KObj_Node() {
   }
  protected:
@@ -75,16 +87,22 @@ class KObj_Oriented : public KObj_Node {
   //virtual ~KObj_Oriented() {};
 };
 
+class KObj_Renderable : public KObj_Oriented {
+ public:
+  //virtual int getType();
+  virtual void render()=0;
+};
+
 /** Used to represent actual objects in the game world through Components;
  *  type: 3
  */
-class KObj_Entity : public KObj_Oriented {
+class KObj_Entity : public KObj_Renderable {
  public:
   std::vector<KComponent*> components;
   int getType() {
     return 3;
   }
-  void render();
+  virtual void render();
   void parentTransform();
 };
 
@@ -92,12 +110,12 @@ class KObj_Entity : public KObj_Oriented {
  * that entities do not have to be copied multiple times.
  *  type: 3
  */
-class KObj_Instance : public KObj_Oriented {
+class KObj_Instance : public KObj_Renderable {
  public:
   int getType() {
     return 4;
   }
-  void render() {
+  virtual void render() {
   }
 };
 
@@ -156,8 +174,6 @@ class CPN_InfinitePlane : public Kondion::KComponent {
 }
 
 extern char* dir;
-extern std::vector<KObj_Node *> world;
-extern KObj::GKO_World* worldObject;
 
 void Launch();
 void GameLoop();
@@ -180,10 +196,14 @@ class RenderPass {
   static const std::vector<RenderPass> passes;
 
   bool autoscan;
+  bool ready = false;
+  bool framebuffered = false;
+  std::vector<KObj_Node> items;
   KObj::OKO_Camera_* camera;
   uint16_t width, height;
   uint8_t type;
 
+  void generate();
   void render();
   RenderPass(uint8_t typ, uint32_t layer, uint16_t w, uint16_t h, bool autoscn);
 

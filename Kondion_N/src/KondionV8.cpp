@@ -301,7 +301,7 @@ void Setup() {
   printf("something else\n");
   Local<Object> world = o->ToObject(isolate);
   printf("woot\n");
-  Kondion::worldObject = static_cast<KObj::GKO_World*>(Local<External>::Cast(world->GetInternalField(0))->Value());
+  KObj_Node::worldObject = static_cast<KObj::GKO_World*>(Local<External>::Cast(world->GetInternalField(0))->Value());
   // really?
   context->Global()->Get(context, String::NewFromUtf8(isolate, "kdion")).ToLocalChecked()
       ->ToObject()->Set(String::NewFromUtf8(isolate, "World"), world);
