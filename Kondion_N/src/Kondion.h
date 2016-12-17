@@ -211,6 +211,9 @@ class RenderPass {
   void generate();
   void render();
   void scan();
+  GLuint id(uint8_t a) {
+    return ids[a];
+  }
   RenderPass(uint8_t typ, uint32_t layer, uint16_t w, uint16_t h, bool autoscn);
 
  protected:
@@ -218,9 +221,12 @@ class RenderPass {
 
 };
 
+GLuint CompileShader(GLenum type, const std::string& code, const std::string& errorname);
+void Composite();
 void Consider(KObj_Renderable* a);
 void Setup();
 void Three(KObj::OKO_Camera_* c, uint16_t width, uint16_t height);
+void Two(uint8_t window);
 void RenderCube(float scale);
 void RenderQuad(float width, float height);
 }

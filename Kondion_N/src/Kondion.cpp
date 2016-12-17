@@ -194,27 +194,6 @@ void GameLoop() {
     //glm::value_ptr(a->offset)[13] = 0.7f;
     a->offset = glm::translate(a->offset, glm::vec3(0, 0, -Input::Value(Input::ControlIndex("MOVE_Y")) * 0.4));
 
-    //Debug::printMatrix(a->offset);
-    //Debug::PrintMatrix)
-    //a->offset = glm::translate(a->offset, glm::vec3(0.0, 0.7, 0.0));
-    //a->offset += glm::vec4(0.0f, 0.001f, 0.0f, 0.0f);
-    /*if (glfwGetKey(Window::w, GLFW_KEY_W)) {
-     player->offset = glm::translate(player->offset, glm::vec3(0.0f, 0.0f, -0.1f));
-     }
-
-     if (glfwGetKey(Window::w, GLFW_KEY_S)) {
-     a->offset = glm::translate(a->offset, glm::vec3(0.0f, 0.0f, 0.1f));
-     }
-     if (glfwGetKey(Window::w, GLFW_KEY_A)) {
-     a->offset = glm::rotate(a->offset, 0.09f, glm::vec3(0.0f, 1.0f, 0.0f));
-     }
-     if (glfwGetKey(Window::w, GLFW_KEY_D)) {
-     a->offset = glm::rotate(a->offset, -0.09f, glm::vec3(0.0f, 1.0f, 0.0f));
-     }*/
-
-    //if (Input::Get(Input::ControlIndex("MOUSE_BUTTON0"))->x > 0.5f) {
-    //  JS::CallFunction("birds");
-    //}
     JS::GlobalUpdate();
 
 
@@ -236,65 +215,10 @@ void GameLoop() {
     //}
 
     // temporary compositor
-
+    Renderer::Composite();
     //Renderer::Three(800, 600);
 
-    for (size_t i = 0; i < Renderer::RenderPass::passes.size(); i++) {
-      Renderer::RenderPass::passes[i]->render();
-
-    }
-    //for (size_t i = 0; i < KObj_Node::worldObject->children.size(); i++) {
-    //  //printf("c: %s\n", worldObject->children[i]->name.c_str());
-    //  glPushMatrix();
-    //  if (KObj_Node::worldObject->children[i]->getType() == 3) {
-    //    dynamic_cast<KObj_Entity*>(KObj_Node::worldObject->children[i])->render();
-    //  } else if (KObj_Node::worldObject->children[i]->getType() == 4) {
-    //    dynamic_cast<KObj_Instance*>(KObj_Node::worldObject->children[i])->render();
-    //  }
-    //  glPopMatrix();
-    //}
-
-    //a.parentTransform();
-
     glLoadIdentity();
-
-    //f += 0.01f;
-    //Kondion::Resources::textures[0]->Bind();
-    //glTranslatef(0.0f, 0.0f, -6.0f + f);
-    //glRotatef(f * 80.0f, 0.0f, 1.0f, 0.0f);
-    //Renderer::RenderCube(1.0f);
-    /*glBegin(GL_QUADS);
-     // Front Face
-     glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);
-     glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);
-     glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);
-     glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);
-     // Back Face
-     glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
-     glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);
-     glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);
-     glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);
-     // Top Face
-     glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);
-     glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f,  1.0f,  1.0f);
-     glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f,  1.0f,  1.0f);
-     glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);
-     // Bottom Face
-     glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
-     glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f, -1.0f, -1.0f);
-     glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);
-     glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);
-     // Right face
-     glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);
-     glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);
-     glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);
-     glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);
-     // Left Face
-     glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
-     glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);
-     glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);
-     glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);
-     glEnd();*/
     Window::Update();
 
   }

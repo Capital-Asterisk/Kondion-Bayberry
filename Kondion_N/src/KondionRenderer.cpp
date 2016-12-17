@@ -9,6 +9,8 @@
 #include <GL/glext.h>
 #include <GLFW/glfw3.h>
 
+#include <sstream>
+
 #include "Kondion.h"
 
 namespace Kondion {
@@ -20,6 +22,20 @@ Kondion::KObj::OKO_Camera_* currentCamera;
 GLuint beef;
 GLuint bacon;
 GLuint grill;
+
+GLuint temp_prog_deferred;
+GLuint temp_prog_monotex;
+
+void Composite() {
+  for (size_t i = 0; i < RenderPass::passes.size(); i++) {
+    RenderPass::passes[i]->render();
+  }
+  Two(0);
+  glBindTexture(GL_TEXTURE_2D, RenderPass::passes[0]->id(5));
+  //glBindTexture(GL_TEXTURE_2D, Resources::textures[0]->textureId);
+  glTranslatef(800 / 2, 600 / 2, 0.0f);
+  RenderQuad(800, 600);
+}
 
 void Consider(KObj_Renderable* a) {
   for (size_t i = 0; i < RenderPass::passes.size(); i++) {
@@ -78,6 +94,24 @@ void Setup() {
                GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+
+  Resources::Raw* av = Resources::Get("kotega_2:solid_col");
+  std::ostringstream aaostring;
+  aaostring << av->stream->rdbuf();
+  delete av;
+
+  Resources::Raw* af = Resources::Get("kotega_2:solid_tex");
+  std::ostringstream abostring;
+  abostring << af->stream->rdbuf();
+  delete af;
+
+  temp_prog_monotex = glCreateProgram();
+  GLuint monotex_vert = CompileShader(GL_VERTEX_SHADER, aaostring.str(), "Temporary Monotexture shader (VERT)");
+  GLuint monotex_frag = CompileShader(GL_FRAGMENT_SHADER, abostring.str(), "Temporary Monotexture shader (FRAG)");
+  glAttachShader(temp_prog_monotex, monotex_vert);
+  glAttachShader(temp_prog_monotex, monotex_frag);
+  glLinkProgram(temp_prog_monotex);
+
   //delete [] interlevedDataA;
 
   GLfloat interlevedDataB[] =
@@ -105,6 +139,30 @@ void Setup() {
   std::cout << "oh yeah, " << beef << "beef\n";
 }
 
+// KLoader.java line 300?
+GLuint CompileShader(GLenum type, const std::string& code, const std::string& errorname) {
+  GLuint a = glCreateShader(type);
+  const char* f = code.c_str();
+  glShaderSource(a, 1, &f, NULL);
+  glCompileShader(a);
+  GLint b;
+  GLint c;
+
+  glGetShaderiv(a, GL_INFO_LOG_LENGTH, &b);
+  glGetShaderiv(a, GL_COMPILE_STATUS, &c);
+
+  std::vector<GLchar> d(b);
+
+  //printf("%s")
+
+  glGetShaderInfoLog(a, b, &b, &d[0]);
+  printf("shader log: %s\n", &d[0]);
+  if (c == 0) {
+    printf("Error in compiling shader: %s\n", errorname.c_str());
+  }
+  return a;
+}
+
 void Three(KObj::OKO_Camera_* c, uint16_t width, uint16_t height) {
 
   //glViewport(0, 0, width, height);
@@ -125,6 +183,24 @@ void Three(KObj::OKO_Camera_* c, uint16_t width, uint16_t height) {
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
   glClearDepth(10.0f);
 
+}
+
+void Two(uint8_t window) {
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+  //glClearColor(Kondion.getWorld().clearColor.x, Kondion.getWorld().clearColor.y,
+  //    Kondion.getWorld().clearColor.z, Kondion.getWorld().clearColor.w);
+  glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+
+  glOrtho(0, Window::GetWidth(window), Window::GetHeight(window),
+      0, 6.0f, -6.0f);
+  glMatrixMode(GL_MODELVIEW);
+  //glScalef(1.0f, -1.0f, 1.0f);
+  //GLDrawing.setCoords(new float[] {1, 1, 0, 1, 0, 0, 1, 0});
+  glDisable(GL_DEPTH_TEST);
+  glDisable(GL_CULL_FACE);
 }
 
 void RenderCube(float scale) {
