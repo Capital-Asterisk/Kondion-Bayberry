@@ -52,6 +52,7 @@ class KObj_Node {
   std::string name;
   std::vector<KObj_Node*> children;
   uint16_t myIndex;
+  uint32_t drawLayer;
   void* jsObject;
   virtual int getType() {
     return 0;
@@ -193,18 +194,23 @@ class RenderPass {
    LIGHT  = 5,
    HDR     = 6,
    GUI     = 20;
-  static const std::vector<RenderPass> passes;
+  static std::vector<RenderPass*> passes;
 
   bool autoscan;
   bool ready = false;
   bool framebuffered = false;
-  std::vector<KObj_Node> items;
+  bool cameraOverride = false;
+  std::vector<KObj_Renderable*> items;
   KObj::OKO_Camera_* camera;
+  uint32_t drawLayer;
   uint16_t width, height;
   uint8_t type;
 
+  void consider(KObj_Renderable* a);
+  void force(KObj_Renderable* a);
   void generate();
   void render();
+  void scan();
   RenderPass(uint8_t typ, uint32_t layer, uint16_t w, uint16_t h, bool autoscn);
 
  protected:
@@ -212,8 +218,9 @@ class RenderPass {
 
 };
 
+void Consider(KObj_Renderable* a);
 void Setup();
-void Three(uint16_t width, uint16_t height);
+void Three(KObj::OKO_Camera_* c, uint16_t width, uint16_t height);
 void RenderCube(float scale);
 void RenderQuad(float width, float height);
 }

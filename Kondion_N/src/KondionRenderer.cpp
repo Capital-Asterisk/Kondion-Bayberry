@@ -21,6 +21,13 @@ GLuint beef;
 GLuint bacon;
 GLuint grill;
 
+void Consider(KObj_Renderable* a) {
+  for (size_t i = 0; i < RenderPass::passes.size(); i++) {
+    RenderPass::passes[i]->consider(a);
+
+  }
+}
+
 void Setup() {
 
   glEnable(GL_TEXTURE_2D);
@@ -98,13 +105,13 @@ void Setup() {
   std::cout << "oh yeah, " << beef << "beef\n";
 }
 
-void Three(uint16_t width, uint16_t height) {
+void Three(KObj::OKO_Camera_* c, uint16_t width, uint16_t height) {
 
   //glViewport(0, 0, width, height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   gluPerspective(45.0f, ((GLfloat) width) / ((GLfloat) height), 0.1f, 100.0f);
-  currentCamera->prespective();  // gluLookAt
+  c->prespective();  // gluLookAt
   glMatrixMode(GL_MODELVIEW);
   //glLoadIdentity();
   // glCullFace(GL_BACK);
@@ -178,14 +185,9 @@ void RenderQuad(float width, float height) {
   glPopMatrix();
 }
 
-void RenderPass::generate() {
-  // ids: fboId, brightnessTexture, depth.., diffuse, norms, final
-  ids = new GLuint[5];
-
-}
-
-GLint neat(GLuint tex, uint16_t width, uint16_t height, GLint internal, int format, GLenum thisiscppthistime) {
-  glBindTexture(GL_TEXTURE_2D, tex);
+GLint neat(GLuint* tex, uint16_t width, uint16_t height, GLint internal, int format, GLenum thisiscppthistime) {
+  glGenTextures(1, tex);
+  glBindTexture(GL_TEXTURE_2D, *tex);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -193,10 +195,60 @@ GLint neat(GLuint tex, uint16_t width, uint16_t height, GLint internal, int form
   glTexImage2D(GL_TEXTURE_2D, 0, internal, width,
       height, 0, format, thisiscppthistime, NULL);
 
-  return tex;
+  return *tex;
+}
+
+void RenderPass::consider(KObj_Renderable* a) {
+  printf("a: %s\n", a->name.c_str());
+  // unable to multiply the two drawLayers and compare to zero. two positive unsigned ints can multiply to zero.
+  if ((drawLayer != 0) && (a->drawLayer != 0) && (drawLayer & a->drawLayer == drawLayer)) {
+    items.push_back(a);
+
+  }
+  //if (f.isLight()) {
+  //  lights.add(f);
+  //  System.out.print(f);
+  //} else if ((f instanceof KObj_Renderable)
+  //    && (id & ((KObj_Renderable) f).id) == id)
+  //  items.add((KObj_Renderable) f);
+}
+
+void RenderPass::generate() {
+  // ids: fboId, brightnessTexture, depth.., diffuse, norms, final
+  ids = new GLuint[6];
+  printf("GENERATE\n");
+  glGenFramebuffersEXT(1, ids);
+  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, *ids);
+
+  neat(ids + 1, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE); // Brightness
+  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
+      GL_COLOR_ATTACHMENT3_EXT, GL_TEXTURE_2D,
+      ids[1], 0);
+  neat(ids + 2, width, height, GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_FLOAT); // Depth texture
+  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
+      GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D,
+      ids[2], 0);
+  neat(ids + 3, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE); // Diffuse texture
+  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
+      GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
+      ids[3], 0);
+  neat(ids + 4, width, height, GL_RGB, GL_RGB, GL_FLOAT); // Normal texture
+  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
+      GL_COLOR_ATTACHMENT1_EXT, GL_TEXTURE_2D,
+      ids[4], 0);
+  neat(ids + 5, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE); // Result
+  //if (!pixelate) {
+  //  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  //  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  //}
+  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
+      GL_COLOR_ATTACHMENT2_EXT, GL_TEXTURE_2D,
+      ids[5], 0);
+
 }
 
 void RenderPass::render() {
+  printf("hey %i %i\n", ready, framebuffered);
   if (!ready) {
     if (!framebuffered) {
       generate();
@@ -204,19 +256,44 @@ void RenderPass::render() {
     }
     //glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,
     //    GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, drbId);
-    glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-    //ready = EXTFramebufferObject.glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) == EXTFramebufferObject.GL_FRAMEBUFFER_COMPLETE_EXT;
+    ready = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) == GL_FRAMEBUFFER_COMPLETE_EXT;
+
+
+  } else {
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    printf("then\n");
+
+    glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, ids[0]);
+    GLenum ducky[] = {
+        GL_COLOR_ATTACHMENT0_EXT, GL_COLOR_ATTACHMENT1_EXT,
+        GL_COLOR_ATTACHMENT2_EXT, GL_COLOR_ATTACHMENT3_EXT};
+    glDrawBuffers(4, ducky);
+
+    //glClearColor(Kondion.getWorld().skyColor.x, Kondion.getWorld().skyColor.y,
+    //            Kondion.getWorld().skyColor.z, Kondion.getWorld().skyColor.w);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    if (cameraOverride && camera != NULL)
+      Three(camera, width, height);
+    else
+      Three(currentCamera, width, height);
 
   }
+}
+
+void RenderPass::scan() {
+
 }
 
 RenderPass::RenderPass(uint8_t typ, uint32_t layer, uint16_t w, uint16_t h, bool autoscn) {
   type = typ;
   camera = NULL;
   ids = {};
+  drawLayer = layer;
   width = (w == 0) ? Window::GetWidth(0) : w;
   height = (h == 0) ? Window::GetHeight(0) : h;
   autoscan = autoscn;
+  passes.push_back(this);
 }
 
 }

@@ -30,9 +30,13 @@ char* dir;
 std::vector<KObj_Node *> KObj_Node::all;
 KObj::GKO_World* KObj_Node::worldObject;
 
+std::vector<Renderer::RenderPass*> Renderer::RenderPass::passes;
+
 KObj_Node::KObj_Node() {
   jsObject = NULL;
   myIndex = 0;
+  drawLayer = 1;
+  name = "NotSmoothBlockModel";
   printf("hey there\n");
   all.push_back(this);
 }
@@ -49,7 +53,12 @@ void KObj_Node::setParent(KObj_Node* node) {
   if (parent != NULL) {
     parent->children[myIndex] = NULL;
   }
+  printf("my type: %i, ", this->getType());
   parent = node;
+  if (this->getType() == 3 || this->getType() == 4) {
+    KObj_Renderable* a = (dynamic_cast<KObj_Renderable*>(this));
+    Renderer::Consider(a);
+  }
   for (uint16_t i = 0; i < parent->children.size(); i ++) {
     if (parent->children[i] == NULL) {
       parent->children[i] = this;
@@ -115,6 +124,8 @@ void Launch() {
 
 void GameLoop() {
 
+  new Renderer::RenderPass(Renderer::RenderPass::DEFAULT, 1, 0, 0, true);
+
   JS::Start();
   //printf("objects in world: %i\n", worldObject->children.size());
   KObj::OKO_Camera_ *a = new KObj::OKO_Camera_;
@@ -155,7 +166,7 @@ void GameLoop() {
   //float pitch = 0.0f
   while (Window::Active()) {
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     Input::Update();
     JS::UpdateInput();
@@ -224,18 +235,24 @@ void GameLoop() {
     //	world[i]->updateB();
     //}
 
-    Renderer::Three(800, 600);
+    // temporary compositor
 
-    for (size_t i = 0; i < KObj_Node::worldObject->children.size(); i++) {
-      //printf("c: %s\n", worldObject->children[i]->name.c_str());
-      glPushMatrix();
-      if (KObj_Node::worldObject->children[i]->getType() == 3) {
-        dynamic_cast<KObj_Entity*>(KObj_Node::worldObject->children[i])->render();
-      } else if (KObj_Node::worldObject->children[i]->getType() == 4) {
-        dynamic_cast<KObj_Instance*>(KObj_Node::worldObject->children[i])->render();
-      }
-      glPopMatrix();
+    //Renderer::Three(800, 600);
+
+    for (size_t i = 0; i < Renderer::RenderPass::passes.size(); i++) {
+      Renderer::RenderPass::passes[i]->render();
+
     }
+    //for (size_t i = 0; i < KObj_Node::worldObject->children.size(); i++) {
+    //  //printf("c: %s\n", worldObject->children[i]->name.c_str());
+    //  glPushMatrix();
+    //  if (KObj_Node::worldObject->children[i]->getType() == 3) {
+    //    dynamic_cast<KObj_Entity*>(KObj_Node::worldObject->children[i])->render();
+    //  } else if (KObj_Node::worldObject->children[i]->getType() == 4) {
+    //    dynamic_cast<KObj_Instance*>(KObj_Node::worldObject->children[i])->render();
+    //  }
+    //  glPopMatrix();
+    //}
 
     //a.parentTransform();
 
@@ -288,6 +305,10 @@ void GameLoop() {
 }
 
 int main(int argc, const char* argv[]) {
+  uint32_t a = 2147483648;
+  uint32_t b = 2;
+  uint32_t c = a * b;
+  printf("Unsigned 2147483648 * 2 = %i\n", c);
   {
     char buf[256];
     Kondion::dir = strcat(getcwd(buf, sizeof(buf)), "/");
