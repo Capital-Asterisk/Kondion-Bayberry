@@ -52,3 +52,4 @@ void main(){
     gl_FragData[2] = final;
     gl_FragData[3] = texture2D(texture3, texCoord.st);
 }
+

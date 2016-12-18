@@ -50,3 +50,4 @@ void main(){
     	gl_FragData[3] = vec4(0.0, 0.0, 0.0, 1.0);
     }
 }
+

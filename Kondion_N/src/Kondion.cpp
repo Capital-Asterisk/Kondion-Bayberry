@@ -129,7 +129,7 @@ void GameLoop() {
   JS::Start();
   //printf("objects in world: %i\n", worldObject->children.size());
   KObj::OKO_Camera_ *a = new KObj::OKO_Camera_;
-  a->offset = glm::translate(a->offset, glm::vec3(0.0f, 9.7f, 0.0f));
+  a->offset = glm::translate(a->offset, glm::vec3(0.0f, 0.7f, 0.0f));
   a->offset = glm::rotate(a->offset, 0.3f, glm::vec3(1.0f, 0.0f, 0.0f));
   KObj_Entity *b = new KObj_Entity;
   b->components.insert(b->components.end(), new Component::CPN_InfinitePlane);
@@ -193,7 +193,7 @@ void GameLoop() {
 
     //glm::value_ptr(a->offset)[13] = 0.7f;
     a->offset = glm::translate(a->offset, glm::vec3(0, 0, -Input::Value(Input::ControlIndex("MOVE_Y")) * 0.4));
-
+    //b->offset = glm::rotate(b->offset, 0.01f, glm::vec3(1.0f, 0.0f, 0.0f));
     JS::GlobalUpdate();
 
 

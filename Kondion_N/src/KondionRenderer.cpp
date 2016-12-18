@@ -28,12 +28,16 @@ GLuint temp_prog_monotex;
 
 void Composite() {
   for (size_t i = 0; i < RenderPass::passes.size(); i++) {
+    glBindTexture(GL_TEXTURE_2D, Resources::textures[0]->textureId);
     RenderPass::passes[i]->render();
   }
   Two(0);
-  glBindTexture(GL_TEXTURE_2D, RenderPass::passes[0]->id(5));
+  glUseProgram(0);
+  glBindTexture(GL_TEXTURE_2D, RenderPass::passes[0]->id(4));
+  //printf("h:\ %i\n", RenderPass::passes[0]->id(2));
   //glBindTexture(GL_TEXTURE_2D, Resources::textures[0]->textureId);
   glTranslatef(800 / 2, 600 / 2, 0.0f);
+  glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
   RenderQuad(800, 600);
 }
 
@@ -67,6 +71,10 @@ void Setup() {
 
   glClearColor(0.5f, 0.0f, 0.0f, 1.0f);
 
+  //glEnable(GL_POLYGON_SMOOTH);
+  //glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
+  //glEnable(GL_MULTISAMPLE);
+
   // this should go back to birds
   GLfloat interlevedDataA[] = { 0.5, -0.5, 0.5, 0, -1, 0, 0.5, 0.25, -0.5, -0.5,
       0.5, 0, -1, 0, 0.5, 0.5, -0.5, -0.5, -0.5, 0, -1, 0, 0.25, 0.5, -0.5, 0.5,
@@ -98,19 +106,37 @@ void Setup() {
   Resources::Raw* av = Resources::Get("kotega_2:solid_col");
   std::ostringstream aaostring;
   aaostring << av->stream->rdbuf();
-  delete av;
+  //delete av;
 
   Resources::Raw* af = Resources::Get("kotega_2:solid_tex");
   std::ostringstream abostring;
   abostring << af->stream->rdbuf();
-  delete af;
+  //delete af;
 
-  temp_prog_monotex = glCreateProgram();
+  Resources::Raw* bf = Resources::Get("kotega_2:deferred");
+  std::ostringstream baostring;
+  baostring << bf->stream->rdbuf();
+  //delete bf;
+
+  printf("abostring: %s", abostring.str().c_str());
+
   GLuint monotex_vert = CompileShader(GL_VERTEX_SHADER, aaostring.str(), "Temporary Monotexture shader (VERT)");
   GLuint monotex_frag = CompileShader(GL_FRAGMENT_SHADER, abostring.str(), "Temporary Monotexture shader (FRAG)");
+  GLuint defer_frag = CompileShader(GL_FRAGMENT_SHADER, baostring.str(), "Temporary Deferred shader (FRAG)");
+
+  temp_prog_monotex = glCreateProgram();
   glAttachShader(temp_prog_monotex, monotex_vert);
   glAttachShader(temp_prog_monotex, monotex_frag);
   glLinkProgram(temp_prog_monotex);
+  glUseProgram(temp_prog_monotex);
+  printf("uniform typeee: %i\n", glGetUniformLocation(temp_prog_monotex, "color"));
+
+
+  temp_prog_deferred = glCreateProgram();
+  glAttachShader(temp_prog_deferred, monotex_vert);
+  glAttachShader(temp_prog_deferred, defer_frag);
+  glLinkProgram(temp_prog_deferred);
+  glUseProgram(temp_prog_deferred);
 
   //delete [] interlevedDataA;
 
@@ -182,6 +208,13 @@ void Three(KObj::OKO_Camera_* c, uint16_t width, uint16_t height) {
   glDepthFunc(GL_LEQUAL);
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
   glClearDepth(10.0f);
+
+
+  //glGetUniformiv(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "type"), &30);
+  glUseProgram(temp_prog_monotex);
+  printf("uniform type: %i\n", glGetUniformLocation(temp_prog_monotex, "color"));
+  glProgramUniform1i(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "type"), 30);
+  glProgramUniform4f(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
 
 }
 
@@ -324,7 +357,7 @@ void RenderPass::generate() {
 }
 
 void RenderPass::render() {
-  printf("hey %i %i\n", ready, framebuffered);
+  //printf("hey %i %i\n", ready, framebuffered);
   if (!ready) {
     if (!framebuffered) {
       generate();
@@ -337,7 +370,7 @@ void RenderPass::render() {
 
   } else {
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-    printf("then\n");
+    //printf("then\n");
 
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, ids[0]);
     GLenum ducky[] = {
@@ -353,6 +386,38 @@ void RenderPass::render() {
       Three(camera, width, height);
     else
       Three(currentCamera, width, height);
+
+    bool deep = false; //depthMask != null;
+    if (deep) {
+      //glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
+      //    GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D,
+      //    ((GKO_DeferredPass) depthMask).depId, 0);
+    }
+
+    //glPushMatrix();
+    //new KMat_Monotexture().bind(type);
+    //KLoader.textures.get("neat").bind();
+    //glTranslatef(-getCamera().actTransform.m30, -getCamera().actTransform.m31 + 10, -getCamera().actTransform.m32);
+    //Kondion.km.draw();
+    //glPopMatrix();
+
+    for (size_t i = 0; i < items.size(); i++) {
+      glPushMatrix();
+      items[i]->render();
+      glPopMatrix();
+      //if (!items.get(i).killMe) {
+      //  if (!items.get(i).hidden) {
+      //    items.get(i).render(type, this);
+      //  }
+      //
+      //} else {
+      //  System.out.println("Remove: " + i);
+      //  items.remove(i);
+      //  i --;
+      //}
+    }
+
+    glDepthMask(true);
 
   }
 }
