@@ -33,12 +33,12 @@ void Composite() {
   }
   Two(0);
   glUseProgram(0);
-  glBindTexture(GL_TEXTURE_2D, RenderPass::passes[0]->id(3));
+  glBindTexture(GL_TEXTURE_2D, RenderPass::passes[0]->id(5));
   // 3: diffuse, 4: normals 5: final
   //printf("h:\ %i\n", RenderPass::passes[0]->id(2));
   //glBindTexture(GL_TEXTURE_2D, Resources::textures[0]->textureId);
   glTranslatef(800 / 2, 600 / 2, 0.0f);
-  glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
+  //glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
   RenderQuad(800, 600);
 }
 
@@ -141,7 +141,7 @@ void Setup() {
   glProgramUniform1i(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "texture0"), 0);
 
   glProgramUniform4f(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "skyColor"), 1.0f, 1.0f, 1.0f, 1.0f);
-  glProgramUniform1f(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "fog"), 0.01f);
+  glProgramUniform1f(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "fog"), 0.2f);
 
   glProgramUniform1i(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "texture0"), 0);
   glProgramUniform1i(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "texture1"), 1);
