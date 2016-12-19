@@ -17,7 +17,8 @@ varying mat4 cuteMatrix;
 
 void main(){
 	vec4 final = vec4(0.0, 0.0, 0.0, 0.0);
-	vec2 coord = texCoord.xy;
+	vec2 coord = texCoord.st;
+	final = vec4(coord.x, 0.0, coord.y, 1.0);
 	//coord.x = mod((coord.x - 0.5) / 2 + 0.5 - sin(((1 - coord.x) - 0.5) * 3) / 4, 1.0);
 	//coord.y = mod((coord.y - 0.5) / 2 + 0.5 - sin(((1 - coord.y) - 0.5) * 3) / 4, 1.0);
 	
@@ -29,7 +30,7 @@ void main(){
 		final = skyColor;
 	} else {
 		
-		final = texture2D(texture0, coord) * texture2D(texture3, coord);
+		//final = texture2D(texture0, coord) * texture2D(texture3, coord);
 		//final = vec4(0, coord.x, 0.0, 1.0);
 	}
 	
@@ -47,9 +48,10 @@ void main(){
 	//v *= abs(coord.x - 0.5) / 4;
 	//v *= abs(coord.y - 0.5);
 	//final -= vec4(v, v, v, 0.0);
-    gl_FragData[0] = texture2D(texture0, texCoord.st);
-    gl_FragData[1] = texture2D(texture2, texCoord.st);
-    gl_FragData[2] = final;
-    gl_FragData[3] = texture2D(texture3, texCoord.st);
+	
+	gl_FragData[0] = texture2D(texture0, coord);
+	gl_FragData[1] = texture2D(texture2, coord);
+	gl_FragData[2] = final;
+	gl_FragData[3] = texture2D(texture3, coord);
 }
 

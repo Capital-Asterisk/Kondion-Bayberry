@@ -33,7 +33,8 @@ void Composite() {
   }
   Two(0);
   glUseProgram(0);
-  glBindTexture(GL_TEXTURE_2D, RenderPass::passes[0]->id(4));
+  glBindTexture(GL_TEXTURE_2D, RenderPass::passes[0]->id(3));
+  // 3: diffuse, 4: normals 5: final
   //printf("h:\ %i\n", RenderPass::passes[0]->id(2));
   //glBindTexture(GL_TEXTURE_2D, Resources::textures[0]->textureId);
   glTranslatef(800 / 2, 600 / 2, 0.0f);
@@ -131,12 +132,21 @@ void Setup() {
   glUseProgram(temp_prog_monotex);
   printf("uniform typeee: %i\n", glGetUniformLocation(temp_prog_monotex, "color"));
 
-
   temp_prog_deferred = glCreateProgram();
   glAttachShader(temp_prog_deferred, monotex_vert);
   glAttachShader(temp_prog_deferred, defer_frag);
   glLinkProgram(temp_prog_deferred);
   glUseProgram(temp_prog_deferred);
+
+  glProgramUniform1i(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "texture0"), 0);
+
+  glProgramUniform4f(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "skyColor"), 1.0f, 1.0f, 1.0f, 1.0f);
+  glProgramUniform1f(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "fog"), 0.01f);
+
+  glProgramUniform1i(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "texture0"), 0);
+  glProgramUniform1i(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "texture1"), 1);
+  glProgramUniform1i(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "texture2"), 2);
+  glProgramUniform1i(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "texture3"), 3);
 
   //delete [] interlevedDataA;
 
@@ -417,7 +427,56 @@ void RenderPass::render() {
       //}
     }
 
+    glViewport(0, 0, width, height);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    glOrtho(0, width, height,
+        0, 6.0f, -6.0f);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glDepthMask(false);
+    glDisable(GL_DEPTH_TEST);
+
+    glActiveTexture(GL_TEXTURE0); // Diffuse
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, ids[3]);
+    glActiveTexture(GL_TEXTURE1); // Depth
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, ids[2]);
+    glActiveTexture(GL_TEXTURE2); // Normals
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, ids[4]);
+    glActiveTexture(GL_TEXTURE3); // Brightness
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, ids[1]);
+    //GLDrawing.setCoords(new float[] {1, 1, 0, 1, 0, 0, 1, 0});
+    glTranslatef(width / 2.0f, height / 2.0f, -1.0f);
+    //for (KObj_Renderable light : lights) {
+    //  ((RKO_Light) light).apply(width, height);
+    //}
+    glUseProgram(temp_prog_deferred);
+    //glUniform4f(skyUni, Kondion.getWorld().skyColor.x, Kondion.getWorld().skyColor.y,
+    //    Kondion.getWorld().skyColor.z, Kondion.getWorld().skyColor.w);
+    //glUniform1f(fogUni, 1f);
+    RenderQuad(width, height);
+    glTranslatef(-width / 2, -height / 2, 0);
+    //KShader.unbind();
+    glUseProgram(0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glActiveTexture(GL_TEXTURE0);
+
     glDepthMask(true);
+
+    glViewport(0, 0, Window::GetWidth(0), Window::GetHeight(0));
 
   }
 }
