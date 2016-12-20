@@ -141,7 +141,7 @@ void Setup() {
   glProgramUniform1i(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "texture0"), 0);
 
   glProgramUniform4f(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "skyColor"), 1.0f, 1.0f, 1.0f, 1.0f);
-  glProgramUniform1f(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "fog"), 0.2f);
+  glProgramUniform1f(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "fog"), 0.8f);
 
   glProgramUniform1i(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "texture0"), 0);
   glProgramUniform1i(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "texture1"), 1);

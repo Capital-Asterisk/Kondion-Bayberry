@@ -35,7 +35,10 @@ void main(){
 
 	if (fog != 0.0) {
 		//final = vec4(mix(vec3(1.0, 1.0, 1.0), vec3(final.xyz), clamp(1.0 / exp(texture2D(texture1, texCoord.st).y * fog), 0.0, 1.0)), final.w);
-		float fg = pow(texture2D(texture1, texCoord.st).x, 100 + 100 * fog);
+		//float fg = pow(texture2D(texture1, texCoord.st).x * fog
+		//	+ (texture2D(texture1, texCoord.st).x - fog), 100);
+		float fg = pow(max(pow(texture2D(texture1, texCoord.st).x, 100) * (1 + fog) - fog, 0), 3);
+		//0.3 + 0.3 / (1 / (1 - 0.3))
 		//final = vec4(mix(vec3(1.0, 1.0, 1.0), vec3(final.xyz), 1 - texture2D(texture1, texCoord.st).x ), final.w);
 		final += vec4(fg, fg, fg, 0.0);
 		//final = vec4(mix(vec3(1.0, 1.0, 1.0), vec3(final.xyz), clamp(1.0 / exp(((texture2D(texture1, texCoord.st).x)) * fog), 0.0, 1.0)), final.w);
