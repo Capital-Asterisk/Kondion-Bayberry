@@ -225,10 +225,24 @@ Raw* Get(const std::string& url) {
               }
             }
           } else {
-            // looking for the next directory TODO
+            // we're looking for a directory
+            if (file.is_dir) {
+              // just get the name this time.
+              std::string name(file.name);
 
+              // TODO make this more efficient
+              if (name == current.substr(0, found)) {
+                printf("Enter directory: %s\n",
+                       current.substr(0, found).c_str());
 
+                tinydir_open(&dir, file.path);
 
+                current = current.substr(found + 1, current.size() - 1);
+                printf("entered directory, path: %s\n", current.c_str());
+
+              }
+
+            }
 
           }
 

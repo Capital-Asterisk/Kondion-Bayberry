@@ -104,17 +104,17 @@ void Setup() {
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
-  Resources::Raw* av = Resources::Get("kotega_2:solid_col");
+  Resources::Raw* av = Resources::Get("kotega_2:tempdebug/solid_col");
   std::ostringstream aaostring;
   aaostring << av->stream->rdbuf();
   //delete av;
 
-  Resources::Raw* af = Resources::Get("kotega_2:solid_tex");
+  Resources::Raw* af = Resources::Get("kotega_2:tempdebug/solid_tex");
   std::ostringstream abostring;
   abostring << af->stream->rdbuf();
   //delete af;
 
-  Resources::Raw* bf = Resources::Get("kotega_2:deferred");
+  Resources::Raw* bf = Resources::Get("kotega_2:tempdebug/deferred");
   std::ostringstream baostring;
   baostring << bf->stream->rdbuf();
   //delete bf;
