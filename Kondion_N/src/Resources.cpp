@@ -170,47 +170,65 @@ void Setup() {
 
 Raw* Get(const std::string& url) {
 
+  // url is "carton:directory/directory/filename"
+  // it shouldn't be nammed url.
+
+  // find the first occourance of ':'
   int found = url.find(':');
+  // then substring it, to get just the id, "carton"
   std::string id = url.substr(0, found);
+  // same thing, but in reverse, "directory/directory/filename"
   std::string current = url.substr(found + 1, url.size() - 1);
 
   //printf("%s \n", current.c_str());
 
+  // loop through the cartons and find a matching id
   for (unsigned int i = 0; i < cartons.size(); i++) {
     if (cartons[i]->id == id) {
       if (cartons[i]->type == CARTON_FOLDER) {
 
+        // open the directory of the carton, list files
         tinydir_dir dir;
         tinydir_open(&dir, cartons[i]->filepath.c_str());
 
+        // loop through all the files in the directory
         while (dir.has_next) {
 
+          // the current file
           tinydir_file file;
           tinydir_readfile(&dir, &file);
 
+          // print file name for fun
           printf("%s\n", file.name);
 
+          // choose the next file, for the next loop.
           tinydir_next(&dir);
 
-          // reusing the found variable
-          found = url.find('/');
+          // reusing the 'found' variable to look for a '/' in the current path
+          found = current.find('/');
 
+          // if there is no more '/' left in the current path
           if (found == -1) {
-            // looking for the final file
-            if (!file.is_dir) {  //if (file.is_reg) // i think this would support symlinks and fancy things
+            // looking for the final file, no more dirs to enter
+            if (!file.is_dir) {
+              //if (file.is_reg) // i think this would support
+                                 // symlinks and fancy things
+              // get the name of the current file and remove the file extension
               std::string name(file.name);
               name = name.substr(0, name.find('.'));
-              if (name == current) {
-                printf("Resource found: %s\n", file.path);
-                //return std::ifstream file(c->filepath + "kondion.json");
-                //in = std::ifstream(file.path);
-                //static_cast<std::ifstream>(in).open(file.path);
 
+              // now the name can be compared with the one in the current path.
+              if (name == current) {
+                // the correct resource has been found, return a new raw data.
+                printf("Resource found: %s\n", file.path);
                 return new Raw(std::string(file.path));
               }
             }
           } else {
             // looking for the next directory TODO
+
+
+
 
           }
 

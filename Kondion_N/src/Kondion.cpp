@@ -159,7 +159,8 @@ void GameLoop() {
   Input::AddControl("MOVE_X", Input::INPUT_SYSTEM, 'A');
   Input::AddControl("MOVE_Y", Input::INPUT_SYSTEM, '2');
   Input::AddControl("MOVE_Y", Input::INPUT_SYSTEM, 'W');
-
+  Input::AddControl("DEBUGA", Input::INPUT_SYSTEM, 'K');
+  Input::AddControl("DEBUGB", Input::INPUT_SYSTEM, 'L');
   Input::MouseLock(true);
 
   //float yaw = 0.0f;

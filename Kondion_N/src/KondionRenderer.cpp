@@ -141,7 +141,7 @@ void Setup() {
   glProgramUniform1i(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "texture0"), 0);
 
   glProgramUniform4f(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "skyColor"), 1.0f, 1.0f, 1.0f, 1.0f);
-  glProgramUniform1f(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "fog"), 0.8f);
+  glProgramUniform1f(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "fog"), 0.02f);
 
   glProgramUniform1i(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "texture0"), 0);
   glProgramUniform1i(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "texture1"), 1);
@@ -199,6 +199,8 @@ GLuint CompileShader(GLenum type, const std::string& code, const std::string& er
   return a;
 }
 
+float temp_fog = 0.0f;
+
 void Three(KObj::OKO_Camera_* c, uint16_t width, uint16_t height) {
 
   //glViewport(0, 0, width, height);
@@ -220,12 +222,14 @@ void Three(KObj::OKO_Camera_* c, uint16_t width, uint16_t height) {
   glClearDepth(10.0f);
 
 
+  temp_fog += (Input::Get(Input::ControlIndex("DEBUGA"))->x - Input::Get(Input::ControlIndex("DEBUGB"))->x) / 100;
+  printf("fog: %f\n", temp_fog);
   //glGetUniformiv(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "type"), &30);
   glUseProgram(temp_prog_monotex);
-  printf("uniform type: %i\n", glGetUniformLocation(temp_prog_monotex, "color"));
+  //printf("uniform type: %i\n", glGetUniformLocation(temp_prog_monotex, "color"));
   glProgramUniform1i(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "type"), 30);
   glProgramUniform4f(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
-
+  glProgramUniform1f(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "fog"), temp_fog);
 }
 
 void Two(uint8_t window) {
