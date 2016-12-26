@@ -193,6 +193,13 @@ void Callback_Oriented_SetOffsetPosition(const FunctionCallbackInfo<v8::Value>& 
   //pointer_this->transform;
 }
 
+void Callback_Kdion_Load(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (args.Length() < 1)
+    return;
+  HandleScope handle_scope(isolate);
+  printf("%s\n", *String::Utf8Value(args[0]));
+}
+
 void Callback_Kdion_Log(const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (args.Length() < 1)
     return;

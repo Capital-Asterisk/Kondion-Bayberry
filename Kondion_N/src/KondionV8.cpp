@@ -136,8 +136,8 @@ void CallFunction(const std::string& s) {
   //printf("Is birds a function?: %i\n", birds->IsFunction());
   Local<Value> res;
   Local<Value> args[1] = { String::NewFromUtf8(isolate, "arg") };
-  res = Local<Function>::Cast(birds)->Call(context, context->Global(), 1, args)
-      .ToLocalChecked();
+  res = Local<Function>::Cast(birds)->
+      Call(context, context->Global(), 1, args).ToLocalChecked();
   //printf("result: %s\n", *String::Utf8Value(res));
 }
 
@@ -219,6 +219,8 @@ void Setup() {
 
   // Create kdion object
   Local<ObjectTemplate> kdion = ObjectTemplate::New(isolate);
+  kdion->Set(String::NewFromUtf8(isolate, "load"),
+             FunctionTemplate::New(isolate, Callback_Kdion_Load));
   kdion->Set(String::NewFromUtf8(isolate, "log"),
              FunctionTemplate::New(isolate, Callback_Kdion_Log));
   kdion->Set(String::NewFromUtf8(isolate, "initialize"),
@@ -228,12 +230,16 @@ void Setup() {
 
   // constructor functions, bird chicken test
 
-  Local<FunctionTemplate> bird = FunctionTemplate::New(isolate, Callback_Kdion_Bird);
+  Local<FunctionTemplate> bird =
+      FunctionTemplate::New(isolate, Callback_Kdion_Bird);
   bird->InstanceTemplate()->SetInternalFieldCount(1);
-  bird->InstanceTemplate()->SetAccessor(String::NewFromUtf8(isolate, "integrity"), Callback_Bird_GetIntegrity, Callback_Bird_SetIntegrity);
+  bird->InstanceTemplate()->SetAccessor(
+      String::NewFromUtf8(isolate, "integrity"),
+      Callback_Bird_GetIntegrity, Callback_Bird_SetIntegrity);
   kdion->Set(String::NewFromUtf8(isolate, "Bird"), bird);
 
-  Local<FunctionTemplate> chicken = FunctionTemplate::New(isolate, Callback_Kdion_Bird);
+  Local<FunctionTemplate> chicken =
+      FunctionTemplate::New(isolate, Callback_Kdion_Bird);
   chicken->Inherit(bird);
   chicken->InstanceTemplate()->SetInternalFieldCount(1);
 
@@ -241,25 +247,34 @@ void Setup() {
 
   Local<FunctionTemplate> kobj_node = FunctionTemplate::New(isolate);
   kobj_node->InstanceTemplate()->SetInternalFieldCount(1);
-  kobj_node->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "getParent"), FunctionTemplate::New(isolate, Callback_KObj_GetParent));
-  kobj_node->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "setParent"), FunctionTemplate::New(isolate, Callback_KObj_SetParent));
+  kobj_node->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "getParent"),
+      FunctionTemplate::New(isolate, Callback_KObj_GetParent));
+  kobj_node->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "setParent"),
+      FunctionTemplate::New(isolate, Callback_KObj_SetParent));
   //kobj_node->HasInstance(object)
 
   Local<FunctionTemplate> kobj_oriented = FunctionTemplate::New(isolate);
   kobj_oriented->InstanceTemplate()->SetInternalFieldCount(1);
   kobj_oriented->Inherit(kobj_node);
-  kobj_oriented->PrototypeTemplate()->Set(String::NewFromUtf8(isolate, "setPosition"), FunctionTemplate::New(isolate, Callback_Oriented_SetOffsetPosition));
+  kobj_oriented->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "setPosition"),
+      FunctionTemplate::New(isolate, Callback_Oriented_SetOffsetPosition));
 
-  Local<FunctionTemplate> kobj_entity = FunctionTemplate::New(isolate, Callback_KObj_Entity);
+  Local<FunctionTemplate> kobj_entity =
+      FunctionTemplate::New(isolate, Callback_KObj_Entity);
   kobj_entity->InstanceTemplate()->SetInternalFieldCount(1);
   kobj_entity->Inherit(kobj_oriented);
 
-  Local<FunctionTemplate> kobj_instance = FunctionTemplate::New(isolate, Callback_KObj_Entity);
+  Local<FunctionTemplate> kobj_instance =
+      FunctionTemplate::New(isolate, Callback_KObj_Entity);
   kobj_instance->InstanceTemplate()->SetInternalFieldCount(1);
   kobj_instance->Inherit(kobj_oriented);
 
   // GKO
-  Local<FunctionTemplate> gko_world = FunctionTemplate::New(isolate, Callback_GKO_World);
+  Local<FunctionTemplate> gko_world =
+      FunctionTemplate::New(isolate, Callback_GKO_World);
   gko_world->InstanceTemplate()->SetInternalFieldCount(1);
   gko_world->Inherit(kobj_node);
 
@@ -284,7 +299,8 @@ void Setup() {
   // Run a test script
 
   // Create a new context with global included
-  Local<Context> context = Context::New(Isolate::GetCurrent(), NULL, global);
+  Local<Context> context =
+      Context::New(Isolate::GetCurrent(), NULL, global);
   Context::Scope context_scope(context);
 
   // Input, somehow objects can only be made after the context is created
