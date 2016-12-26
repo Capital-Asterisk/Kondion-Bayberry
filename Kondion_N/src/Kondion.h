@@ -34,8 +34,9 @@ class KObj_Entity;
 class KObj_Instance;
 
 namespace KObj {
-  class GKO_World;
-};
+class GKO_World;
+}
+;
 
 class KComponent;
 class KMaterial;
@@ -185,15 +186,8 @@ extern KObj::OKO_Camera_* currentCamera;
 class RenderPass {
  public:
 
-  static const unsigned char
-   DEFAULT   = 0,
-   FORWARD   = 1,
-   DIFFUSE   = 2,
-   DEPTH   = 3,
-   NORMALS   = 4,
-   LIGHT  = 5,
-   HDR     = 6,
-   GUI     = 20;
+  static const unsigned char DEFAULT = 0, FORWARD = 1, DIFFUSE = 2, DEPTH = 3,
+      NORMALS = 4, LIGHT = 5, HDR = 6, GUI = 20;
   static std::vector<RenderPass*> passes;
 
   bool autoscan;
@@ -221,7 +215,8 @@ class RenderPass {
 
 };
 
-GLuint CompileShader(GLenum type, const std::string& code, const std::string& errorname);
+GLuint CompileShader(GLenum type, const std::string& code,
+                     const std::string& errorname);
 void Composite();
 void Consider(KObj_Renderable* a);
 void Setup();
@@ -291,9 +286,8 @@ class KTexture {
   GLint minFilter, magFilter, textureId, wrapS, wrapT;
   std::string source;
 
-  KTexture(GLint id, uint16_t width, uint16_t height,
-           GLint miFilter, GLint maFilter, GLint awrapS, GLint awrapT,
-           bool mipped);
+  KTexture(GLint id, uint16_t width, uint16_t height, GLint miFilter,
+           GLint maFilter, GLint awrapS, GLint awrapT, bool mipped);
   KTexture(std::string path, GLint miFilter, GLint maFilter, GLint awrapS,
            GLint awrapT);
   void Bind();

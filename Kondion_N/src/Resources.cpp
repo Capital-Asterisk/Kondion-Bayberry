@@ -212,7 +212,7 @@ Raw* Get(const std::string& url) {
             // looking for the final file, no more dirs to enter
             if (!file.is_dir) {
               //if (file.is_reg) // i think this would support
-                                 // symlinks and fancy things
+              // symlinks and fancy things
               // get the name of the current file and remove the file extension
               std::string name(file.name);
               name = name.substr(0, name.find('.'));

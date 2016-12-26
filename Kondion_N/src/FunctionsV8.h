@@ -33,7 +33,6 @@ Persistent<Object, CopyablePersistentTraits<Object>> p_input;
 
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_kobj_node;
 
-
 class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
  public:
   virtual void* Allocate(size_t length) {
@@ -146,15 +145,16 @@ void Callback_KObj_SetParent(const v8::FunctionCallbackInfo<v8::Value>& args) {
   //p = static_cast<Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>*>(pointer->jsObject);
   //Local<v8::Object> o = Local<v8::Object>::New(isolate, *p);
   //args.GetReturnValue().Set(o);
-  Local<FunctionTemplate> f = Local<FunctionTemplate>::New(isolate, p_kobj_node);
+  Local<FunctionTemplate> f = Local<FunctionTemplate>::New(isolate,
+                                                           p_kobj_node);
   printf("Arg0 is kobj_node: %i\n", f->HasInstance(args[0]));
 
   if (!f->HasInstance(args[0]))
     return;
   KObj_Node* pointer_this = static_cast<KObj_Node*>(Local<External>::Cast(
-        args.This()->GetInternalField(0))->Value());
+      args.This()->GetInternalField(0))->Value());
   KObj_Node* pointer_arg0 = static_cast<KObj_Node*>(Local<External>::Cast(
-        Local<Object>::Cast(args[0])->GetInternalField(0))->Value());
+      Local<Object>::Cast(args[0])->GetInternalField(0))->Value());
 
   pointer_this->setParent(pointer_arg0);
 }
@@ -175,14 +175,16 @@ void Callback_Bird_SetIntegrity(Local<String> property, Local<Value> value,
   static_cast<Bird*>(pointer)->integrity = value->Int32Value();
 }
 
-void Callback_Oriented_SetOffsetPosition(const FunctionCallbackInfo<v8::Value>& args) {
+void Callback_Oriented_SetOffsetPosition(
+    const FunctionCallbackInfo<v8::Value>& args) {
   if (args.IsConstructCall() || args.Length() == 0)
     return;
   if (!args[0]->IsArray())
     return;
   Local<Array> a = Local<Array>::Cast(args[0]);
-  KObj_Oriented* pointer_this = static_cast<KObj_Oriented*>(Local<External>::Cast(
-        args.This()->GetInternalField(0))->Value());
+  KObj_Oriented* pointer_this =
+      static_cast<KObj_Oriented*>(Local<External>::Cast(
+          args.This()->GetInternalField(0))->Value());
   pointer_this->offset[3][0] = a->Get(0)->NumberValue();
   pointer_this->offset[3][1] = a->Get(1)->NumberValue();
   pointer_this->offset[3][2] = a->Get(2)->NumberValue();

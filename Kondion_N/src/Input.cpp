@@ -76,20 +76,21 @@ uint16_t AddControl(const std::string& name, uint8_t device, uint16_t button) {
   int compared = -1;
   uint16_t i = 0;
   if (controls.size() != 0) {
-    i = controls.size(); // last element
+    i = controls.size();  // last element
     //printf("chirp chirp %i\n", name.compare(controls[i]->name));
     //while (i != 0 && (compared = name.compare(controls[i]->name)) > 0) {
-      //printf("birds: %i, compared: %i\n", i, compared);
-      //i--;
+    //printf("birds: %i, compared: %i\n", i, compared);
+    //i--;
     //}
     printf("BIRDS! %s\n", name.c_str());
     while (i != 0 && compared != 0) {
-      i --;
+      i--;
       compared = name.compare(controls[i]->name);
       //compared = strcmp(name.c_str(), controls[i]->name.c_str());
-      printf("%s -- %s comparison: %i\n", name.c_str(), controls[i]->name.c_str(), compared);
+      printf("%s -- %s comparison: %i\n", name.c_str(),
+             controls[i]->name.c_str(), compared);
     };
-    i ++;
+    i++;
   }
 
   f->alternate = (compared == 0);
@@ -120,10 +121,10 @@ float Value(uint16_t i) {
     return 0.0f;
 
   float r = controls[i]->x;
-  i ++;
+  i++;
   while (i < controls.size() && controls[i]->alternate) {
     r = (std::abs(r) < std::abs(controls[i]->x)) ? controls[i]->x : r;
-    i ++;
+    i++;
     //r = std::max(r, controls[i]->px);
   }
   return r;
@@ -133,10 +134,10 @@ float ValuePrev(uint16_t i) {
   if (i >= controls.size())
     return 0.0f;
   float r = controls[i]->px;
-  i ++;
+  i++;
   while (i < controls.size() && controls[i]->alternate) {
     r = (std::abs(r) < std::abs(controls[i]->px)) ? controls[i]->px : r;
-    i ++;
+    i++;
     //r = std::max(r, controls[i]->px);
   }
   return r;

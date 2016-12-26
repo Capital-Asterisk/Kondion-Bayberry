@@ -59,7 +59,7 @@ void KObj_Node::setParent(KObj_Node* node) {
     KObj_Renderable* a = (dynamic_cast<KObj_Renderable*>(this));
     Renderer::Consider(a);
   }
-  for (uint16_t i = 0; i < parent->children.size(); i ++) {
+  for (uint16_t i = 0; i < parent->children.size(); i++) {
     if (parent->children[i] == NULL) {
       parent->children[i] = this;
       printf("parent has been set, the other way.\n");
@@ -186,25 +186,28 @@ void GameLoop() {
     a->offset = glm::mat4x4();
     a->offset = glm::translate(a->offset, trans);
     a->offset = glm::rotate(
-            a->offset, Input::Get(Input::ControlIndex("MOUSE_X"))->x * -0.001f,
-            glm::vec3(0.0f, 1.0f, 0.0f));
+        a->offset, Input::Get(Input::ControlIndex("MOUSE_X"))->x * -0.001f,
+        glm::vec3(0.0f, 1.0f, 0.0f));
     a->offset = glm::rotate(
         a->offset, Input::Get(Input::ControlIndex("MOUSE_Y"))->x * -0.001f,
         glm::vec3(1.0f, -0.0f, -0.0f));
 
     //glm::value_ptr(a->offset)[13] = 0.7f;
-    a->offset = glm::translate(a->offset, glm::vec3(0, 0, -Input::Value(Input::ControlIndex("MOVE_Y")) * 0.4));
+    a->offset = glm::translate(
+        a->offset,
+        glm::vec3(0, 0, -Input::Value(Input::ControlIndex("MOVE_Y")) * 0.4));
     //b->offset = glm::rotate(b->offset, 0.01f, glm::vec3(1.0f, 0.0f, 0.0f));
     JS::GlobalUpdate();
-
 
     for (size_t i = 0; i < KObj_Node::worldObject->children.size(); i++) {
       KObj_Node::worldObject->children[i]->updateA();
     }
 
     for (size_t i = 0; i < KObj_Node::worldObject->children.size(); i++) {
-      if (KObj_Node::worldObject->children[i]->getType() == 2 || KObj_Node::worldObject->children[i]->getType() == 3) {
-        dynamic_cast<KObj_Oriented*>(KObj_Node::worldObject->children[i])->parentTransform();
+      if (KObj_Node::worldObject->children[i]->getType() == 2
+          || KObj_Node::worldObject->children[i]->getType() == 3) {
+        dynamic_cast<KObj_Oriented*>(KObj_Node::worldObject->children[i])
+            ->parentTransform();
       }
     }
 
@@ -238,7 +241,8 @@ int main(int argc, const char* argv[]) {
     char buf[256];
     Kondion::dir = strcat(getcwd(buf, sizeof(buf)), "/");
     printf("Kondion %s | %s %s\nDirectory:%s\n", KONDION_VERSION, __DATE__,
-           __TIME__, Kondion::dir);
+    __TIME__,
+           Kondion::dir);
     Kondion::JS::Setup();
 
     unsigned char mode = 1;  // 0: none, 1: carton

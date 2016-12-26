@@ -136,8 +136,8 @@ void CallFunction(const std::string& s) {
   //printf("Is birds a function?: %i\n", birds->IsFunction());
   Local<Value> res;
   Local<Value> args[1] = { String::NewFromUtf8(isolate, "arg") };
-  res = Local<Function>::Cast(birds)->
-      Call(context, context->Global(), 1, args).ToLocalChecked();
+  res = Local<Function>::Cast(birds)->Call(context, context->Global(), 1, args)
+      .ToLocalChecked();
   //printf("result: %s\n", *String::Utf8Value(res));
 }
 
@@ -174,8 +174,8 @@ void Eval(const char* s) {
     MaybeLocal<Value> mayberesult = script.ToLocalChecked()->Run(context);
     if (mayberesult.IsEmpty()) {
       printf("Error!\n");
-    } //else
-      //Local<Value> result = mayberesult.ToLocalChecked();
+    }  //else
+       //Local<Value> result = mayberesult.ToLocalChecked();
   }
 }
 
@@ -185,7 +185,7 @@ void GlobalUpdate() {
   Local<Context> context = Local<Context>::New(isolate, p_context);
   Context::Scope context_scope(context);
   Local<Array> a = Local<Array>::New(isolate, p_gupdate);
-  for (uint16_t i = 0; i < a->Length(); i ++) {
+  for (uint16_t i = 0; i < a->Length(); i++) {
     Local<Function>::Cast(a->Get(i))->Call(context, context->Global(), 0, NULL);
   }
 }
@@ -230,16 +230,16 @@ void Setup() {
 
   // constructor functions, bird chicken test
 
-  Local<FunctionTemplate> bird =
-      FunctionTemplate::New(isolate, Callback_Kdion_Bird);
+  Local<FunctionTemplate> bird = FunctionTemplate::New(isolate,
+                                                       Callback_Kdion_Bird);
   bird->InstanceTemplate()->SetInternalFieldCount(1);
   bird->InstanceTemplate()->SetAccessor(
-      String::NewFromUtf8(isolate, "integrity"),
-      Callback_Bird_GetIntegrity, Callback_Bird_SetIntegrity);
+      String::NewFromUtf8(isolate, "integrity"), Callback_Bird_GetIntegrity,
+      Callback_Bird_SetIntegrity);
   kdion->Set(String::NewFromUtf8(isolate, "Bird"), bird);
 
-  Local<FunctionTemplate> chicken =
-      FunctionTemplate::New(isolate, Callback_Kdion_Bird);
+  Local<FunctionTemplate> chicken = FunctionTemplate::New(isolate,
+                                                          Callback_Kdion_Bird);
   chicken->Inherit(bird);
   chicken->InstanceTemplate()->SetInternalFieldCount(1);
 
@@ -262,19 +262,19 @@ void Setup() {
       String::NewFromUtf8(isolate, "setPosition"),
       FunctionTemplate::New(isolate, Callback_Oriented_SetOffsetPosition));
 
-  Local<FunctionTemplate> kobj_entity =
-      FunctionTemplate::New(isolate, Callback_KObj_Entity);
+  Local<FunctionTemplate> kobj_entity = FunctionTemplate::New(
+      isolate, Callback_KObj_Entity);
   kobj_entity->InstanceTemplate()->SetInternalFieldCount(1);
   kobj_entity->Inherit(kobj_oriented);
 
-  Local<FunctionTemplate> kobj_instance =
-      FunctionTemplate::New(isolate, Callback_KObj_Entity);
+  Local<FunctionTemplate> kobj_instance = FunctionTemplate::New(
+      isolate, Callback_KObj_Entity);
   kobj_instance->InstanceTemplate()->SetInternalFieldCount(1);
   kobj_instance->Inherit(kobj_oriented);
 
   // GKO
-  Local<FunctionTemplate> gko_world =
-      FunctionTemplate::New(isolate, Callback_GKO_World);
+  Local<FunctionTemplate> gko_world = FunctionTemplate::New(isolate,
+                                                            Callback_GKO_World);
   gko_world->InstanceTemplate()->SetInternalFieldCount(1);
   gko_world->Inherit(kobj_node);
 
@@ -299,8 +299,7 @@ void Setup() {
   // Run a test script
 
   // Create a new context with global included
-  Local<Context> context =
-      Context::New(Isolate::GetCurrent(), NULL, global);
+  Local<Context> context = Context::New(Isolate::GetCurrent(), NULL, global);
   Context::Scope context_scope(context);
 
   // Input, somehow objects can only be made after the context is created
@@ -308,19 +307,23 @@ void Setup() {
   Local<Object> input = Object::New(isolate);
   //kdion->Set(String::NewFromUtf8(isolate, "input"), input);
   // really? (second actually, bottom one came first)
-  context->Global()->Get(context, String::NewFromUtf8(isolate, "kdion")).ToLocalChecked()
-      ->ToObject()->Set(String::NewFromUtf8(isolate, "input"), input);
+  context->Global()->Get(context, String::NewFromUtf8(isolate, "kdion"))
+      .ToLocalChecked()->ToObject()->Set(String::NewFromUtf8(isolate, "input"),
+                                         input);
 
   // World
   printf("something\n");
-  Local<Value> o = gko_world->GetFunction()->CallAsConstructor(context, 0, NULL).ToLocalChecked();
+  Local<Value> o = gko_world->GetFunction()->CallAsConstructor(context, 0, NULL)
+      .ToLocalChecked();
   printf("something else\n");
   Local<Object> world = o->ToObject(isolate);
   printf("woot\n");
-  KObj_Node::worldObject = static_cast<KObj::GKO_World*>(Local<External>::Cast(world->GetInternalField(0))->Value());
+  KObj_Node::worldObject = static_cast<KObj::GKO_World*>(Local<External>::Cast(
+      world->GetInternalField(0))->Value());
   // really?
-  context->Global()->Get(context, String::NewFromUtf8(isolate, "kdion")).ToLocalChecked()
-      ->ToObject()->Set(String::NewFromUtf8(isolate, "World"), world);
+  context->Global()->Get(context, String::NewFromUtf8(isolate, "kdion"))
+      .ToLocalChecked()->ToObject()->Set(String::NewFromUtf8(isolate, "World"),
+                                         world);
 
   // Create a string containing the JavaScript source code.
   Local<String> source =
@@ -347,14 +350,14 @@ void Setup() {
   //printf("%s\n", *utf8);
 
   // Make persistent handles
-  p_context = Persistent<Context,
-      CopyablePersistentTraits<Context>>(isolate, context);
+  p_context = Persistent<Context, CopyablePersistentTraits<Context>>(isolate,
+                                                                     context);
   p_kobj_node = Persistent<FunctionTemplate,
       CopyablePersistentTraits<FunctionTemplate>>(isolate, kobj_node);
-  p_gupdate = Persistent<Array,
-      CopyablePersistentTraits<Array>>(isolate, Array::New(isolate, 0));
-  p_input = Persistent<Object,
-        CopyablePersistentTraits<Object>>(isolate, input);
+  p_gupdate = Persistent<Array, CopyablePersistentTraits<Array>>(
+      isolate, Array::New(isolate, 0));
+  p_input = Persistent<Object, CopyablePersistentTraits<Object>>(isolate,
+                                                                 input);
 
 }
 
@@ -366,8 +369,7 @@ void Start() {
 
   Local<Function> init = Local<Function>::New(isolate, p_initialize);
   Local<Value> args[1] = { String::NewFromUtf8(isolate, "arg") };
-  init->Call(context, context->Global(), 1, args)
-      .ToLocalChecked();
+  init->Call(context, context->Global(), 1, args).ToLocalChecked();
   p_initialize.Reset();
 }
 
@@ -378,12 +380,13 @@ void UpdateInput() {
   Context::Scope context_scope(context);
 
   Local<Object> input = Local<Object>::New(isolate, p_input);
-  for (uint16_t i = 0; i < Input::Count(); i ++) {
+  for (uint16_t i = 0; i < Input::Count(); i++) {
     if (!Input::Get(i)->alternate) {
-      Local<String> s = String::NewFromUtf8(isolate, Input::Get(i)->name.c_str());
+      Local<String> s = String::NewFromUtf8(isolate,
+                                            Input::Get(i)->name.c_str());
       // check if input has name registered already
       //if (input->HasOwnProperty(s)) {
-        //if (input->Get(s)->ToNumber()->)
+      //if (input->Get(s)->ToNumber()->)
       //}
       input->Set(s, Number::New(isolate, Input::Value(i)));
     }

@@ -53,8 +53,8 @@ void Setup() {
 
   glEnable(GL_TEXTURE_2D);
   glShadeModel(GL_SMOOTH);
-  glClearColor(0.0f, 0.0f, 0.0f, 0.5f);// Black Background
-  glClearDepth(1.0f);	// Depth Buffer Setup
+  glClearColor(0.0f, 0.0f, 0.0f, 0.5f);  // Black Background
+  glClearDepth(1.0f);  // Depth Buffer Setup
   glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
   glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	//
@@ -100,9 +100,8 @@ void Setup() {
   glGenBuffers(1, &beef);
   glBindBuffer(GL_ARRAY_BUFFER, beef);
   glBufferData(GL_ARRAY_BUFFER, sizeof(interlevedDataA), interlevedDataA,
-               GL_STATIC_DRAW);
+  GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 
   Resources::Raw* av = Resources::Get("kotega_2:tempdebug/solid_col");
   std::ostringstream aaostring;
@@ -121,16 +120,20 @@ void Setup() {
 
   printf("abostring: %s", abostring.str().c_str());
 
-  GLuint monotex_vert = CompileShader(GL_VERTEX_SHADER, aaostring.str(), "Temporary Monotexture shader (VERT)");
-  GLuint monotex_frag = CompileShader(GL_FRAGMENT_SHADER, abostring.str(), "Temporary Monotexture shader (FRAG)");
-  GLuint defer_frag = CompileShader(GL_FRAGMENT_SHADER, baostring.str(), "Temporary Deferred shader (FRAG)");
+  GLuint monotex_vert = CompileShader(GL_VERTEX_SHADER, aaostring.str(),
+                                      "Temporary Monotexture shader (VERT)");
+  GLuint monotex_frag = CompileShader(GL_FRAGMENT_SHADER, abostring.str(),
+                                      "Temporary Monotexture shader (FRAG)");
+  GLuint defer_frag = CompileShader(GL_FRAGMENT_SHADER, baostring.str(),
+                                    "Temporary Deferred shader (FRAG)");
 
   temp_prog_monotex = glCreateProgram();
   glAttachShader(temp_prog_monotex, monotex_vert);
   glAttachShader(temp_prog_monotex, monotex_frag);
   glLinkProgram(temp_prog_monotex);
   glUseProgram(temp_prog_monotex);
-  printf("uniform typeee: %i\n", glGetUniformLocation(temp_prog_monotex, "color"));
+  printf("uniform typeee: %i\n",
+         glGetUniformLocation(temp_prog_monotex, "color"));
 
   temp_prog_deferred = glCreateProgram();
   glAttachShader(temp_prog_deferred, monotex_vert);
@@ -138,15 +141,23 @@ void Setup() {
   glLinkProgram(temp_prog_deferred);
   glUseProgram(temp_prog_deferred);
 
-  glProgramUniform1i(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "texture0"), 0);
+  glProgramUniform1i(temp_prog_monotex,
+                     glGetUniformLocation(temp_prog_monotex, "texture0"), 0);
 
-  glProgramUniform4f(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "skyColor"), 1.0f, 1.0f, 1.0f, 1.0f);
-  glProgramUniform1f(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "fog"), 0.02f);
+  glProgramUniform4f(temp_prog_deferred,
+                     glGetUniformLocation(temp_prog_deferred, "skyColor"), 1.0f,
+                     1.0f, 1.0f, 1.0f);
+  glProgramUniform1f(temp_prog_deferred,
+                     glGetUniformLocation(temp_prog_deferred, "fog"), 0.02f);
 
-  glProgramUniform1i(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "texture0"), 0);
-  glProgramUniform1i(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "texture1"), 1);
-  glProgramUniform1i(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "texture2"), 2);
-  glProgramUniform1i(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "texture3"), 3);
+  glProgramUniform1i(temp_prog_deferred,
+                     glGetUniformLocation(temp_prog_deferred, "texture0"), 0);
+  glProgramUniform1i(temp_prog_deferred,
+                     glGetUniformLocation(temp_prog_deferred, "texture1"), 1);
+  glProgramUniform1i(temp_prog_deferred,
+                     glGetUniformLocation(temp_prog_deferred, "texture2"), 2);
+  glProgramUniform1i(temp_prog_deferred,
+                     glGetUniformLocation(temp_prog_deferred, "texture3"), 3);
 
   //delete [] interlevedDataA;
 
@@ -157,7 +168,7 @@ void Setup() {
   glGenBuffers(1, &bacon);
   glBindBuffer(GL_ARRAY_BUFFER, bacon);
   glBufferData(GL_ARRAY_BUFFER, sizeof(interlevedDataB), interlevedDataB,
-               GL_STATIC_DRAW);
+  GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   //delete [] interlevedDataB;
@@ -167,7 +178,7 @@ void Setup() {
   glGenBuffers(1, &grill);
   glBindBuffer(GL_ARRAY_BUFFER, grill);
   glBufferData(GL_ARRAY_BUFFER, sizeof(interlevedDataC), interlevedDataC,
-               GL_STATIC_DRAW);
+  GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   //delete [] interlevedDataC;
@@ -176,7 +187,8 @@ void Setup() {
 }
 
 // KLoader.java line 300?
-GLuint CompileShader(GLenum type, const std::string& code, const std::string& errorname) {
+GLuint CompileShader(GLenum type, const std::string& code,
+                     const std::string& errorname) {
   GLuint a = glCreateShader(type);
   const char* f = code.c_str();
   glShaderSource(a, 1, &f, NULL);
@@ -221,15 +233,19 @@ void Three(KObj::OKO_Camera_* c, uint16_t width, uint16_t height) {
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
   glClearDepth(10.0f);
 
-
-  temp_fog += (Input::Get(Input::ControlIndex("DEBUGA"))->x - Input::Get(Input::ControlIndex("DEBUGB"))->x) / 100;
+  temp_fog += (Input::Get(Input::ControlIndex("DEBUGA"))->x
+      - Input::Get(Input::ControlIndex("DEBUGB"))->x) / 100;
   printf("fog: %f\n", temp_fog);
   //glGetUniformiv(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "type"), &30);
   glUseProgram(temp_prog_monotex);
   //printf("uniform type: %i\n", glGetUniformLocation(temp_prog_monotex, "color"));
-  glProgramUniform1i(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "type"), 30);
-  glProgramUniform4f(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "color"), 1.0f, 1.0f, 1.0f, 1.0f);
-  glProgramUniform1f(temp_prog_deferred, glGetUniformLocation(temp_prog_deferred, "fog"), temp_fog);
+  glProgramUniform1i(temp_prog_monotex,
+                     glGetUniformLocation(temp_prog_monotex, "type"), 30);
+  glProgramUniform4f(temp_prog_monotex,
+                     glGetUniformLocation(temp_prog_monotex, "color"), 1.0f,
+                     1.0f, 1.0f, 1.0f);
+  glProgramUniform1f(temp_prog_deferred,
+                     glGetUniformLocation(temp_prog_deferred, "fog"), temp_fog);
 }
 
 void Two(uint8_t window) {
@@ -241,8 +257,8 @@ void Two(uint8_t window) {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
-  glOrtho(0, Window::GetWidth(window), Window::GetHeight(window),
-      0, 6.0f, -6.0f);
+  glOrtho(0, Window::GetWidth(window), Window::GetHeight(window), 0, 6.0f,
+          -6.0f);
   glMatrixMode(GL_MODELVIEW);
   //glScalef(1.0f, -1.0f, 1.0f);
   //GLDrawing.setCoords(new float[] {1, 1, 0, 1, 0, 0, 1, 0});
@@ -308,15 +324,16 @@ void RenderQuad(float width, float height) {
   glPopMatrix();
 }
 
-GLint neat(GLuint* tex, uint16_t width, uint16_t height, GLint internal, int format, GLenum thisiscppthistime) {
+GLint neat(GLuint* tex, uint16_t width, uint16_t height, GLint internal,
+           int format, GLenum thisiscppthistime) {
   glGenTextures(1, tex);
   glBindTexture(GL_TEXTURE_2D, *tex);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexImage2D(GL_TEXTURE_2D, 0, internal, width,
-      height, 0, format, thisiscppthistime, NULL);
+  glTexImage2D(GL_TEXTURE_2D, 0, internal, width, height, 0, format,
+               thisiscppthistime, NULL);
 
   return *tex;
 }
@@ -324,7 +341,8 @@ GLint neat(GLuint* tex, uint16_t width, uint16_t height, GLint internal, int for
 void RenderPass::consider(KObj_Renderable* a) {
   printf("a: %s\n", a->name.c_str());
   // unable to multiply the two drawLayers and compare to zero. two positive unsigned ints can multiply to zero.
-  if ((drawLayer != 0) && (a->drawLayer != 0) && (drawLayer & a->drawLayer == drawLayer)) {
+  if ((drawLayer != 0) && (a->drawLayer != 0)
+      && (drawLayer & a->drawLayer == drawLayer)) {
     items.push_back(a);
 
   }
@@ -343,30 +361,31 @@ void RenderPass::generate() {
   glGenFramebuffersEXT(1, ids);
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, *ids);
 
-  neat(ids + 1, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE); // Brightness
+  neat(ids + 1, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);  // Brightness
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
-      GL_COLOR_ATTACHMENT3_EXT, GL_TEXTURE_2D,
-      ids[1], 0);
-  neat(ids + 2, width, height, GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT, GL_FLOAT); // Depth texture
+  GL_COLOR_ATTACHMENT3_EXT,
+                            GL_TEXTURE_2D, ids[1], 0);
+  neat(ids + 2, width, height, GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT,
+       GL_FLOAT);  // Depth texture
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
-      GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D,
-      ids[2], 0);
-  neat(ids + 3, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE); // Diffuse texture
+  GL_DEPTH_ATTACHMENT_EXT,
+                            GL_TEXTURE_2D, ids[2], 0);
+  neat(ids + 3, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);  // Diffuse texture
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
-      GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D,
-      ids[3], 0);
-  neat(ids + 4, width, height, GL_RGB, GL_RGB, GL_FLOAT); // Normal texture
+  GL_COLOR_ATTACHMENT0_EXT,
+                            GL_TEXTURE_2D, ids[3], 0);
+  neat(ids + 4, width, height, GL_RGB, GL_RGB, GL_FLOAT);  // Normal texture
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
-      GL_COLOR_ATTACHMENT1_EXT, GL_TEXTURE_2D,
-      ids[4], 0);
-  neat(ids + 5, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE); // Result
+  GL_COLOR_ATTACHMENT1_EXT,
+                            GL_TEXTURE_2D, ids[4], 0);
+  neat(ids + 5, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);  // Result
   //if (!pixelate) {
   //  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   //  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   //}
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
-      GL_COLOR_ATTACHMENT2_EXT, GL_TEXTURE_2D,
-      ids[5], 0);
+  GL_COLOR_ATTACHMENT2_EXT,
+                            GL_TEXTURE_2D, ids[5], 0);
 
 }
 
@@ -379,8 +398,8 @@ void RenderPass::render() {
     }
     //glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,
     //    GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, drbId);
-    ready = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) == GL_FRAMEBUFFER_COMPLETE_EXT;
-
+    ready = glCheckFramebufferStatusEXT(
+        GL_FRAMEBUFFER_EXT) == GL_FRAMEBUFFER_COMPLETE_EXT;
 
   } else {
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -388,8 +407,8 @@ void RenderPass::render() {
 
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, ids[0]);
     GLenum ducky[] = {
-        GL_COLOR_ATTACHMENT0_EXT, GL_COLOR_ATTACHMENT1_EXT,
-        GL_COLOR_ATTACHMENT2_EXT, GL_COLOR_ATTACHMENT3_EXT};
+    GL_COLOR_ATTACHMENT0_EXT, GL_COLOR_ATTACHMENT1_EXT,
+    GL_COLOR_ATTACHMENT2_EXT, GL_COLOR_ATTACHMENT3_EXT };
     glDrawBuffers(4, ducky);
 
     //glClearColor(Kondion.getWorld().skyColor.x, Kondion.getWorld().skyColor.y,
@@ -401,7 +420,7 @@ void RenderPass::render() {
     else
       Three(currentCamera, width, height);
 
-    bool deep = false; //depthMask != null;
+    bool deep = false;  //depthMask != null;
     if (deep) {
       //glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
       //    GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D,
@@ -435,24 +454,23 @@ void RenderPass::render() {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
 
-    glOrtho(0, width, height,
-        0, 6.0f, -6.0f);
+    glOrtho(0, width, height, 0, 6.0f, -6.0f);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
     glDepthMask(false);
     glDisable(GL_DEPTH_TEST);
 
-    glActiveTexture(GL_TEXTURE0); // Diffuse
+    glActiveTexture(GL_TEXTURE0);  // Diffuse
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, ids[3]);
-    glActiveTexture(GL_TEXTURE1); // Depth
+    glActiveTexture(GL_TEXTURE1);  // Depth
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, ids[2]);
-    glActiveTexture(GL_TEXTURE2); // Normals
+    glActiveTexture(GL_TEXTURE2);  // Normals
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, ids[4]);
-    glActiveTexture(GL_TEXTURE3); // Brightness
+    glActiveTexture(GL_TEXTURE3);  // Brightness
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, ids[1]);
     //GLDrawing.setCoords(new float[] {1, 1, 0, 1, 0, 0, 1, 0});
@@ -489,7 +507,8 @@ void RenderPass::scan() {
 
 }
 
-RenderPass::RenderPass(uint8_t typ, uint32_t layer, uint16_t w, uint16_t h, bool autoscn) {
+RenderPass::RenderPass(uint8_t typ, uint32_t layer, uint16_t w, uint16_t h,
+                       bool autoscn) {
   type = typ;
   camera = NULL;
   ids = {};
