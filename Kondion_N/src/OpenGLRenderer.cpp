@@ -14,6 +14,9 @@
 #include "Kondion.h"
 
 namespace Kondion {
+
+//std::vector<Resources::KTexture *> Resources::KTexture::textures;
+
 namespace Renderer {
 
 // Camera used for the current render pass
@@ -28,7 +31,7 @@ GLuint temp_prog_monotex;
 
 void Composite() {
   for (size_t i = 0; i < RenderPass::passes.size(); i++) {
-    glBindTexture(GL_TEXTURE_2D, Resources::textures[0]->textureId);
+    glBindTexture(GL_TEXTURE_2D, Resources::KTexture::textures[0]->textureId);
     RenderPass::passes[i]->render();
   }
   Two(0);

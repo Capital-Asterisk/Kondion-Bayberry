@@ -81,11 +81,11 @@ std::string GetString(size_t id, const std::string& key) {
       if (!json.IsEmpty()) {
         if (json->ToObject(isolate)->Has(
             String::NewFromUtf8(isolate, key.c_str()))) {
-          printf(
-              "return: %s\n",
-              *String::Utf8Value(
-                  json->ToObject(isolate)->Get(
-                      String::NewFromUtf8(isolate, key.c_str()))));
+          //printf(
+          //    "return: %s\n",
+          //    *String::Utf8Value(
+          //        json->ToObject(isolate)->Get(
+          //            String::NewFromUtf8(isolate, key.c_str()))));
           return std::string(
               *String::Utf8Value(
                   json->ToObject(isolate)->Get(
@@ -105,6 +105,37 @@ std::string GetString(size_t id, const std::string& key) {
   } else {
     perror("JSON: invalid Id");
     return "error";
+  }
+}
+
+void GetStringArray(size_t id, const std::string& key, std::vector<std::string> &in) {
+  if (id >= 0 && objects.size() >= id) {
+    if (objects[id]) {
+      Isolate::Scope isolate_scope(isolate);
+      HandleScope handle_scope(isolate);
+      //Local<Context> context = Local<Context>::New(isolate, contextp);
+      Local<Value> json = Local<Value>::New(isolate, *objects[id]);
+      if (!json.IsEmpty()) {
+        if (json->ToObject(isolate)->Has(
+            String::NewFromUtf8(isolate, key.c_str()))) {
+          Local<Array> object = Local<Array>::Cast(
+              json->ToObject(isolate)->Get(
+                  String::NewFromUtf8(isolate, key.c_str())));
+          std::vector<std::string> ret;
+          for (uint16_t i = 0; i < object->Length(); i ++) {
+            in.push_back(std::string(*String::Utf8Value(object->Get(i))));
+          }
+        } else {
+          perror("JSON: no such key");
+        }
+      } else {
+        perror("JSON: attempted to access an empty whatever");
+      }
+    } else {
+      perror("JSON: object at x id does not exist");
+    }
+  } else {
+    perror("JSON: invalid Id");
   }
 }
 

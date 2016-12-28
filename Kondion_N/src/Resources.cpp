@@ -31,12 +31,11 @@ namespace Resources {
 
 const unsigned char CARTON_KCA = 0, CARTON_FOLDER = 1, CARTON_ZIP = 2;
 
-struct Carton;
-
-std::vector<KTexture *> textures;
-std::vector<Carton *> cartons;
+std::vector<KTexture *> KTexture::textures;
 
 struct Carton {
+
+  static std::vector<Carton *> cartons;
 
   uint8_t type;
   std::string filepath;
@@ -52,37 +51,46 @@ struct Carton {
 
 };
 
+std::vector<Carton *> Carton::cartons;
+
 void AddCarton(const std::string& path) {
 
   printf("adding carton: %s\n", path.c_str());
 
+  // Create an empty carton resource identifier
   Carton* c = new Carton;
-  cartons.insert(cartons.end(), c);
+  Carton::cartons.insert(Carton::cartons.end(), c);
   c->filepath = path;
 
+  // Check if the file exists
   struct stat buf;
   int st = stat(path.c_str(), &buf);
 
+  // Check if the file exists
   if (st == 0) {
     printf("carton exists\n");
-    if (buf.st_mode & S_IFDIR) {  // all sources say &
-      printf("carton is folder\n");
+    if (buf.st_mode & S_IFDIR) {  // all sources say '&'
+
+      //printf("carton is folder\n");
+
       // now get the name and stuff
       // if the path doesn't end with a separator, add one
       c->type = CARTON_FOLDER;
       if (c->filepath[c->filepath.length() - 1] != SEPARATOR)
         c->filepath += SEPARATOR;
-      // get name
 
+      // Parse kondion.json, can't use Raw get yet since we don't have the name.
       std::ifstream file(c->filepath + "kondion.json");
       int json = JS::ON::Parse(&file, c->filepath + "kondion.json");
 
+      // Start getting information
       //c->isGame = JS::ON::GetString(json, "Game") == "true";
       c->id = JS::ON::GetString(json, "Id");
       c->name = JS::ON::GetString(json, "Name");
       c->desc = JS::ON::GetString(json, "Description");
       c->version = JS::ON::GetString(json, "Version");
 
+      // Don't mind this
       if (c->isGame) {
         c->startTitle = JS::ON::GetString(json, "StartTitle");
       }
@@ -109,12 +117,12 @@ void AddCarton(const std::string& path) {
     } else {
       perror(("Invalid carton: " + path + "\n").c_str());
       delete c;
-      cartons.erase(cartons.end());
+      Carton::cartons.erase(Carton::cartons.end());
     }
   } else {
     perror(("Unable to access carton: " + path + "\n").c_str());
     delete c;
-    cartons.erase(cartons.end());
+    Carton::cartons.erase(Carton::cartons.end());
   }
 }
 
@@ -149,8 +157,8 @@ void Setup() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-  textures.insert(textures.end(),
-                  new KTexture(textureId, 32, 32,
+  KTexture::textures.insert(KTexture::textures.end(),
+                  new KTexture("k_test", textureId, 32, 32,
                   GL_LINEAR,
                                GL_NEAREST, GL_REPEAT, GL_REPEAT, false));
 
@@ -183,13 +191,13 @@ Raw* Get(const std::string& url) {
   //printf("%s \n", current.c_str());
 
   // loop through the cartons and find a matching id
-  for (unsigned int i = 0; i < cartons.size(); i++) {
-    if (cartons[i]->id == id) {
-      if (cartons[i]->type == CARTON_FOLDER) {
+  for (unsigned int i = 0; i < Carton::cartons.size(); i++) {
+    if (Carton::cartons[i]->id == id) {
+      if (Carton::cartons[i]->type == CARTON_FOLDER) {
 
         // open the directory of the carton, list files
         tinydir_dir dir;
-        tinydir_open(&dir, cartons[i]->filepath.c_str());
+        tinydir_open(&dir, Carton::cartons[i]->filepath.c_str());
 
         // loop through all the files in the directory
         while (dir.has_next) {
@@ -258,9 +266,11 @@ Raw* Get(const std::string& url) {
   return NULL;
 }
 
-// Internal
-KTexture::KTexture(GLint id, uint16_t awidth, uint16_t aheight, GLint miFilter,
-                   GLint maFilter, GLint awrapS, GLint awrapT, bool mipped) {
+// For internal textures
+KTexture::KTexture(std::string name, GLint id, uint16_t awidth,
+                   uint16_t aheight, GLint miFilter, GLint maFilter,
+                   GLint awrapS, GLint awrapT, bool mipped) {
+  identifier = name;
   source = "INTERNAL";
   isLoaded = true;
   isInternal = true;
@@ -274,8 +284,9 @@ KTexture::KTexture(GLint id, uint16_t awidth, uint16_t aheight, GLint miFilter,
   magFilter = maFilter;
 }
 
-KTexture::KTexture(std::string path, GLint miFilter, GLint maFilter,
-                   GLint awrapS, GLint awrapT) {
+KTexture::KTexture(std::string name, std::string path, GLint miFilter,
+                   GLint maFilter, GLint awrapS, GLint awrapT) {
+  identifier = name;
   source = path;
   textureId = 0;
   isLoaded = false;

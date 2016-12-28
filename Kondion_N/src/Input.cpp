@@ -12,6 +12,8 @@
 namespace Kondion {
 namespace Input {
 
+std::vector<Control*> Control::controls;
+
 /*
  * -Input devices, adds input types:
  * Touch screen (pointer(s))
@@ -41,6 +43,9 @@ namespace Input {
  * js: (input["key_shoot"].x >= 0.5) is when button is down
  * js: (input["move_lr"].y * forward) for axis
  *
+ * -Game controllers
+ * TODO and important
+ *
  * device:
  * 0: system input (mouse, keyboard, touchscreen?)
  *     0-399: keyboard
@@ -58,8 +63,7 @@ namespace Input {
  */
 
 // I don't know how to avoid these
-std::vector<Control*> controls;
-
+//std::vector<Control*> controls;
 /**
  * Add a new control.
  * @param name What you want the name of the control to be.
@@ -75,8 +79,8 @@ uint16_t AddControl(const std::string& name, uint8_t device, uint16_t button) {
   f->name = name;
   int compared = -1;
   uint16_t i = 0;
-  if (controls.size() != 0) {
-    i = controls.size();  // last element
+  if (Control::controls.size() != 0) {
+    i = Control::controls.size();  // last element
     //printf("chirp chirp %i\n", name.compare(controls[i]->name));
     //while (i != 0 && (compared = name.compare(controls[i]->name)) > 0) {
     //printf("birds: %i, compared: %i\n", i, compared);
@@ -85,45 +89,46 @@ uint16_t AddControl(const std::string& name, uint8_t device, uint16_t button) {
     printf("BIRDS! %s\n", name.c_str());
     while (i != 0 && compared != 0) {
       i--;
-      compared = name.compare(controls[i]->name);
+      compared = name.compare(Control::controls[i]->name);
       //compared = strcmp(name.c_str(), controls[i]->name.c_str());
       printf("%s -- %s comparison: %i\n", name.c_str(),
-             controls[i]->name.c_str(), compared);
+             Control::controls[i]->name.c_str(), compared);
     };
     i++;
   }
 
   f->alternate = (compared == 0);
-  controls.insert(controls.begin() + i, f);
+  Control::controls.insert(Control::controls.begin() + i, f);
   //printf("birds: %i\n", i);
   return i;
 }
 
 uint16_t ControlIndex(const std::string& name) {
-  for (unsigned short i = 0; i < controls.size(); i++) {
-    if (controls[i]->name.compare(name) == 0)
+  for (unsigned short i = 0; i < Control::controls.size(); i++) {
+    if (Control::controls[i]->name.compare(name) == 0)
       return i;
   }
-  return controls.size();
+  return Control::controls.size();
 }
 
 Control* Get(uint16_t i) {
-  return controls[i];
+  return Control::controls[i];
 }
 
 uint16_t Count() {
-  return controls.size();
+  return Control::controls.size();
 }
 
 float Value(uint16_t i) {
   //printf("poop %f\n", controls[i]->x);
-  if (i >= controls.size())
+  if (i >= Control::controls.size())
     return 0.0f;
 
-  float r = controls[i]->x;
+  float r = Control::controls[i]->x;
   i++;
-  while (i < controls.size() && controls[i]->alternate) {
-    r = (std::abs(r) < std::abs(controls[i]->x)) ? controls[i]->x : r;
+  while (i < Control::controls.size() && Control::controls[i]->alternate) {
+    r = (std::abs(r) < std::abs(Control::controls[i]->x)) ?
+        Control::controls[i]->x : r;
     i++;
     //r = std::max(r, controls[i]->px);
   }
@@ -131,12 +136,13 @@ float Value(uint16_t i) {
 }
 
 float ValuePrev(uint16_t i) {
-  if (i >= controls.size())
+  if (i >= Control::controls.size())
     return 0.0f;
-  float r = controls[i]->px;
+  float r = Control::controls[i]->px;
   i++;
-  while (i < controls.size() && controls[i]->alternate) {
-    r = (std::abs(r) < std::abs(controls[i]->px)) ? controls[i]->px : r;
+  while (i < Control::controls.size() && Control::controls[i]->alternate) {
+    r = (std::abs(r) < std::abs(Control::controls[i]->px)) ?
+        Control::controls[i]->px : r;
     i++;
     //r = std::max(r, controls[i]->px);
   }
@@ -167,55 +173,57 @@ void Setup() {
 }
 
 void Update() {
-  for (unsigned short i = 0; i < controls.size(); i++) {
-    controls[i]->px = controls[i]->x;
+  for (unsigned short i = 0; i < Control::controls.size(); i++) {
+    Control::controls[i]->px = Control::controls[i]->x;
     //controls[i]->py = controls[i]->y;
-    if (controls[i]->device == 0) {
+    if (Control::controls[i]->device == 0) {
       // system controller
-      if (controls[i]->button < MOUSE_BUTTON) {
+      if (Control::controls[i]->button < MOUSE_BUTTON) {
         // keyboard
-        controls[i]->x = glfwGetKey(Window::w, controls[i]->button);
+        Control::controls[i]->x = glfwGetKey(Window::w,
+                                             Control::controls[i]->button);
         //controls[i]->y = 0;
-      } else if (controls[i]->button < MOUSE_BUTTON + 8) {
-        controls[i]->x = glfwGetMouseButton(Window::w,
-                                            controls[i]->button - 400);
+      } else if (Control::controls[i]->button < MOUSE_BUTTON + 8) {
+        Control::controls[i]->x = glfwGetMouseButton(
+            Window::w, Control::controls[i]->button - 400);
         //controls[i]->y = 0;
-      } else if (controls[i]->button == MOUSE_POSX) {
+      } else if (Control::controls[i]->button == MOUSE_POSX) {
         double x, y;
         glfwGetCursorPos(Window::w, &x, &y);
-        controls[i]->x = x;
+        Control::controls[i]->x = x;
         //controls[i]->y = y;
-      } else if (controls[i]->button == MOUSE_POSY) {
+      } else if (Control::controls[i]->button == MOUSE_POSY) {
         double x, y;
         glfwGetCursorPos(Window::w, &x, &y);
-        controls[i]->x = y;
+        Control::controls[i]->x = y;
         //controls[i]->y = y; else if (controls[i]->button == MOUSE_SCROLLX) {
 
-      } else if (controls[i]->button == MOUSE_SCROLLY) {
+      } else if (Control::controls[i]->button == MOUSE_SCROLLY) {
 
-      } else if (controls[i]->button == MOUSE_INSIDE) {
+      } else if (Control::controls[i]->button == MOUSE_INSIDE) {
 
       }
-    } else if (controls[i]->device >= 10) {
-      unsigned char joy = controls[i]->device - 10;
-      if (controls[i]->button < CONTROLLER_AXIS) {
+    } else if (Control::controls[i]->device >= 10) {
+      unsigned char joy = Control::controls[i]->device - 10;
+      if (Control::controls[i]->button < CONTROLLER_AXIS) {
         // it is a button
         int dummy;
-        controls[i]->x =
-            glfwGetJoystickButtons(joy, &dummy)[controls[i]->button];
+        Control::controls[i]->x =
+            glfwGetJoystickButtons(joy, &dummy)[Control::controls[i]->button];
       } else {  // else if (whatever), but nothing yet
         int dummy;
-        controls[i]->x = glfwGetJoystickAxes(joy, &dummy)[controls[i]->button
-            - CONTROLLER_AXIS];
+        Control::controls[i]->x =
+            glfwGetJoystickAxes(joy, &dummy)[Control::controls[i]->button
+                - CONTROLLER_AXIS];
       }
     }
   }
 }
 
 void DebugPrint() {
-  for (uint16_t i = 0; i < controls.size(); i++) {
-    printf("Name: %s Alt: %i X: %4.2f \n", controls[i]->name.c_str(),
-           controls[i]->alternate, controls[i]->x);
+  for (uint16_t i = 0; i < Control::controls.size(); i++) {
+    printf("Name: %s Alt: %i X: %4.2f \n", Control::controls[i]->name.c_str(),
+           Control::controls[i]->alternate, Control::controls[i]->x);
     //std::cout << "name: " << controls[i]->name << " alternate:" << controls[i]->alternate;
   }
 }

@@ -247,6 +247,7 @@ const uint16_t MOUSE_BUTTON = 400, MOUSE_POSX = 409, MOUSE_POSY = 410,
     CONTROLLER_AXIS = 100, CONTROLLER_BUTTON = 0;
 
 struct Control {
+  static std::vector<Control*> controls;
   std::string name;
   bool alternate;
   uint8_t device;
@@ -280,16 +281,20 @@ namespace Resources {
 
 class KTexture {
  public:
+
+  static std::vector<KTexture *> textures;
+
+  std::string source, identifier;
   uint16_t width, height;
   bool isInternal, isLoaded, mipmapped;
   //unsigned short imageWidth, imageHeight;
   GLint minFilter, magFilter, textureId, wrapS, wrapT;
-  std::string source;
 
-  KTexture(GLint id, uint16_t width, uint16_t height, GLint miFilter,
-           GLint maFilter, GLint awrapS, GLint awrapT, bool mipped);
-  KTexture(std::string path, GLint miFilter, GLint maFilter, GLint awrapS,
-           GLint awrapT);
+  KTexture(std::string name, GLint id, uint16_t width, uint16_t height,
+           GLint miFilter, GLint maFilter, GLint awrapS, GLint awrapT,
+           bool mipped);
+  KTexture(std::string name, std::string path, GLint miFilter, GLint maFilter,
+           GLint awrapS, GLint awrapT);
   void Bind();
 };
 
@@ -336,6 +341,8 @@ namespace ON {
 int Parse(const std::string& s);
 int Parse(std::ifstream* s, const std::string& path);
 std::string GetString(size_t id, const std::string& key);
+void GetStringArray(size_t id, const std::string& key,
+                    std::vector<std::string> in);
 void Dispose(size_t id);
 }
 
