@@ -81,7 +81,7 @@ void AddCarton(const std::string& path) {
 
       // Parse kondion.json, can't use Raw get yet since we don't have the name.
       std::ifstream file(c->filepath + "kondion.json");
-      int json = JS::ON::Parse(&file, c->filepath + "kondion.json");
+      uint16_t json = JS::ON::Parse(&file, c->filepath + "kondion.json");
 
       // Start getting information
       //c->isGame = JS::ON::GetString(json, "Game") == "true";
@@ -90,8 +90,18 @@ void AddCarton(const std::string& path) {
       c->desc = JS::ON::GetString(json, "Description");
       c->version = JS::ON::GetString(json, "Version");
 
+      uint16_t graphics = JS::ON::Enter(json, "Graphics");
+
       std::vector<std::string> dummy;
-      JS::ON::GetKeys(json, dummy);
+      JS::ON::GetKeys(graphics, dummy);
+
+      printf("Graphics: %i\n", graphics);
+
+      for (uint16_t i = 0; i < dummy.size(); i ++) {
+        printf("Texture to load %s\n", dummy[i].c_str());
+      }
+
+
 
       // Don't mind this
       if (c->isGame) {

@@ -143,7 +143,7 @@ void GetStringArray(size_t id, const std::string& key, std::vector<std::string> 
   }
 }
 
-void GetKeys(size_t id, std::vector<std::string> in) {
+void GetKeys(size_t id, std::vector<std::string> &in) {
   // Check if the Id is valid
   if (id < 0 || objects.size() < id)
     return;
@@ -163,7 +163,8 @@ void GetKeys(size_t id, std::vector<std::string> in) {
   Local<Array> keys = objA->ToObject(isolate)->GetPropertyNames(context).ToLocalChecked();
 
   for (uint16_t i = 0; i < keys->Length(); i++) {
-    printf("Key: %s\n", *String::Utf8Value(keys->Get(i)));
+    //printf("Key: %s\n", *String::Utf8Value(keys->Get(i)));
+    in.push_back(std::string(*String::Utf8Value(keys->Get(i))));
   }
 
 }

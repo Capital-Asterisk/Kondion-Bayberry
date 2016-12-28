@@ -13,8 +13,8 @@
 		
 	},
 	"Graphics": {
-		"tiles_diff": ["graphics/tiles"],
-		"tiles_norm": ["graphics/tiles_norm"]
+		"tiles_diff": ["graphics/tiles", "+traitnamehere"],
+		"tiles_norm": ["graphics/tiles_norm", "+normalmap"]
 	},
 	"OBJ": {
 		
