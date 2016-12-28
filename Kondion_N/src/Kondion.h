@@ -338,10 +338,13 @@ void Start();
 void UpdateInput();
 
 namespace ON {
-int Parse(const std::string& s);
-int Parse(std::ifstream* s, const std::string& path);
+size_t Parse(const std::string& s);
+size_t Parse(std::ifstream* s, const std::string& path);
 std::string GetString(size_t id, const std::string& key);
 void GetStringArray(size_t id, const std::string& key,
+                    std::vector<std::string> in);
+size_t Enter(size_t id, const std::string& key);
+void GetKeys(size_t id, const std::string& key,
                     std::vector<std::string> in);
 void Dispose(size_t id);
 }

@@ -238,7 +238,7 @@ void Three(KObj::OKO_Camera_* c, uint16_t width, uint16_t height) {
 
   temp_fog += (Input::Get(Input::ControlIndex("DEBUGA"))->x
       - Input::Get(Input::ControlIndex("DEBUGB"))->x) / 100;
-  printf("fog: %f\n", temp_fog);
+  //printf("fog: %f\n", temp_fog);
   //glGetUniformiv(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "type"), &30);
   glUseProgram(temp_prog_monotex);
   //printf("uniform type: %i\n", glGetUniformLocation(temp_prog_monotex, "color"));

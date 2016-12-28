@@ -26,7 +26,7 @@ namespace ON {
 
 std::vector<Persistent<Value, CopyablePersistentTraits<Value>>*> objects;
 
-int Parse(const std::string& s) {
+size_t Parse(const std::string& s) {
   Isolate::Scope isolate_scope(isolate);
   HandleScope handle_scope(isolate);
   Local<Context> context = Local<Context>::New(isolate, p_context);
@@ -58,9 +58,11 @@ int Parse(const std::string& s) {
   return j;
 }
 
-int Parse(std::ifstream* s, const std::string& path) {
+size_t Parse(std::ifstream* s, const std::string& path) {
+
   std::string res = "";
   std::string line;
+
   if (s->is_open()) {
     while (getline(*s, line)) {
       res += line + "\n";
@@ -72,6 +74,7 @@ int Parse(std::ifstream* s, const std::string& path) {
 }
 
 std::string GetString(size_t id, const std::string& key) {
+  // TODO make this readable
   if (id >= 0 && objects.size() >= id) {
     if (objects[id]) {
       Isolate::Scope isolate_scope(isolate);
@@ -109,6 +112,7 @@ std::string GetString(size_t id, const std::string& key) {
 }
 
 void GetStringArray(size_t id, const std::string& key, std::vector<std::string> &in) {
+  // TODO make this readable
   if (id >= 0 && objects.size() >= id) {
     if (objects[id]) {
       Isolate::Scope isolate_scope(isolate);
@@ -139,6 +143,70 @@ void GetStringArray(size_t id, const std::string& key, std::vector<std::string> 
   }
 }
 
+void GetKeys(size_t id, const std::string& key, std::vector<std::string> &in) {
+  // Check if the Id is valid
+  if (id < 0 || objects.size() < id)
+    return;
+
+  // Get get the object as a Local<Value>
+  Local<Value> objA = Local<Value>::New(isolate, *objects[id]);
+
+  // terminate if there are errors
+  if (objA.IsEmpty() || !objA->IsObject())
+    return;
+
+  // terminate if the key does not exist
+  if (!objA->ToObject(isolate)->Has(String::NewFromUtf8(isolate, key.c_str())))
+    return;
+
+  // Get object
+  Local<Object> objB = Local<Object>::Cast(
+      objA->ToObject(isolate)->Get(String::NewFromUtf8(isolate, key.c_str())));
+
+
+}
+
+size_t Enter(size_t id, const std::string& key) {
+
+  // TODO make the other functions look nice like this.
+
+  // Check if the Id is valid
+  if (id < 0 || objects.size() < id)
+    return -1;
+
+  // Get get the object as a Local<Value>
+  Local<Value> objA = Local<Value>::New(isolate, *objects[id]);
+
+  // terminate if there are errors
+  if (objA.IsEmpty() || !objA->IsObject())
+    return -1;
+
+  // terminate if the key does not exist
+  if (!objA->ToObject(isolate)->Has(String::NewFromUtf8(isolate, key.c_str())))
+    return -1;
+
+  // Get object
+  Local<Object> objB = Local<Object>::Cast(
+      objA->ToObject(isolate)->Get(String::NewFromUtf8(isolate, key.c_str())));
+
+  Persistent<Value, CopyablePersistentTraits<Value>> *objC = new Persistent<
+        Value, CopyablePersistentTraits<Value>>(
+        isolate, objB);
+
+  size_t j = 0;
+  for (size_t i = 0; i < objects.size(); i++) {
+    if (!objects[i]) {
+      objects[i] = objC;
+      j = i + 1;
+    }
+  }
+  if (j == 0) {
+    j = objects.size();
+    objects.insert(objects.end(), objC);
+  }
+  return j;
+}
+
 void Dispose(size_t id) {
   if (id >= 0 && objects.size() >= id) {
     if (objects[id]) {
@@ -148,7 +216,7 @@ void Dispose(size_t id) {
   }
 }
 
-}
+} // ON namespace ends here btw
 
 void CallFunction(const std::string& s) {
   Isolate::Scope isolate_scope(isolate);
