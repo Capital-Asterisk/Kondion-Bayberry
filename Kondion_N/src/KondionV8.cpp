@@ -143,10 +143,14 @@ void GetStringArray(size_t id, const std::string& key, std::vector<std::string> 
   }
 }
 
-void GetKeys(size_t id, const std::string& key, std::vector<std::string> &in) {
+void GetKeys(size_t id, std::vector<std::string> in) {
   // Check if the Id is valid
   if (id < 0 || objects.size() < id)
     return;
+
+  Isolate::Scope isolate_scope(isolate);
+  HandleScope handle_scope(isolate);
+  Local<Context> context = Local<Context>::New(isolate, p_context);
 
   // Get get the object as a Local<Value>
   Local<Value> objA = Local<Value>::New(isolate, *objects[id]);
@@ -155,14 +159,12 @@ void GetKeys(size_t id, const std::string& key, std::vector<std::string> &in) {
   if (objA.IsEmpty() || !objA->IsObject())
     return;
 
-  // terminate if the key does not exist
-  if (!objA->ToObject(isolate)->Has(String::NewFromUtf8(isolate, key.c_str())))
-    return;
+  // Get keys
+  Local<Array> keys = objA->ToObject(isolate)->GetPropertyNames(context).ToLocalChecked();
 
-  // Get object
-  Local<Object> objB = Local<Object>::Cast(
-      objA->ToObject(isolate)->Get(String::NewFromUtf8(isolate, key.c_str())));
-
+  for (uint16_t i = 0; i < keys->Length(); i++) {
+    printf("Key: %s\n", *String::Utf8Value(keys->Get(i)));
+  }
 
 }
 
@@ -173,6 +175,9 @@ size_t Enter(size_t id, const std::string& key) {
   // Check if the Id is valid
   if (id < 0 || objects.size() < id)
     return -1;
+
+  Isolate::Scope isolate_scope(isolate);
+  HandleScope handle_scope(isolate);
 
   // Get get the object as a Local<Value>
   Local<Value> objA = Local<Value>::New(isolate, *objects[id]);

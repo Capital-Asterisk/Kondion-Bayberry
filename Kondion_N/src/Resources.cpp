@@ -90,6 +90,8 @@ void AddCarton(const std::string& path) {
       c->desc = JS::ON::GetString(json, "Description");
       c->version = JS::ON::GetString(json, "Version");
 
+      std::vector<std::string> dummy;
+      JS::ON::GetKeys(json, dummy);
 
       // Don't mind this
       if (c->isGame) {

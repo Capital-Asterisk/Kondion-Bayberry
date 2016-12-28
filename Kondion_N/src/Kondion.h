@@ -344,8 +344,7 @@ std::string GetString(size_t id, const std::string& key);
 void GetStringArray(size_t id, const std::string& key,
                     std::vector<std::string> in);
 size_t Enter(size_t id, const std::string& key);
-void GetKeys(size_t id, const std::string& key,
-                    std::vector<std::string> in);
+void GetKeys(size_t id, std::vector<std::string> in);
 void Dispose(size_t id);
 }
 
