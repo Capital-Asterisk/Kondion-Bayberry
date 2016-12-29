@@ -284,17 +284,23 @@ class KTexture {
 
   static std::vector<KTexture *> textures;
 
-  std::string source, identifier;
-  uint16_t width, height;
-  bool isInternal, isLoaded, mipmapped;
-  //unsigned short imageWidth, imageHeight;
-  GLint minFilter, magFilter, textureId, wrapS, wrapT;
 
-  KTexture(std::string name, GLint id, uint16_t width, uint16_t height,
-           GLint miFilter, GLint maFilter, GLint awrapS, GLint awrapT,
-           bool mipped);
-  KTexture(std::string name, std::string path, GLint miFilter, GLint maFilter,
-           GLint awrapS, GLint awrapT);
+  std::string source, identifier;
+  uint16_t traits;
+  uint16_t width, height;
+  bool isInternal, isLoaded;//, mipmapped;
+  //unsigned short imageWidth, imageHeight;
+  //GLint minFilter, magFilter, textureId, wrapS, wrapT;
+  GLint textureId;
+
+  //KTexture(std::string name, GLint id, uint16_t width, uint16_t height,
+  //         GLint miFilter, GLint maFilter, GLint awrapS, GLint awrapT,
+  //         bool mipped);
+  KTexture(std::string name, GLint id, uint16_t width, uint16_t height);
+  //KTexture(std::string name, std::string path, GLint miFilter, GLint maFilter,
+  //         GLint awrapS, GLint awrapT);
+  KTexture(std::string name, std::string path, uint16_t trait);
+
   void Bind();
 };
 
@@ -342,7 +348,7 @@ size_t Parse(const std::string& s);
 size_t Parse(std::ifstream* s, const std::string& path);
 std::string GetString(size_t id, const std::string& key);
 void GetStringArray(size_t id, const std::string& key,
-                    std::vector<std::string> in);
+                    std::vector<std::string> &in);
 size_t Enter(size_t id, const std::string& key);
 void GetKeys(size_t id, std::vector<std::string> &in);
 void Dispose(size_t id);

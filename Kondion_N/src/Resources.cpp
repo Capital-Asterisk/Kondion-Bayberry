@@ -90,26 +90,47 @@ void AddCarton(const std::string& path) {
       c->desc = JS::ON::GetString(json, "Description");
       c->version = JS::ON::GetString(json, "Version");
 
+      // Enter the graphics section of the json
       uint16_t graphics = JS::ON::Enter(json, "Graphics");
 
+      // Get all the keys in Graphics, these are texture names
       std::vector<std::string> dummy;
       JS::ON::GetKeys(graphics, dummy);
 
       printf("Graphics: %i\n", graphics);
 
+      // Start registering textures
+      std::vector<std::string> elements;
       for (uint16_t i = 0; i < dummy.size(); i ++) {
+
         printf("Texture to load %s\n", dummy[i].c_str());
+        JS::ON::GetStringArray(graphics, dummy[i], elements);
+
+        // TODO parse traits
+        new KTexture(dummy[i], elements[0], 0);
+
+        // This is only for printing
+        for (uint8_t j = 0; j < elements.size(); j ++) {
+          printf("Param %s\n", elements[j].c_str());
+        }
+
+        // The elements array is reused for the next texture entry
+        elements.clear();
       }
 
-
+      // dispose of graphics becuase we don't need it anymore.
+      // if not, then memory leak
+      JS::ON::Dispose(graphics);
 
       // Don't mind this
       if (c->isGame) {
         c->startTitle = JS::ON::GetString(json, "StartTitle");
       }
 
+      // Dispose of the entire json, we don't need it, no memory leaks.
       JS::ON::Dispose(json);
 
+      // a reminder
       if (c->id.length() > 8 || c->id.length() < 3) {
         perror(
             ("It is recommended that a carton ID must be 3 to 8 characters\nCarton: '"
@@ -127,6 +148,7 @@ void AddCarton(const std::string& path) {
     } else if (buf.st_mode & S_IFREG) {
       printf("carton is file\n");
       //c->type = CARTON_KCA; // or zip
+      // TODO, carton from kca file
     } else {
       perror(("Invalid carton: " + path + "\n").c_str());
       delete c;
@@ -170,10 +192,8 @@ void Setup() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-  KTexture::textures.insert(KTexture::textures.end(),
-                  new KTexture("k_test", textureId, 32, 32,
-                  GL_LINEAR,
-                               GL_NEAREST, GL_REPEAT, GL_REPEAT, false));
+
+  KTexture::textures[0] = new KTexture("k_test", textureId, 32, 32);
 
   Raw* f = Get("kotega_2:masterscript");
 
@@ -280,9 +300,7 @@ Raw* Get(const std::string& url) {
 }
 
 // For internal textures
-KTexture::KTexture(std::string name, GLint id, uint16_t awidth,
-                   uint16_t aheight, GLint miFilter, GLint maFilter,
-                   GLint awrapS, GLint awrapT, bool mipped) {
+KTexture::KTexture(std::string name, GLint id, uint16_t awidth, uint16_t aheight) {
   identifier = name;
   source = "INTERNAL";
   isLoaded = true;
@@ -290,14 +308,15 @@ KTexture::KTexture(std::string name, GLint id, uint16_t awidth,
   textureId = id;
   width = awidth;
   height = aheight;
-  mipmapped = mipped;
-  wrapS = awrapS;
-  wrapT = awrapT;
-  minFilter = miFilter;
-  magFilter = maFilter;
+  traits = 0;
+  //mipmapped = mipped;
+  //wrapS = awrapS;
+  //wrapT = awrapT;
+  //minFilter = miFilter;
+  //magFilter = maFilter;
 }
 
-KTexture::KTexture(std::string name, std::string path, GLint miFilter,
+/*KTexture::KTexture(std::string name, std::string path, GLint miFilter,
                    GLint maFilter, GLint awrapS, GLint awrapT) {
   identifier = name;
   source = path;
@@ -311,6 +330,19 @@ KTexture::KTexture(std::string name, std::string path, GLint miFilter,
   width = 0;
   height = 0;
   mipmapped = false;
+  textures.push_back(this);
+}*/
+
+KTexture::KTexture(std::string name, std::string path, uint16_t trait) {
+  identifier = name;
+  source = path;
+  isLoaded = false;
+  isInternal = false;
+  textureId = -1;
+  width = 0;
+  height = 0;
+  traits = trait;
+  textures.push_back(this);
 }
 
 void KTexture::Bind() {

@@ -233,18 +233,31 @@ void GameLoop() {
 }
 
 int main(int argc, const char* argv[]) {
+
+  // this is an experiment
   uint32_t a = 2147483648;
   uint32_t b = 2;
   uint32_t c = a * b;
   printf("Unsigned 2147483648 * 2 = %i\n", c);
+  // aparrently 2 non-zero numbers can multiply to zero
+
   {
+    // Get the directory
     char buf[256];
     Kondion::dir = strcat(getcwd(buf, sizeof(buf)), "/");
+
+    // Print some information
     printf("Kondion %s | %s %s\nDirectory:%s\n", KONDION_VERSION, __DATE__,
     __TIME__,
            Kondion::dir);
+
+    // Setup V8
     Kondion::JS::Setup();
 
+    // make space for the default texture.
+    Kondion::Resources::KTexture::textures.push_back(NULL);
+
+    // Load cartons, goal: loading screen asap
     unsigned char mode = 1;  // 0: none, 1: carton
     for (int i = 1; i < argc; i++) {
       switch (mode) {
