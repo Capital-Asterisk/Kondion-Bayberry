@@ -225,6 +225,8 @@ void GameLoop() {
     glLoadIdentity();
     Window::Update();
 
+    Resources::Update();
+
   }
   JS::Destroy();
 

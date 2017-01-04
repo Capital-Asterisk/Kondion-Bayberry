@@ -163,8 +163,13 @@ void AddCarton(const std::string& path) {
 }
 
 void Load(const std::string& name, uint8_t type) {
-
-
+  for (uint16_t i = 0; i < KTexture::textures.size(); i ++) {
+    if (KTexture::textures[i]->identifier == name) {
+      KTexture::loadMe.push_back(i);
+      printf("Texture is now queued for load: %s\n", name.c_str());
+      return;
+    }
+  }
 }
 
 void Setup() {
@@ -213,6 +218,12 @@ void Setup() {
   Kondion::JS::Eval(ostring.str());
 
   delete f;
+}
+
+void Update() {
+  if (KTexture::loadMe.size() != 0) {
+    printf("LOAD TEXTURES NOW\n");
+  }
 }
 
 Raw* Get(const std::string& url) {

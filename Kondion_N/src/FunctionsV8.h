@@ -201,12 +201,20 @@ void Callback_Kdion_Load(const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (!args[0]->IsObject())
     return;
   Local<Object> a = args[0]->ToObject();
+  HandleScope handle_scope(isolate);
   // Start loading textures (if any)
   if (a->HasOwnProperty(String::NewFromUtf8(isolate, "textures"))) {
-    printf("Start loading textures!\n");
-
+    Local<Value> b = a->Get(String::NewFromUtf8(isolate, "textures"));
+    if (b->IsArray()) {
+      Local<Array> c = Local<Array>::Cast(b);
+      printf("JS: start texture queue\n");
+      for (uint16_t i = 0; i < c->Length(); i ++) {
+        std::string s(*String::Utf8Value(c->Get(i)));
+        Resources::Load(s, 1);
+      }
+    }
   }
-  HandleScope handle_scope(isolate);
+
   //printf("%s\n", *String::Utf8Value(args[0]));
 }
 

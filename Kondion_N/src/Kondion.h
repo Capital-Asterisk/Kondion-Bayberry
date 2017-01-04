@@ -327,6 +327,7 @@ class Raw {
 void AddCarton(const std::string& path);
 void Load(const std::string& name, uint8_t type);
 void Setup();
+void Update();
 Raw* Get(const std::string& url);
 
 extern std::vector<KTexture *> textures;
