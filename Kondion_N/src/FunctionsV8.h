@@ -198,8 +198,16 @@ void Callback_Oriented_SetOffsetPosition(
 void Callback_Kdion_Load(const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (args.Length() < 1)
     return;
+  if (!args[0]->IsObject())
+    return;
+  Local<Object> a = args[0]->ToObject();
+  // Start loading textures (if any)
+  if (a->HasOwnProperty(String::NewFromUtf8(isolate, "textures"))) {
+    printf("Start loading textures!\n");
+
+  }
   HandleScope handle_scope(isolate);
-  printf("%s\n", *String::Utf8Value(args[0]));
+  //printf("%s\n", *String::Utf8Value(args[0]));
 }
 
 void Callback_Kdion_Log(const v8::FunctionCallbackInfo<v8::Value>& args) {

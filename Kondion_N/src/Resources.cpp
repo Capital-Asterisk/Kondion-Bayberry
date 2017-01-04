@@ -32,6 +32,7 @@ namespace Resources {
 const unsigned char CARTON_KCA = 0, CARTON_FOLDER = 1, CARTON_ZIP = 2;
 
 std::vector<KTexture *> KTexture::textures;
+std::vector<uint16_t> KTexture::loadMe;
 
 struct Carton {
 
@@ -159,6 +160,11 @@ void AddCarton(const std::string& path) {
     delete c;
     Carton::cartons.erase(Carton::cartons.end());
   }
+}
+
+void Load(const std::string& name, uint8_t type) {
+
+
 }
 
 void Setup() {
