@@ -20,6 +20,7 @@
 
 #include <glm/glm.hpp>
 
+#define STB_IMAGE_IMPLEMENTATION
 #include <nanovg/src/stb_image.h>
 
 #include <GL/glew.h>
@@ -110,7 +111,7 @@ void AddCarton(const std::string& path) {
         JS::ON::GetStringArray(graphics, dummy[i], elements);
 
         // TODO parse traits
-        new KTexture(dummy[i], elements[0], 0);
+        new KTexture(dummy[i], c->id + ":" + elements[0], 0);
 
         // This is only for printing
         for (uint8_t j = 0; j < elements.size(); j ++) {
@@ -369,6 +370,9 @@ KTexture::KTexture(std::string name, std::string path, uint16_t trait) {
 }
 
 void KTexture::Load() {
+
+  printf("Loading texture: %s, source: %s\n", identifier.c_str(), source.c_str());
+
   if (isLoaded) {
     printf("Texture already loaded");
     return;
@@ -377,6 +381,7 @@ void KTexture::Load() {
   if (textureId == -1) {
     // Generate texture Id if not done so
     glGenTextures(1, &textureId);
+    printf("Generated new textureId: %i\n", textureId);
   }
 
   // bind it
@@ -389,6 +394,7 @@ void KTexture::Load() {
   int cmp;
   uint8_t* img;
   if (f->carton == CARTON_FOLDER) {
+    printf("Loading from file: %s\n", f->filepath.c_str());
     img = stbi_load(f->filepath.c_str(), &wid, &hei, &cmp, STBI_rgb_alpha);
     delete f;
   } else {
