@@ -28,7 +28,7 @@ kdion.initialize(function() {
 	var e = new KObj_Entity();
 	kdion.e = e;
 	e.setParent(kdion.World, "hey theretttt", 5, 5, 8);
-	//kdion.load({textures: ["tiles_diff", "tiles_norm"]});
+	kdion.load({textures: ["tiles_diff", "tiles_norm"]});
 	kdion.load({textures: 5});
 });
 

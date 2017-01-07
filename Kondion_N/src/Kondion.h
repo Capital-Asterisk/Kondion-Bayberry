@@ -291,7 +291,7 @@ class KTexture {
   bool isInternal, isLoaded;//, mipmapped;
   //unsigned short imageWidth, imageHeight;
   //GLint minFilter, magFilter, textureId, wrapS, wrapT;
-  GLint textureId;
+  GLuint textureId;
 
   //KTexture(std::string name, GLint id, uint16_t width, uint16_t height,
   //         GLint miFilter, GLint maFilter, GLint awrapS, GLint awrapT,
@@ -300,7 +300,7 @@ class KTexture {
   //KTexture(std::string name, std::string path, GLint miFilter, GLint maFilter,
   //         GLint awrapS, GLint awrapT);
   KTexture(std::string name, std::string path, uint16_t trait);
-
+  void Load();
   void Bind();
 };
 
@@ -308,9 +308,12 @@ class Raw {
  public:
   std::istream* stream;
   std::filebuf* fb;
-  Raw(std::string file) {
+  std::string filepath;
+  uint8_t carton;
+  Raw(const std::string& file) {
     fb = new std::filebuf;
-
+    carton = 1; // CARTON_FOLDER
+    filepath = file;
     fb->open(file.c_str(), std::ios::in);
     stream = new std::istream(fb);
   }

@@ -20,6 +20,8 @@
 
 #include <glm/glm.hpp>
 
+#include <nanovg/src/stb_image.h>
+
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
@@ -223,6 +225,10 @@ void Setup() {
 void Update() {
   if (KTexture::loadMe.size() != 0) {
     printf("LOAD TEXTURES NOW\n");
+    for (uint16_t i = KTexture::loadMe.size() - 1; i != 0; i --) {
+      KTexture::textures[KTexture::loadMe[i]]->Load();
+    }
+    KTexture::loadMe.clear();
   }
 }
 
@@ -360,6 +366,63 @@ KTexture::KTexture(std::string name, std::string path, uint16_t trait) {
   height = 0;
   traits = trait;
   textures.push_back(this);
+}
+
+void KTexture::Load() {
+  if (isLoaded) {
+    printf("Texture already loaded");
+    return;
+  }
+
+  if (textureId == -1) {
+    // Generate texture Id if not done so
+    glGenTextures(1, &textureId);
+  }
+
+  // bind it
+  glBindTexture(GL_TEXTURE_2D, textureId);
+
+  // Start loading
+  Raw* f = Get(source);
+  int wid;
+  int hei;
+  int cmp;
+  uint8_t* img;
+  if (f->carton == CARTON_FOLDER) {
+    img = stbi_load(f->filepath.c_str(), &wid, &hei, &cmp, STBI_rgb_alpha);
+    delete f;
+  } else {
+    // do some other method, load from memory
+    delete f;
+  }
+
+  // Now load it onto the openGL texture, TODO: filters
+
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+  // actually load the data
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, wid, hei, 0, GL_RGBA, GL_UNSIGNED_BYTE, img);
+
+  // no memory leak for me
+  stbi_image_free(img);
+
+  // some big thing
+  //printf("Birds 1\n");
+  //std::string* str = new std::string;
+  //printf("Birds 1.1\n");
+  //printf("Birds 1.2\n");
+  //*(img->stream) >> *f;
+  //std::ostringstream* ostring = new std::ostringstream; // This is probably not the right way
+  //printf("Birds 1.3\n");
+  //(*ostring) << f->stream->rdbuf();
+  //printf("Birds 2\n");
+  //stbi_load(filename, x, y, comp, req_comp)
+  //std::cout << "Bind: " << textureId << "\n";
+  //delete f;
+
+
+  printf("Loaded texture: %s\n Dimensions: %ix%i", identifier.c_str(), wid, hei);
 }
 
 void KTexture::Bind() {
