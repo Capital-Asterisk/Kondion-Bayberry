@@ -36,7 +36,8 @@ kdion.globalUpdate(function() {
 	//kdion.log("");
 	//kdion.log(kdion.input["MOUSE_X"]);
 	if (kdion.input["MOVE_X"])
-		kdion.e.setPosition([0, Math.random(), 0]);
+		//kdion.e.setPosition([0, Math.random(), 0]);
+		kdion.e.translate(0, 0.03, 0);
 	
 });
 

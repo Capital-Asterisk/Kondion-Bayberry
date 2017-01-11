@@ -154,8 +154,8 @@ void GameLoop() {
   Input::AddControl("MOUSE_X", Input::INPUT_SYSTEM, Input::MOUSE_POSX);
   Input::AddControl("MOUSE_Y", Input::INPUT_SYSTEM, Input::MOUSE_POSY);
   Input::AddControl("MOUSE_BUTTON0", Input::INPUT_SYSTEM, Input::MOUSE_BUTTON);
-  //Input::AddControl("MOVE_X", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 0);
-  //Input::AddControl("MOVE_Y", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 1);
+  //Input::AddControl("MOVE_X", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 2);
+  //Input::AddControl("MOVE_Y", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 7);
   Input::AddControl("MOVE_X", Input::INPUT_SYSTEM, 'A');
   Input::AddControl("MOVE_Y", Input::INPUT_SYSTEM, '2');
   Input::AddControl("MOVE_Y", Input::INPUT_SYSTEM, 'W');

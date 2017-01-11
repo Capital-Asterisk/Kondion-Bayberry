@@ -366,6 +366,12 @@ void Setup() {
   kobj_oriented->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "setPosition"),
       FunctionTemplate::New(isolate, Callback_Oriented_SetOffsetPosition));
+  kobj_oriented->PrototypeTemplate()->Set(
+        String::NewFromUtf8(isolate, "translate"),
+        FunctionTemplate::New(isolate, Callback_Oriented_Translate));
+  kobj_oriented->PrototypeTemplate()->Set(
+        String::NewFromUtf8(isolate, "rotate"),
+        FunctionTemplate::New(isolate, Callback_Oriented_Rotate));
 
   Local<FunctionTemplate> kobj_entity = FunctionTemplate::New(
       isolate, Callback_KObj_Entity);

@@ -5,6 +5,8 @@
  *      Author: neal
  */
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "include/libplatform/libplatform.h"
@@ -32,6 +34,13 @@ Persistent<Array, CopyablePersistentTraits<Array>> p_gupdate;
 Persistent<Object, CopyablePersistentTraits<Object>> p_input;
 
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_kobj_node;
+
+// kobj js object:
+// translate(x, y, z);
+// rotate(a, x, y, z);
+// dir(in, x, y, z);
+// position(in, origin);
+// getMatrix(in, what, origin (optional))
 
 class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
  public:
@@ -193,6 +202,38 @@ void Callback_Oriented_SetOffsetPosition(
   //b[13] = a->Get(1)->NumberValue();
   //b[14] = a->Get(2)->NumberValue();
   //pointer_this->transform;
+}
+
+void Callback_Oriented_Translate(
+    const FunctionCallbackInfo<v8::Value>& args) {
+  if (args.IsConstructCall() || args.Length() < 3)
+    return;
+  //Local<Array> a = Local<Array>::Cast(args[0]);
+  KObj_Oriented* pointer_this =
+      static_cast<KObj_Oriented*>(Local<External>::Cast(
+          args.This()->GetInternalField(0))->Value());
+  pointer_this->offset = glm::translate(pointer_this->offset, glm::vec3(
+      args[0]->NumberValue(),
+      args[1]->NumberValue(),
+      args[2]->NumberValue()));
+  //pointer_this->offset[3][0] = a->Get(0)->NumberValue();
+  //pointer_this->offset[3][1] = a->Get(1)->NumberValue();
+  //pointer_this->offset[3][2] = a->Get(2)->NumberValue();
+}
+
+void Callback_Oriented_Rotate(
+    const FunctionCallbackInfo<v8::Value>& args) {
+  if (args.IsConstructCall() || args.Length() == 0)
+    return;
+  if (!args[0]->IsArray())
+    return;
+  Local<Array> a = Local<Array>::Cast(args[0]);
+  KObj_Oriented* pointer_this =
+      static_cast<KObj_Oriented*>(Local<External>::Cast(
+          args.This()->GetInternalField(0))->Value());
+  pointer_this->offset[3][0] = a->Get(0)->NumberValue();
+  pointer_this->offset[3][1] = a->Get(1)->NumberValue();
+  pointer_this->offset[3][2] = a->Get(2)->NumberValue();
 }
 
 void Callback_Kdion_Load(const v8::FunctionCallbackInfo<v8::Value>& args) {
