@@ -128,9 +128,9 @@ void GameLoop() {
 
   JS::Start();
   //printf("objects in world: %i\n", worldObject->children.size());
-  KObj::OKO_Camera_ *a = new KObj::OKO_Camera_;
-  a->offset = glm::translate(a->offset, glm::vec3(0.0f, 0.7f, 0.0f));
-  a->offset = glm::rotate(a->offset, 0.3f, glm::vec3(1.0f, 0.0f, 0.0f));
+  //KObj::OKO_Camera_ *a = new KObj::OKO_Camera_;
+  //a->offset = glm::translate(a->offset, glm::vec3(0.0f, 0.7f, 0.0f));
+  //a->offset = glm::rotate(a->offset, 0.3f, glm::vec3(1.0f, 0.0f, 0.0f));
   KObj_Entity *b = new KObj_Entity;
   b->components.insert(b->components.end(), new Component::CPN_InfinitePlane);
   b->components[0]->offset = glm::rotate(b->components[0]->offset, 3.14159f / 2,
@@ -142,11 +142,11 @@ void GameLoop() {
   //player->offset = glm::translate(player->offset, glm::vec3(0.0f, 0.25f, 0.0f));
   //player->offset = glm::rotate(player->offset, 0.1f, glm::vec3(1.0f, 0.0f, 0.0f));
   //a->setParent(player);
-  Renderer::currentCamera = a;
+  //Renderer::currentCamera = a;
 
   b->setParent(KObj_Node::worldObject);
   //player->setParent(worldObject);
-  a->setParent(KObj_Node::worldObject);
+  //a->setParent(KObj_Node::worldObject);
   //w.insert(world.end(), b);
   //world.insert(world.end(), player);
   //world.insert(world.end(), a);
@@ -182,20 +182,20 @@ void GameLoop() {
     //    (Input::Get(Input::ControlIndex("MOUSE_X"))->delta()) * 0.001f,
     //    glm::vec3(0.0f, 1.0f, -0.000000f));
 
-    glm::vec3 trans = glm::vec3(a->offset[3]);
-    a->offset = glm::mat4x4();
-    a->offset = glm::translate(a->offset, trans);
-    a->offset = glm::rotate(
-        a->offset, Input::Get(Input::ControlIndex("MOUSE_X"))->x * -0.001f,
-        glm::vec3(0.0f, 1.0f, 0.0f));
-    a->offset = glm::rotate(
-        a->offset, Input::Get(Input::ControlIndex("MOUSE_Y"))->x * -0.001f,
-        glm::vec3(1.0f, -0.0f, -0.0f));
+    //glm::vec3 trans = glm::vec3(a->offset[3]);
+    //a->offset = glm::mat4x4();
+    //a->offset = glm::translate(a->offset, trans);
+    //a->offset = glm::rotate(
+    //    a->offset, Input::Get(Input::ControlIndex("MOUSE_X"))->x * -0.001f,
+    //    glm::vec3(0.0f, 1.0f, 0.0f));
+    //a->offset = glm::rotate(
+    //    a->offset, Input::Get(Input::ControlIndex("MOUSE_Y"))->x * -0.001f,
+    //    glm::vec3(1.0f, -0.0f, -0.0f));
 
     //glm::value_ptr(a->offset)[13] = 0.7f;
-    a->offset = glm::translate(
-        a->offset,
-        glm::vec3(0, 0, -Input::Value(Input::ControlIndex("MOVE_Y")) * 0.4));
+    //a->offset = glm::translate(
+    //    a->offset,
+    //    glm::vec3(0, 0, -Input::Value(Input::ControlIndex("MOVE_Y")) * 0.4));
     //b->offset = glm::rotate(b->offset, 0.01f, glm::vec3(1.0f, 0.0f, 0.0f));
     JS::GlobalUpdate();
 

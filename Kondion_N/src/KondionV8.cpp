@@ -333,6 +333,10 @@ void Setup() {
   kdion->Set(String::NewFromUtf8(isolate, "globalUpdate"),
              FunctionTemplate::New(isolate, Callback_Kdion_GlobalUpdate));
 
+  kdion->SetAccessor(
+        String::NewFromUtf8(isolate, "camera"), Callback_KObj_World_GetCamera,
+        Callback_KObj_World_SetCamera);
+
   // constructor functions, bird chicken test
 
   Local<FunctionTemplate> bird = FunctionTemplate::New(isolate,
@@ -389,6 +393,13 @@ void Setup() {
   gko_world->InstanceTemplate()->SetInternalFieldCount(1);
   gko_world->Inherit(kobj_node);
 
+  // OKO
+
+  Local<FunctionTemplate> oko_camera = FunctionTemplate::New(isolate,
+                                                              Callback_OKO_Camera);
+  oko_camera->InstanceTemplate()->SetInternalFieldCount(1);
+  oko_camera->Inherit(kobj_oriented);
+
   //bird->InstanceTemplate()->SetAccessor(String::NewFromUtf8(isolate, "integrity"), Callback_Bird_GetIntegrity, Callback_Bird_SetIntegrity);
 
   // Add everything together
@@ -404,6 +415,7 @@ void Setup() {
   global->Set(String::NewFromUtf8(isolate, "KObj_Instance"), kobj_instance);
 
   global->Set(String::NewFromUtf8(isolate, "GKO_World"), gko_world);
+  global->Set(String::NewFromUtf8(isolate, "OKO_Camera"), oko_camera);
 
   //global->Set(String::NewFromUtf8(isolate, "GKO_World"), gko_world);
 
@@ -469,7 +481,8 @@ void Setup() {
       isolate, Array::New(isolate, 0));
   p_input = Persistent<Object, CopyablePersistentTraits<Object>>(isolate,
                                                                  input);
-
+  p_oko_camera = Persistent<FunctionTemplate,
+        CopyablePersistentTraits<FunctionTemplate>>(isolate, oko_camera);
 }
 
 void Start() {

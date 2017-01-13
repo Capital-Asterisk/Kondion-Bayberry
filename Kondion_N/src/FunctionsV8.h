@@ -21,7 +21,7 @@ namespace JS {
 
 class ArrayBufferAllocator;
 
-// Is this a bad thing?
+// TODO deal with this mess
 
 ArrayBufferAllocator* allocator;
 
@@ -34,6 +34,7 @@ Persistent<Array, CopyablePersistentTraits<Array>> p_gupdate;
 Persistent<Object, CopyablePersistentTraits<Object>> p_input;
 
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_kobj_node;
+Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_oko_camera;
 
 // kobj js object:
 // translate(x, y, z);
@@ -104,6 +105,21 @@ void Callback_GKO_World(const FunctionCallbackInfo<v8::Value>& args) {
   }
 }
 
+void Callback_OKO_Camera(const FunctionCallbackInfo<v8::Value>& args) {
+  HandleScope handle_scope(isolate);
+  if (args.IsConstructCall()) {
+    printf("New Camera\n");
+    KObj::OKO_Camera_* o = new KObj::OKO_Camera_();
+    //o->components.push_back(new Component::CPN_Cube);
+    o->jsObject = new Persistent<v8::Object,
+        CopyablePersistentTraits<v8::Object>>(isolate, args.This());
+    //Kondion::world.push_back(o);
+    args.This()->SetInternalField(0, External::New(isolate, o));
+    args.GetReturnValue().Set(args.This());
+  }
+}
+
+
 void Callback_Kdion_Blank(const v8::FunctionCallbackInfo<v8::Value>& args) {
   //HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {
@@ -166,6 +182,32 @@ void Callback_KObj_SetParent(const v8::FunctionCallbackInfo<v8::Value>& args) {
       Local<Object>::Cast(args[0])->GetInternalField(0))->Value());
 
   pointer_this->setParent(pointer_arg0);
+}
+
+void Callback_KObj_World_GetCamera(Local<String> property,
+                                   const PropertyCallbackInfo<Value>& info) {
+  //Local<External> wrap = Local<External>::Cast(
+  //      info.Holder()->GetInternalField(0));
+  //void* pointer = wrap->Value();
+  Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>* p =
+      static_cast<Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>*>
+      (Renderer::currentCamera->jsObject);
+  Local<v8::Object> o = Local<v8::Object>::New(isolate, *p);
+  info.GetReturnValue().Set(o);
+}
+
+void Callback_KObj_World_SetCamera(Local<String> property, Local<Value> value,
+                             const PropertyCallbackInfo<void>& info) {
+  Local<FunctionTemplate> f = Local<FunctionTemplate>::New(isolate,
+                                                           p_oko_camera);
+  printf("Arg0 is camera: %i\n", f->HasInstance(value));
+  if (!f->HasInstance(value))
+    return;
+  Local<External> wrap = Local<External>::Cast(
+       value->ToObject()->GetInternalField(0));
+  void* pointer = wrap->Value();
+  Renderer::currentCamera = static_cast<KObj::OKO_Camera_*>(pointer);
+  //static_cast<Bird*>(pointer)->integrity = value->Int32Value();
 }
 
 void Callback_Bird_GetIntegrity(Local<String> property,
