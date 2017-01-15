@@ -209,18 +209,27 @@ void Setup() {
 
   KTexture::textures[0] = new KTexture("k_test", textureId, 32, 32);
 
-  Raw* f = Get("kotega_2:masterscript");
+  //Raw* f = Get("kotega_2:masterscript");
 
   //printf("masterscript stream open?: %i\n", f->stream);
   //while (*f->stream)
   //	std::cout << char(f->stream->get());
 
-  std::ostringstream ostring;
-  ostring << f->stream->rdbuf();
+  //std::ostringstream ostring;
+  //ostring << f->stream->rdbuf();
 
-  Kondion::JS::Eval(ostring.str());
+  //Kondion::JS::Eval(ostring.str());
 
-  delete f;
+  //delete f;
+
+  Raw* f;
+
+  for (uint16_t i = 0; i < Carton::cartons.size(); i ++) {
+    f = Get(Carton::cartons[i]->id + ":masterscript");
+    std::ostringstream ostring;
+    ostring << f->stream->rdbuf();
+    Kondion::JS::Eval(ostring.str());
+  }
 }
 
 void Update() {
