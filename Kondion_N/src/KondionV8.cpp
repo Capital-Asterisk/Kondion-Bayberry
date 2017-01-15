@@ -46,7 +46,8 @@ size_t Parse(const std::string& s) {
       isolate, json.ToLocalChecked()->ToObject(isolate));
   unsigned int j = 0;
   for (unsigned int i = 0; i < objects.size(); i++) {
-    if (!objects[i]) {
+    if (objects[i] == NULL) {
+      printf("taking space: %i\n", i);
       objects[i] = obj;
       j = i + 1;
     }
@@ -201,9 +202,9 @@ size_t Enter(size_t id, const std::string& key) {
 
   size_t j = 0;
   for (size_t i = 0; i < objects.size(); i++) {
-    if (!objects[i]) {
+    if (objects[i] == NULL) {
       objects[i] = objC;
-      j = i + 1;
+      return i;
     }
   }
   if (j == 0) {
@@ -214,11 +215,16 @@ size_t Enter(size_t id, const std::string& key) {
 }
 
 void Dispose(size_t id) {
+  //Isolate::Scope isolate_scope(isolate);
+  //HandleScope handle_scope(isolate);
   if (id >= 0 && objects.size() >= id) {
-    if (objects[id]) {
+    if (objects[id] != NULL) {
+      printf("Disposing: %i\n", id);
       objects[id]->Reset();
+      //delete objects[id];
+      printf("size: %i\n", objects.size());
+      //objects[id] = NULL;
     }
-    objects[id] = NULL;
   }
 }
 

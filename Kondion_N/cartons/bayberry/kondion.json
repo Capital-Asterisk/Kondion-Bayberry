@@ -1,0 +1,28 @@
+{
+	"Name": "Kondion Optional default resources",
+	"Game": false,
+	"Id": "kdefault",
+	"Description": "Useful JS things",
+	"Vendor": "Vendalenger",
+	"Version": "Bayberry",
+	"Date": "Jan 15 2017",
+	"Cover": "nullthing.png",
+	"StartTitle": "Hey there",
+	"Traits": [""],
+	"Buttons": {
+		
+	},
+	"Graphics": {
+	},
+	"OBJ": {
+		
+	},
+	"Audio": {
+	
+	},
+	"SAudio": {
+	},
+	"Materials": {
+		
+	}
+}
