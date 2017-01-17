@@ -101,6 +101,9 @@ class KObj_Renderable : public KObj_Oriented {
 class KObj_Entity : public KObj_Renderable {
  public:
   std::vector<KComponent*> components;
+  glm::vec3 velocity;
+  glm::quat rotVelocity;
+  uint8_t physics;
   int getType() {
     return 3;
   }
@@ -149,7 +152,7 @@ class KMaterial {
 namespace KObj {
 
 class GKO_World : public KObj_Node {
-
+  float timescale;
 };
 
 class OKO_Camera_ : public KObj_Oriented {

@@ -203,6 +203,7 @@ size_t Enter(size_t id, const std::string& key) {
   size_t j = 0;
   for (size_t i = 0; i < objects.size(); i++) {
     if (objects[i] == NULL) {
+      printf("taking space: %i\n", i);
       objects[i] = objC;
       return i;
     }
@@ -219,10 +220,10 @@ void Dispose(size_t id) {
   //HandleScope handle_scope(isolate);
   if (id >= 0 && objects.size() >= id) {
     if (objects[id] != NULL) {
-      printf("Disposing: %i\n", id);
+      //printf("Disposing: %i\n", id);
       objects[id]->Reset();
       //delete objects[id];
-      printf("size: %i\n", objects.size());
+      //printf("size: %i\n", objects.size());
       //objects[id] = NULL;
     }
   }
@@ -255,9 +256,15 @@ void CallFunction(const std::string& s) {
 void Destroy() {
   //Isolate::Scope isolate_scope(isolate);
   p_kobj_node.Reset();
+  p_oko_camera.Reset();
   p_context.Reset();
   p_gupdate.Reset();
   p_input.Reset();
+  //for (uint16_t i = 0; i < ON::objects.size(); i++) {
+    //printf("Reset: %i\n", i);
+    //ON::objects[i]->Reset();
+    //ON::objects[i] = NULL;
+  //}
   printf("current isolate: %p\n", Isolate::GetCurrent());
   isolate->Dispose();
   V8::Dispose();
