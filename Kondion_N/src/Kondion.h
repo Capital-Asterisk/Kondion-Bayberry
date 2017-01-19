@@ -13,6 +13,8 @@
 
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #include <GLFW/glfw3.h>
 
@@ -107,6 +109,7 @@ class KObj_Entity : public KObj_Renderable {
   int getType() {
     return 3;
   }
+  void updateA();
   virtual void render();
   void parentTransform();
 };
@@ -252,7 +255,9 @@ const uint16_t MOUSE_BUTTON = 400, MOUSE_POSX = 409, MOUSE_POSY = 410,
 struct Control {
   static std::vector<Control*> controls;
   std::string name;
+  bool useDelta;
   bool alternate;
+  bool invert;
   uint8_t device;
   uint16_t button;
   //float x, y, px, py;
@@ -260,6 +265,14 @@ struct Control {
   float delta() {
     return px - x;
   }
+};
+
+struct VirtualJoystick {
+  uint16_t* controls;
+  uint8_t* direction;
+  uint8_t amt;
+  float* magnitude;
+  bool clamp;
 };
 
 uint16_t AddControl(const std::string& name, uint8_t device, uint16_t button);

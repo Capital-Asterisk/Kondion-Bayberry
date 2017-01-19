@@ -13,6 +13,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 #ifdef _WIN32
 #include <direct.h>
@@ -87,6 +89,12 @@ void KObj_Oriented::parentTransform() {
   transform *= offset;
 
   //actTransform.mul(transform);
+}
+
+void KObj_Entity::updateA() {
+  //rotVelocity = glm::quat(glm::vec3(0.0, 0.01, 0.0));
+  offset = offset * glm::toMat4(rotVelocity);
+
 }
 
 void KObj_Entity::parentTransform() {
