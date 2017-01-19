@@ -73,10 +73,9 @@ std::vector<Control*> Control::controls;
  */
 uint16_t AddControl(const std::string& name, uint8_t device, uint16_t button) {
 
-  Control* f = new Control;
-  f->button = button;
-  f->device = device;
-  f->name = name;
+  Control* f = new Control(name, device, button);
+
+  // TODO: put the rest of this into Control
   int compared = -1;
   uint16_t i = 0;
   if (Control::controls.size() != 0) {

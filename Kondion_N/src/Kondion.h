@@ -253,26 +253,60 @@ const uint16_t MOUSE_BUTTON = 400, MOUSE_POSX = 409, MOUSE_POSY = 410,
     CONTROLLER_AXIS = 100, CONTROLLER_BUTTON = 0;
 
 struct Control {
+
   static std::vector<Control*> controls;
+
   std::string name;
-  bool useDelta;
-  bool alternate;
-  bool invert;
+
   uint8_t device;
   uint16_t button;
   //float x, y, px, py;
   float x, px;
+  bool useDelta;
+  bool alternate;
+  bool invert;
+
   float delta() {
     return px - x;
+  }
+
+  Control(const std::string& name, uint8_t device, uint16_t button) {
+    x = 0.0f;
+    px = 0.0f;
+    invert = false;
+    alternate = false;
+    useDelta = false;
+    this->name = name;
+    this->device = device;
+    this->button = button;
   }
 };
 
 struct VirtualJoystick {
-  uint16_t* controls;
-  uint8_t* direction;
-  uint8_t amt;
-  float* magnitude;
+
+  static std::vector<VirtualJoystick*> virtualJoysticks;
+
+  std::vector<uint16_t> controls; // there should be a better way of doing this
+  std::vector<uint8_t> direction;
+  std::vector<float> magnitude;
+
+  std::string name;
   bool clamp;
+
+  void add(uint16_t index, uint8_t angle, float mag) {
+    if (Control::controls.size() <= index)
+      return; // out of bounds
+    controls.push_back(index);
+    direction.push_back(angle);
+    magnitude.push_back(mag);
+  }
+
+  VirtualJoystick(bool clamp, const std::string& prefix) {
+    this->clamp = clamp;
+    name = prefix;
+    virtualJoysticks.push_back(this);
+  }
+
 };
 
 uint16_t AddControl(const std::string& name, uint8_t device, uint16_t button);
