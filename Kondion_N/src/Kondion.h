@@ -38,7 +38,6 @@ class KObj_Instance;
 namespace KObj {
 class GKO_World;
 }
-;
 
 class KComponent;
 class KMaterial;
@@ -284,27 +283,32 @@ struct Control {
 
 struct VirtualJoystick {
 
-  static std::vector<VirtualJoystick*> virtualJoysticks;
+  static std::vector<VirtualJoystick*> vsticks;
 
   std::vector<uint16_t> controls; // there should be a better way of doing this
   std::vector<uint8_t> direction;
   std::vector<float> magnitude;
 
   std::string name;
+  float x, px, y, py;
   bool clamp;
 
   void add(uint16_t index, uint8_t angle, float mag) {
-    if (Control::controls.size() <= index)
-      return; // out of bounds
+    //if (Control::controls.size() <= index)
+    //  return; // out of bounds
     controls.push_back(index);
     direction.push_back(angle);
     magnitude.push_back(mag);
   }
 
   VirtualJoystick(bool clamp, const std::string& prefix) {
+    x = 0;
+    y = 0;
+    px = 0;
+    py = 0;
     this->clamp = clamp;
     name = prefix;
-    virtualJoysticks.push_back(this);
+    vsticks.push_back(this);
   }
 
 };

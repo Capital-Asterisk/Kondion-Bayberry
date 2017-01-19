@@ -164,11 +164,25 @@ void GameLoop() {
   Input::AddControl("MOUSE_BUTTON0", Input::INPUT_SYSTEM, Input::MOUSE_BUTTON);
   //Input::AddControl("MOVE_X", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 2);
   //Input::AddControl("MOVE_Y", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 7);
-  Input::AddControl("MOVE_X", Input::INPUT_SYSTEM, 'A');
-  Input::AddControl("MOVE_Y", Input::INPUT_SYSTEM, '2');
-  Input::AddControl("MOVE_Y", Input::INPUT_SYSTEM, 'W');
+  Input::VirtualJoystick* f = new Input::VirtualJoystick(true, "MOVE");
+  Input::AddControl("D_U", Input::INPUT_SYSTEM, 'W');
+  Input::AddControl("D_L", Input::INPUT_SYSTEM, 'A');
+  Input::AddControl("D_D", Input::INPUT_SYSTEM, 'S');
+  Input::AddControl("D_R", Input::INPUT_SYSTEM, 'D');
+
+  //Input::AddControl("MOVE_X", Input::INPUT_SYSTEM, 'A');
+  //Input::AddControl("MOVE_Y", Input::INPUT_SYSTEM, '2');
+  //Input::AddControl("MOVE_Y", Input::INPUT_SYSTEM, 'W');
+
+
   Input::AddControl("DEBUGA", Input::INPUT_SYSTEM, 'K');
   Input::AddControl("DEBUGB", Input::INPUT_SYSTEM, 'L');
+
+  f->add(Input::ControlIndex("D_U"), 0, 1.0f);
+  f->add(Input::ControlIndex("D_L"), 64, 1.0f);
+  f->add(Input::ControlIndex("D_D"), 128, 1.0f);
+  f->add(Input::ControlIndex("D_R"), 192, 1.0f);
+
   Input::MouseLock(true);
 
   //float yaw = 0.0f;
@@ -225,6 +239,8 @@ void GameLoop() {
     //for (size_t i = 0; i < world.size(); i ++) {
     //	world[i]->updateB();
     //}
+
+    printf("directions: %f %f\n", f->x, f->y);
 
     // temporary compositor
     Renderer::Composite();

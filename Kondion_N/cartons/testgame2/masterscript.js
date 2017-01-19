@@ -29,9 +29,13 @@ kdion.initialize(function() {
 	kdion.log("Bird is integrity: " + c.integrity);
 	kdion.log("World: " + kdion.World)
 	var e = new KObj_Entity();
+	e.translate(0.0, 0.5, 0.0);
 	kdion.e = e;
 	
 	var camera = new OKO_Camera();
+	
+	camera.translate(0.0, 2.0, 6.0);
+	//kdion.log(kdion.camera);
 	
 	camera.setParent(kdion.World);
 	e.setParent(kdion.World, "hey theretttt", 5, 5, 8);
@@ -43,10 +47,9 @@ kdion.initialize(function() {
 kdion.globalUpdate(function() {
 	//kdion.log("");
 	//kdion.log(kdion.input["MOUSE_X"]);
-	if (kdion.input["MOVE_X"])
-		kdion.e.translate(0.0, 0.04, 0.0);
+	kdion.e.translate(-kdion.input["MOVE_X"] * 0.06, 0.0, kdion.input["MOVE_Y"] * 0.06);
 	//kdion.log(kdion.camera);
-	kdion.camera.translate(0.0, 0.01, kdion.input["MOVE_Y"] * 0.03);
+	//kdion.camera.translate(0.0, 0.01, kdion.input["MOVE_Y"] * 0.03);
 	
 });
 

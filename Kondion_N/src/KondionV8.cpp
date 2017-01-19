@@ -511,12 +511,19 @@ void Start() {
 }
 
 void UpdateInput() {
+
+  // Apply inputs to the 'inputs' js object.
+
+  // fancy V8 things
   Isolate::Scope isolate_scope(isolate);
   HandleScope handle_scope(isolate);
   Local<Context> context = Local<Context>::New(isolate, p_context);
   Context::Scope context_scope(context);
 
+  //Get a input object handle through the persistent
   Local<Object> input = Local<Object>::New(isolate, p_input);
+
+  // Put all control values into the object
   for (uint16_t i = 0; i < Input::Count(); i++) {
     if (!Input::Get(i)->alternate) {
       Local<String> s = String::NewFromUtf8(isolate,
@@ -527,6 +534,17 @@ void UpdateInput() {
       //}
       input->Set(s, Number::New(isolate, Input::Value(i)));
     }
+  }
+
+  // same thing, but with virtual joysticks
+  for (uint16_t i = 0; i < Input::VirtualJoystick::vsticks.size(); i++) {
+    // TODO: make this more efficient
+    Local<String> sx = String::NewFromUtf8(isolate,
+        (Input::VirtualJoystick::vsticks[i]->name + "_X").c_str());
+    Local<String> sy = String::NewFromUtf8(isolate,
+        (Input::VirtualJoystick::vsticks[i]->name + "_Y").c_str());
+    input->Set(sx, Number::New(isolate, Input::VirtualJoystick::vsticks[i]->x));
+    input->Set(sy, Number::New(isolate, Input::VirtualJoystick::vsticks[i]->y));
   }
 
 }

@@ -7,12 +7,15 @@
 
 #include <GLFW/glfw3.h>
 
+#include <glm/glm.hpp>
+
 #include "Kondion.h"
 
 namespace Kondion {
 namespace Input {
 
 std::vector<Control*> Control::controls;
+std::vector<VirtualJoystick*> VirtualJoystick::vsticks;
 
 /*
  * -Input devices, adds input types:
@@ -172,7 +175,7 @@ void Setup() {
 }
 
 void Update() {
-  for (unsigned short i = 0; i < Control::controls.size(); i++) {
+  for (uint16_t i = 0; i < Control::controls.size(); i++) {
     Control::controls[i]->px = Control::controls[i]->x;
     //controls[i]->py = controls[i]->y;
     if (Control::controls[i]->device == 0) {
@@ -217,6 +220,31 @@ void Update() {
       }
     }
   }
+
+  for (uint16_t i = 0; i < VirtualJoystick::vsticks.size(); i ++) {
+    // add up the values of all the controls
+
+    VirtualJoystick* f = VirtualJoystick::vsticks[i];
+
+    f->x = 0;
+    f->y = 0;
+    //float x, y;
+    for (uint16_t j = 0; j < f->controls.size(); j ++) {
+      float amt = Control::controls[f->controls[j]]->x * f->magnitude[j];
+      f->x += amt * cos(double(f->direction[j] - 64) / (128.0f / glm::pi<double>()));
+      f->y += amt * sin(double(f->direction[j] - 64) / (128.0f / glm::pi<double>()));
+      //printf("%i %s\n", f->controls[j], Control::controls[f->controls[j]]->name.c_str());
+    }
+
+    if (f->clamp && f->x * f->y != 0.0f) {
+      // Normalize
+      float mag = sqrtf(f->x * f->x + f->y * f->y);
+      f->x /= mag;
+      f->y /= mag;
+    }
+
+  }
+
 }
 
 void DebugPrint() {

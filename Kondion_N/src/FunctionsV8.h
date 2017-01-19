@@ -189,6 +189,8 @@ void Callback_KObj_World_GetCamera(Local<String> property,
   //Local<External> wrap = Local<External>::Cast(
   //      info.Holder()->GetInternalField(0));
   //void* pointer = wrap->Value();
+  if (Renderer::currentCamera == NULL)
+    return;
   Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>* p =
       static_cast<Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>*>
       (Renderer::currentCamera->jsObject);
