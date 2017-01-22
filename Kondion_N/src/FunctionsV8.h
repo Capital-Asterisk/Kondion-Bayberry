@@ -7,6 +7,8 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
+#include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 #include "include/libplatform/libplatform.h"
@@ -271,7 +273,7 @@ void Callback_Oriented_PointAt(
   // at, up x, up y, up z, origin
   if (args.IsConstructCall())
     return;
-  //Local<Array> a = Local<Array>::Cast(args[0]);
+
   KObj_Oriented* pointer_this =
     static_cast<KObj_Oriented*>(Local<External>::Cast(
         args.This()->GetInternalField(0))->Value());
@@ -280,24 +282,75 @@ void Callback_Oriented_PointAt(
         static_cast<KObj_Oriented*>(Local<External>::Cast(
             args[0]->ToObject()->GetInternalField(0))->Value());
 
-  glm::vec4 direction(0, 0, -1, 0);
-  direction = pointer_this->offset * direction;
-  direction = glm::normalize(direction);
+  // TODO: set these wwith arguments
+  glm::mat4 origin(1);
+  glm::vec4 up(0.0f, 1.0f, 0.0f, 0.0f);
 
-  glm::vec3 difference(pointer_that->offset[3][0],
-                         pointer_that->offset[3][1], pointer_that->offset[3][2]);
-  difference -= glm::vec3(pointer_this->offset[3][0],
-                          pointer_this->offset[3][1], pointer_this->offset[3][2]);
-  difference = glm::normalize(difference);
+  // Remove translation from origin
+  origin[3][0] = 0;
+  origin[3][1] = 0;
+  origin[3][2] = 0;
 
-  glm::quat f = glm::rotation(glm::vec3(direction), difference);
+  // TODO: Do something to origin to use "up"
 
-  pointer_this->offset *= glm::toMat4(f);
+  // Multiply both by the origin
+  pointer_this->offset = origin * pointer_this->offset;
+  glm::mat4 that = origin * pointer_that->offset;
 
-  difference *= 0.02;
-  pointer_this->offset[3][0] += difference.x;
-  pointer_this->offset[3][1] += difference.y;
-  pointer_this->offset[3][2] += difference.z;
+  // TODO account for scale
+
+  // Create a rotation that points towards the target
+  glm::quat f(
+      glm::vec3(
+          -glm::atan(pointer_this->offset[3][1] - that[3][1])
+              / glm::length(
+                  glm::vec2(pointer_this->offset[3][0] - that[3][0],
+                            pointer_this->offset[3][2] - that[3][2])),
+          glm::atan(pointer_this->offset[3][0] - that[3][0],
+                    pointer_this->offset[3][2] - that[3][2]),
+          0.0f));
+  // Then convert it to Mat4
+  glm::mat4 abird = glm::toMat4(f);
+
+  // Set the new matrix's translation to this object's translation
+  abird[3][0] = pointer_this->offset[3][0];
+  abird[3][1] = pointer_this->offset[3][1];
+  abird[3][2] = pointer_this->offset[3][2];
+
+  // set this translation to the new one
+  pointer_this->offset = abird;
+
+  // inverse the origin
+  glm::inverse(origin);
+
+  // Multiply by the inverse to undo the effects of the first origin multiplication.
+  pointer_this->offset = origin * pointer_this->offset;
+
+  //glm::vec4 direction(0, 0, -1, 0);
+  //direction = pointer_this->offset * direction;
+  //direction = glm::normalize(direction);
+
+  //glm::vec3 difference(pointer_that->offset[3][0],
+  //                       pointer_that->offset[3][1], pointer_that->offset[3][2]);
+  //difference -= glm::vec3(pointer_this->offset[3][0],
+  //                        pointer_this->offset[3][1], pointer_this->offset[3][2]);
+  //difference = glm::normalize(difference);
+
+
+  //glm::quat f = glm::rotation(glm::vec3(direction), difference);
+  //glm::rotate(f, 1.2f, glm::vec3(0.0f, 0.0f, 1.0f));
+  //pointer_this->offset *= glm::toMat4(f);
+
+  //pointer_this->offset = glm::rotate(pointer_this->offset, 0.1f, glm::vec3(0.0f, 0.0f, 1.0f));
+
+  ////direction = up;
+  ////direction = pointer_this->offset * direction;
+  ////direction = glm::normalize(direction);
+
+  //difference *= 0.02;
+  //pointer_this->offset[3][0] += difference.x;
+  //pointer_this->offset[3][1] += difference.y;
+  //pointer_this->offset[3][2] += difference.z;
   Debug::printMatrix(pointer_this->offset);
 
   //pointer_this->offset = glm::translate(pointer_this->offset, glm::vec3(
