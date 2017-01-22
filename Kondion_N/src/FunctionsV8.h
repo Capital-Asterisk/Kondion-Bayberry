@@ -121,7 +121,6 @@ void Callback_OKO_Camera(const FunctionCallbackInfo<v8::Value>& args) {
   }
 }
 
-
 void Callback_Kdion_Blank(const v8::FunctionCallbackInfo<v8::Value>& args) {
   //HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {
@@ -194,21 +193,21 @@ void Callback_KObj_World_GetCamera(Local<String> property,
   if (Renderer::currentCamera == NULL)
     return;
   Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>* p =
-      static_cast<Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>*>
-      (Renderer::currentCamera->jsObject);
+      static_cast<Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>*>(Renderer::currentCamera
+          ->jsObject);
   Local<v8::Object> o = Local<v8::Object>::New(isolate, *p);
   info.GetReturnValue().Set(o);
 }
 
 void Callback_KObj_World_SetCamera(Local<String> property, Local<Value> value,
-                             const PropertyCallbackInfo<void>& info) {
+                                   const PropertyCallbackInfo<void>& info) {
   Local<FunctionTemplate> f = Local<FunctionTemplate>::New(isolate,
                                                            p_oko_camera);
   printf("Arg0 is camera: %i\n", f->HasInstance(value));
   if (!f->HasInstance(value))
     return;
   Local<External> wrap = Local<External>::Cast(
-       value->ToObject()->GetInternalField(0));
+      value->ToObject()->GetInternalField(0));
   void* pointer = wrap->Value();
   Renderer::currentCamera = static_cast<KObj::OKO_Camera_*>(pointer);
   //static_cast<Bird*>(pointer)->integrity = value->Int32Value();
@@ -250,37 +249,35 @@ void Callback_Oriented_SetOffsetPosition(
   //pointer_this->transform;
 }
 
-void Callback_Oriented_Translate(
-    const FunctionCallbackInfo<v8::Value>& args) {
+void Callback_Oriented_Translate(const FunctionCallbackInfo<v8::Value>& args) {
   if (args.IsConstructCall() || args.Length() < 3)
     return;
   //Local<Array> a = Local<Array>::Cast(args[0]);
   KObj_Oriented* pointer_this =
       static_cast<KObj_Oriented*>(Local<External>::Cast(
           args.This()->GetInternalField(0))->Value());
-  pointer_this->offset = glm::translate(pointer_this->offset, glm::vec3(
-      args[0]->NumberValue(),
-      args[1]->NumberValue(),
-      args[2]->NumberValue()));
+  pointer_this->offset = glm::translate(
+      pointer_this->offset,
+      glm::vec3(args[0]->NumberValue(), args[1]->NumberValue(),
+                args[2]->NumberValue()));
   //pointer_this->offset[3][0] = a->Get(0)->NumberValue();
   //pointer_this->offset[3][1] = a->Get(1)->NumberValue();
   //pointer_this->offset[3][2] = a->Get(2)->NumberValue();
 }
 
-void Callback_Oriented_PointAt(
-    const FunctionCallbackInfo<v8::Value>& args) {
+void Callback_Oriented_PointAt(const FunctionCallbackInfo<v8::Value>& args) {
   //// x, y, z, up x, up y, up z, origin
   // at, up x, up y, up z, origin
   if (args.IsConstructCall())
     return;
 
   KObj_Oriented* pointer_this =
-    static_cast<KObj_Oriented*>(Local<External>::Cast(
-        args.This()->GetInternalField(0))->Value());
+      static_cast<KObj_Oriented*>(Local<External>::Cast(
+          args.This()->GetInternalField(0))->Value());
   // point at the oriented object on the first argument
   KObj_Oriented* pointer_that =
-        static_cast<KObj_Oriented*>(Local<External>::Cast(
-            args[0]->ToObject()->GetInternalField(0))->Value());
+      static_cast<KObj_Oriented*>(Local<External>::Cast(
+          args[0]->ToObject()->GetInternalField(0))->Value());
 
   // TODO: set these wwith arguments
   glm::mat4 origin(1);
@@ -302,10 +299,11 @@ void Callback_Oriented_PointAt(
   // Create a rotation that points towards the target
   glm::quat f(
       glm::vec3(
-          -glm::atan(pointer_this->offset[3][1] - that[3][1])
-              / glm::length(
-                  glm::vec2(pointer_this->offset[3][0] - that[3][0],
-                            pointer_this->offset[3][2] - that[3][2])),
+          -glm::atan(
+              (pointer_this->offset[3][1] - that[3][1])
+                  / glm::length(
+                      glm::vec2(pointer_this->offset[3][0] - that[3][0],
+                                pointer_this->offset[3][2] - that[3][2]))),
           glm::atan(pointer_this->offset[3][0] - that[3][0],
                     pointer_this->offset[3][2] - that[3][2]),
           0.0f));
@@ -336,7 +334,6 @@ void Callback_Oriented_PointAt(
   //                        pointer_this->offset[3][1], pointer_this->offset[3][2]);
   //difference = glm::normalize(difference);
 
-
   //glm::quat f = glm::rotation(glm::vec3(direction), difference);
   //glm::rotate(f, 1.2f, glm::vec3(0.0f, 0.0f, 1.0f));
   //pointer_this->offset *= glm::toMat4(f);
@@ -362,8 +359,7 @@ void Callback_Oriented_PointAt(
   //pointer_this->offset[3][2] = a->Get(2)->NumberValue();
 }
 
-void Callback_Oriented_Rotate(
-    const FunctionCallbackInfo<v8::Value>& args) {
+void Callback_Oriented_Rotate(const FunctionCallbackInfo<v8::Value>& args) {
   if (args.IsConstructCall() || args.Length() == 0)
     return;
   if (!args[0]->IsArray())
@@ -390,7 +386,7 @@ void Callback_Kdion_Load(const v8::FunctionCallbackInfo<v8::Value>& args) {
     if (b->IsArray()) {
       Local<Array> c = Local<Array>::Cast(b);
       printf("JS: start texture queue\n");
-      for (uint16_t i = 0; i < c->Length(); i ++) {
+      for (uint16_t i = 0; i < c->Length(); i++) {
         std::string s(*String::Utf8Value(c->Get(i)));
         Resources::Load(s, 1);
       }
