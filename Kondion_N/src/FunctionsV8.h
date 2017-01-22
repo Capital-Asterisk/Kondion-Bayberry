@@ -265,6 +265,50 @@ void Callback_Oriented_Translate(
   //pointer_this->offset[3][2] = a->Get(2)->NumberValue();
 }
 
+void Callback_Oriented_PointAt(
+    const FunctionCallbackInfo<v8::Value>& args) {
+  //// x, y, z, up x, up y, up z, origin
+  // at, up x, up y, up z, origin
+  if (args.IsConstructCall())
+    return;
+  //Local<Array> a = Local<Array>::Cast(args[0]);
+  KObj_Oriented* pointer_this =
+    static_cast<KObj_Oriented*>(Local<External>::Cast(
+        args.This()->GetInternalField(0))->Value());
+  // point at the oriented object on the first argument
+  KObj_Oriented* pointer_that =
+        static_cast<KObj_Oriented*>(Local<External>::Cast(
+            args[0]->ToObject()->GetInternalField(0))->Value());
+
+  glm::vec4 direction(0, 0, -1, 0);
+  direction = pointer_this->offset * direction;
+  direction = glm::normalize(direction);
+
+  glm::vec3 difference(pointer_that->offset[3][0],
+                         pointer_that->offset[3][1], pointer_that->offset[3][2]);
+  difference -= glm::vec3(pointer_this->offset[3][0],
+                          pointer_this->offset[3][1], pointer_this->offset[3][2]);
+  difference = glm::normalize(difference);
+
+  glm::quat f = glm::rotation(glm::vec3(direction), difference);
+
+  pointer_this->offset *= glm::toMat4(f);
+
+  difference *= 0.02;
+  pointer_this->offset[3][0] += difference.x;
+  pointer_this->offset[3][1] += difference.y;
+  pointer_this->offset[3][2] += difference.z;
+  Debug::printMatrix(pointer_this->offset);
+
+  //pointer_this->offset = glm::translate(pointer_this->offset, glm::vec3(
+  //    args[0]->NumberValue(),
+  //    args[1]->NumberValue(),
+  //    args[2]->NumberValue()));
+  //pointer_this->offset[3][0] = a->Get(0)->NumberValue();
+  //pointer_this->offset[3][1] += 0.02f;
+  //pointer_this->offset[3][2] = a->Get(2)->NumberValue();
+}
+
 void Callback_Oriented_Rotate(
     const FunctionCallbackInfo<v8::Value>& args) {
   if (args.IsConstructCall() || args.Length() == 0)

@@ -240,7 +240,7 @@ void GameLoop() {
     //	world[i]->updateB();
     //}
 
-    printf("directions: %f %f\n", f->x, f->y);
+    //printf("directions: %f %f\n", f->x, f->y);
 
     // temporary compositor
     Renderer::Composite();

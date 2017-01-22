@@ -47,6 +47,7 @@ kdion.initialize(function() {
 kdion.globalUpdate(function() {
 	//kdion.log("");
 	//kdion.log(kdion.input["MOUSE_X"]);
+	kdion.camera.pointAt(kdion.e);
 	kdion.e.translate(-kdion.input["MOVE_X"] * 0.06, 0.0, kdion.input["MOVE_Y"] * 0.06);
 	//kdion.log(kdion.camera);
 	//kdion.camera.translate(0.0, 0.01, kdion.input["MOVE_Y"] * 0.03);
