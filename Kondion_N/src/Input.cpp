@@ -230,6 +230,13 @@ void Update() {
     f->y = 0;
     //float x, y;
     for (uint16_t j = 0; j < f->controls.size(); j ++) {
+
+      if (Control::controls[f->controls[j] + 1]->alternate) {
+        f->add(f->controls[j] + 1,
+               f->direction[j],
+               f->magnitude[j ]);
+      }
+
       float amt = Control::controls[f->controls[j]]->x * f->magnitude[j];
       f->x += amt * cos(double(f->direction[j] - 64) / (128.0f / glm::pi<double>()));
       f->y += amt * sin(double(f->direction[j] - 64) / (128.0f / glm::pi<double>()));
@@ -237,10 +244,12 @@ void Update() {
     }
 
     if (f->clamp && f->x * f->y != 0.0f) {
-      // Normalize
+      // Normalize if magnitude is too large
       float mag = sqrtf(f->x * f->x + f->y * f->y);
-      f->x /= mag;
-      f->y /= mag;
+      if (mag > 1.0f) {
+        f->x /= mag;
+        f->y /= mag;
+      }
     }
 
   }

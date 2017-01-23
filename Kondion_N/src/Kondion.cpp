@@ -162,8 +162,8 @@ void GameLoop() {
   Input::AddControl("MOUSE_X", Input::INPUT_SYSTEM, Input::MOUSE_POSX);
   Input::AddControl("MOUSE_Y", Input::INPUT_SYSTEM, Input::MOUSE_POSY);
   Input::AddControl("MOUSE_BUTTON0", Input::INPUT_SYSTEM, Input::MOUSE_BUTTON);
-  //Input::AddControl("MOVE_X", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 2);
-  //Input::AddControl("MOVE_Y", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 7);
+  Input::AddControl("D_R", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 6);
+  Input::AddControl("D_U", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 7);
   Input::VirtualJoystick* f = new Input::VirtualJoystick(true, "MOVE");
   Input::AddControl("D_U", Input::INPUT_SYSTEM, 'W');
   Input::AddControl("D_L", Input::INPUT_SYSTEM, 'A');
