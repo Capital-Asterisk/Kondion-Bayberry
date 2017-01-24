@@ -79,8 +79,8 @@ class KObj_Node {
  */
 class KObj_Oriented : public KObj_Node {
  public:
-  glm::mat4x4 offset;
   glm::mat4x4 transform;
+  glm::mat4x4 orientation;
   int woot = 0;
   int farX, farY, farZ;
   int getType() {
@@ -102,6 +102,7 @@ class KObj_Renderable : public KObj_Oriented {
 class KObj_Entity : public KObj_Renderable {
  public:
   std::vector<KComponent*> components;
+  glm::mat4x4 next;
   glm::vec3 velocity;
   glm::quat rotVelocity;
   uint8_t physics;

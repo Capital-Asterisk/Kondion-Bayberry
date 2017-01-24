@@ -86,14 +86,14 @@ void KObj_Oriented::parentTransform() {
     //actTransform.normalize3x3();
     //}
   }
-  transform *= offset;
+  transform *= orientation;
 
   //actTransform.mul(transform);
 }
 
 void KObj_Entity::updateA() {
   //rotVelocity = glm::quat(glm::vec3(0.0, 0.01, 0.0));
-  offset = offset * glm::toMat4(rotVelocity);
+  orientation = orientation * glm::toMat4(rotVelocity);
 
 }
 
@@ -143,7 +143,7 @@ void GameLoop() {
   b->components.insert(b->components.end(), new Component::CPN_InfinitePlane);
   b->components[0]->offset = glm::rotate(b->components[0]->offset, 3.14159f / 2,
                                          glm::vec3(1, 0, 0));
-  b->offset = glm::translate(b->offset, glm::vec3(0.0f, -0.0f, 0.0f));
+  b->orientation = glm::translate(b->orientation, glm::vec3(0.0f, -0.0f, 0.0f));
   //printf("type: %i\n", a->getType());
   //KObj_Entity *player = new KObj_Entity;
   //player->components.insert(player->components.end(), new Component::CPN_Cube);
@@ -162,8 +162,8 @@ void GameLoop() {
   Input::AddControl("MOUSE_X", Input::INPUT_SYSTEM, Input::MOUSE_POSX);
   Input::AddControl("MOUSE_Y", Input::INPUT_SYSTEM, Input::MOUSE_POSY);
   Input::AddControl("MOUSE_BUTTON0", Input::INPUT_SYSTEM, Input::MOUSE_BUTTON);
-  Input::AddControl("D_R", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 6);
-  Input::AddControl("D_U", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 7);
+  //Input::AddControl("D_R", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 6);
+  //Input::AddControl("D_U", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 7);
   Input::VirtualJoystick* f = new Input::VirtualJoystick(true, "MOVE");
   Input::AddControl("D_U", Input::INPUT_SYSTEM, 'W');
   Input::AddControl("D_L", Input::INPUT_SYSTEM, 'A');

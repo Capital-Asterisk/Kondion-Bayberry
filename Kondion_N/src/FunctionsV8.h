@@ -239,9 +239,9 @@ void Callback_Oriented_SetOffsetPosition(
   KObj_Oriented* pointer_this =
       static_cast<KObj_Oriented*>(Local<External>::Cast(
           args.This()->GetInternalField(0))->Value());
-  pointer_this->offset[3][0] = a->Get(0)->NumberValue();
-  pointer_this->offset[3][1] = a->Get(1)->NumberValue();
-  pointer_this->offset[3][2] = a->Get(2)->NumberValue();
+  pointer_this->orientation[3][0] = a->Get(0)->NumberValue();
+  pointer_this->orientation[3][1] = a->Get(1)->NumberValue();
+  pointer_this->orientation[3][2] = a->Get(2)->NumberValue();
   //const float* b = glm::value_ptr(pointer_this->offset);
   //b[12] = a->Get(0)->NumberValue();
   //b[13] = a->Get(1)->NumberValue();
@@ -256,8 +256,8 @@ void Callback_Oriented_Translate(const FunctionCallbackInfo<v8::Value>& args) {
   KObj_Oriented* pointer_this =
       static_cast<KObj_Oriented*>(Local<External>::Cast(
           args.This()->GetInternalField(0))->Value());
-  pointer_this->offset = glm::translate(
-      pointer_this->offset,
+  pointer_this->orientation = glm::translate(
+      pointer_this->orientation,
       glm::vec3(args[0]->NumberValue(), args[1]->NumberValue(),
                 args[2]->NumberValue()));
   //pointer_this->offset[3][0] = a->Get(0)->NumberValue();
@@ -291,8 +291,8 @@ void Callback_Oriented_PointAt(const FunctionCallbackInfo<v8::Value>& args) {
   // TODO: Do something to origin to use "up"
 
   // Multiply both by the origin
-  pointer_this->offset = origin * pointer_this->offset;
-  glm::mat4 that = origin * pointer_that->offset;
+  pointer_this->orientation = origin * pointer_this->orientation;
+  glm::mat4 that = origin * pointer_that->orientation;
 
   // TODO account for scale
 
@@ -300,29 +300,29 @@ void Callback_Oriented_PointAt(const FunctionCallbackInfo<v8::Value>& args) {
   glm::quat f(
       glm::vec3(
           -glm::atan(
-              (pointer_this->offset[3][1] - that[3][1])
+              (pointer_this->orientation[3][1] - that[3][1])
                   / glm::length(
-                      glm::vec2(pointer_this->offset[3][0] - that[3][0],
-                                pointer_this->offset[3][2] - that[3][2]))),
-          glm::atan(pointer_this->offset[3][0] - that[3][0],
-                    pointer_this->offset[3][2] - that[3][2]),
+                      glm::vec2(pointer_this->orientation[3][0] - that[3][0],
+                                pointer_this->orientation[3][2] - that[3][2]))),
+          glm::atan(pointer_this->orientation[3][0] - that[3][0],
+                    pointer_this->orientation[3][2] - that[3][2]),
           0.0f));
   // Then convert it to Mat4
   glm::mat4 abird = glm::toMat4(f);
 
   // Set the new matrix's translation to this object's translation
-  abird[3][0] = pointer_this->offset[3][0];
-  abird[3][1] = pointer_this->offset[3][1];
-  abird[3][2] = pointer_this->offset[3][2];
+  abird[3][0] = pointer_this->orientation[3][0];
+  abird[3][1] = pointer_this->orientation[3][1];
+  abird[3][2] = pointer_this->orientation[3][2];
 
   // set this translation to the new one
-  pointer_this->offset = abird;
+  pointer_this->orientation = abird;
 
   // inverse the origin
   glm::inverse(origin);
 
   // Multiply by the inverse to undo the effects of the first origin multiplication.
-  pointer_this->offset = origin * pointer_this->offset;
+  pointer_this->orientation = origin * pointer_this->orientation;
 
   //glm::vec4 direction(0, 0, -1, 0);
   //direction = pointer_this->offset * direction;
@@ -348,7 +348,7 @@ void Callback_Oriented_PointAt(const FunctionCallbackInfo<v8::Value>& args) {
   //pointer_this->offset[3][0] += difference.x;
   //pointer_this->offset[3][1] += difference.y;
   //pointer_this->offset[3][2] += difference.z;
-  Debug::printMatrix(pointer_this->offset);
+  Debug::printMatrix(pointer_this->orientation);
 
   //pointer_this->offset = glm::translate(pointer_this->offset, glm::vec3(
   //    args[0]->NumberValue(),
@@ -368,9 +368,9 @@ void Callback_Oriented_Rotate(const FunctionCallbackInfo<v8::Value>& args) {
   KObj_Oriented* pointer_this =
       static_cast<KObj_Oriented*>(Local<External>::Cast(
           args.This()->GetInternalField(0))->Value());
-  pointer_this->offset[3][0] = a->Get(0)->NumberValue();
-  pointer_this->offset[3][1] = a->Get(1)->NumberValue();
-  pointer_this->offset[3][2] = a->Get(2)->NumberValue();
+  pointer_this->orientation[3][0] = a->Get(0)->NumberValue();
+  pointer_this->orientation[3][1] = a->Get(1)->NumberValue();
+  pointer_this->orientation[3][2] = a->Get(2)->NumberValue();
 }
 
 void Callback_Kdion_Load(const v8::FunctionCallbackInfo<v8::Value>& args) {
