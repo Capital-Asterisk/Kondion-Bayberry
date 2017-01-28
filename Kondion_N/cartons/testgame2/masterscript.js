@@ -32,6 +32,10 @@ kdion.initialize(function() {
 	e.translate(0.0, 0.5, 0.0);
 	kdion.e = e;
 	
+	var drag = new KObj_Entity();
+	drag.translate(0.0, 1.5, 0.4);
+	drag.setParent(kdion.World);
+	
 	var camera = new OKO_Camera();
 	
 	camera.translate(0.0, 2.0, 6.0);

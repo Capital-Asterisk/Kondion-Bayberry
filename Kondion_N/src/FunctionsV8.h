@@ -84,6 +84,7 @@ void Callback_KObj_Entity(const FunctionCallbackInfo<v8::Value>& args) {
   if (args.IsConstructCall()) {
     printf("New Entity\n");
     KObj_Entity* o = new KObj_Entity();
+    o->physics = 1;
     o->components.push_back(new Component::CPN_Cube);
     o->jsObject = new Persistent<v8::Object,
         CopyablePersistentTraits<v8::Object>>(isolate, args.This());
@@ -348,7 +349,7 @@ void Callback_Oriented_PointAt(const FunctionCallbackInfo<v8::Value>& args) {
   //pointer_this->offset[3][0] += difference.x;
   //pointer_this->offset[3][1] += difference.y;
   //pointer_this->offset[3][2] += difference.z;
-  Debug::printMatrix(pointer_this->orientation);
+  //Debug::printMatrix(pointer_this->orientation);
 
   //pointer_this->offset = glm::translate(pointer_this->offset, glm::vec3(
   //    args[0]->NumberValue(),

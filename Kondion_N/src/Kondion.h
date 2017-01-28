@@ -101,11 +101,16 @@ class KObj_Renderable : public KObj_Oriented {
  */
 class KObj_Entity : public KObj_Renderable {
  public:
-  std::vector<KComponent*> components;
   glm::mat4x4 next;
   glm::vec3 velocity;
   glm::quat rotVelocity;
+
+  std::vector<KComponent*> components;
+
+  // 0: static
+  // 1: something else
   uint8_t physics;
+
   int getType() {
     return 3;
   }
@@ -166,6 +171,22 @@ class OKO_Camera_ : public KObj_Oriented {
   void parentTransform();
 };
 
+class OKO_Force : public KObj_Oriented {
+ public:
+  // 0: unused
+  // 1: direction
+  // 2:
+  uint8_t type;
+  // 0: linear
+  // 1: inverse square
+  // 2: constant
+  uint8_t falloff;
+  float strength;
+  // 0 is global
+  float range;
+
+  void parentTransform();
+};
 }
 
 namespace Component {
