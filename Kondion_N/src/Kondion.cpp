@@ -191,10 +191,19 @@ void GameLoop() {
 
   Input::MouseLock(true);
 
+  double startTime = glfwGetTime();
+  double lastTime = startTime;
+  double currentTime = 0;
+  double delta;
+
   //float yaw = 0.0f;
   //float pitch = 0.0f
   while (Window::Active()) {
 
+    currentTime = glfwGetTime();
+    delta = currentTime - lastTime;
+    lastTime = currentTime;
+    printf("Time: %f\n", delta);
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     Input::Update();
