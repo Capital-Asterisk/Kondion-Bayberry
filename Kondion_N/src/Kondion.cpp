@@ -4,7 +4,9 @@
 // Version     :
 // Copyright   : Your copyright notice
 // Description : Hello World in C++, Ansi-style
-//============================================================================
+//====================== gbb vggttttggggggggggggg======================================================
+
+#include <chrono>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -26,8 +28,13 @@
 
 namespace Kondion {
 
-// I really don't know how to avoid these
+namespace {
 char* dir;
+uint64_t timeNow;
+int64_t timeCurrent;
+}
+
+
 
 std::vector<KObj_Node *> KObj_Node::all;
 KObj::GKO_World* KObj_Node::worldObject;
@@ -37,6 +44,8 @@ std::vector<Renderer::RenderPass*> Renderer::RenderPass::passes;
 KObj_Node::KObj_Node() {
   jsObject = NULL;
   myIndex = 0;
+  depth = 0;
+  treeSize = 0;
   drawLayer = 1;
   name = "NotSmoothBlockModel";
   printf("hey there\n");
@@ -48,7 +57,9 @@ KObj_Node* KObj_Node::getParent() {
 }
 
 void KObj_Node::setParent(KObj_Node* node) {
+  // TODO loop parenting
   if (node == this) {
+    // Prevent self parenting
     perror("An object will never be parented to itself.\n");
     return;
   }
@@ -70,6 +81,9 @@ void KObj_Node::setParent(KObj_Node* node) {
   }
   printf("parent has been set.\n");
   parent->children.push_back(this);
+  depth = parent->depth + 1;
+  // world related stuff
+
 }
 
 void KObj_Oriented::parentTransform() {
@@ -117,6 +131,10 @@ void KObj_Entity::render() {
     }
 
   }
+}
+
+std::string Dir() {
+  return std::string(dir);
 }
 
 void Launch() {
@@ -200,10 +218,21 @@ void GameLoop() {
   //float pitch = 0.0f
   while (Window::Active()) {
 
+    // egg timing
+    timeCurrent = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+    // delta timing
     currentTime = glfwGetTime();
     delta = currentTime - lastTime;
     lastTime = currentTime;
-    printf("Time: %f\n", delta);
+
+    if (currentTime > 16.0) {
+      glfwSetTime(currentTime - 16.0);
+      lastTime -= 16.0;
+    }
+
+    //printf("Time: %f\n", currentTime);
+
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     Input::Update();

@@ -313,7 +313,7 @@ void Setup() {
   printf("Initializing V8, version: %s\n", V8::GetVersion());
 
   V8::InitializeICU();
-  V8::InitializeExternalStartupData(Kondion::dir);
+  V8::InitializeExternalStartupData(Kondion::Dir().c_str());
   platform = platform::CreateDefaultPlatform();
   V8::InitializePlatform(platform);
   V8::Initialize();

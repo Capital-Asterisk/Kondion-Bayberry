@@ -49,12 +49,23 @@ class KMaterial;
  */
 class KObj_Node {
  public:
+  // All of the KObj_Nodes in existance, including the ones that aren't in world.
   static std::vector<KObj_Node *> all;
+  // The current world object, has no parent
   static KObj::GKO_World* worldObject;
+  // Name to identify with
   std::string name;
+  // All the children
   std::vector<KObj_Node*> children;
+  // How deep the object is in the tree. World is 0, object in world is 1.
+  uint8_t depth;
+  // My index out of all of the KObj_Nodes in existance
   uint16_t myIndex;
+  // How large the tree is, this as root. (all of children's children...)
+  uint16_t treeSize;
+  // 32 bits of layers, use bitwise
   uint32_t drawLayer;
+  // The JS object that is bound
   void* jsObject;
   virtual int getType() {
     return 0;
@@ -161,6 +172,8 @@ namespace KObj {
 
 class GKO_World : public KObj_Node {
   float timescale;
+  std::vector<uint16_t> world;
+
 };
 
 class OKO_Camera_ : public KObj_Oriented {
@@ -202,10 +215,11 @@ class CPN_InfinitePlane : public Kondion::KComponent {
 };
 }
 
-extern char* dir;
-
-void Launch();
+double Delta();
+std::string Dir();
 void GameLoop();
+void Launch();
+double Time();
 
 namespace Renderer {
 extern KObj::OKO_Camera_* currentCamera;
