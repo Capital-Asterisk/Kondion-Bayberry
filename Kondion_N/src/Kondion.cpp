@@ -43,6 +43,7 @@ std::vector<Renderer::RenderPass*> Renderer::RenderPass::passes;
 
 KObj_Node::KObj_Node() {
   jsObject = NULL;
+  parent = NULL;
   depth = 0;
   myIndex = 0;
   treeSize = 0;
@@ -88,10 +89,10 @@ void KObj_Node::setParent(KObj_Node* node) {
   // Go through the chain if parents, check for parent looping, and treeSize ++
   KObj_Node* top = parent;
   for (uint8_t i = 0; i < depth; i ++) {
+    top->treeSize ++;
     if (top->depth != 0) {
       top = top->parent;
     }
-    top->treeSize ++;
   }
   printf("Top: %s\n", top->name);
   // TODO: instanceof world
@@ -101,6 +102,7 @@ void KObj_Node::setParent(KObj_Node* node) {
     KObj::GKO_World::worldObject->world.push_back(allIndex);
 
   }
+  Debug::printWorld();
 }
 
 void KObj_Oriented::parentTransform() {
@@ -185,6 +187,7 @@ void GameLoop() {
                                          glm::vec3(1, 0, 0));
   b->orientation = glm::translate(b->orientation, glm::vec3(0.0f, -0.0f, 0.0f));
   b->physics = 0;
+  b->name = "Ground";
   //printf("type: %i\n", a->getType());
   //KObj_Entity *player = new KObj_Entity;
   //player->components.insert(player->components.end(), new Component::CPN_Cube);
@@ -249,14 +252,7 @@ void GameLoop() {
       glfwSetTime(currentTime - 16.0);
       lastTime -= 16.0;
 
-
-      // Print the world, put here not to spam the output
-      printf("---- WORLD: %i objects, %i total\n", KObj::GKO_World::worldObject->treeSize,
-             KObj_Node::all.size());
-      for (uint16_t i = 0; i < KObj::GKO_World::worldObject->treeSize; i++) {
-        KObj_Node* e = KObj_Node::all[KObj::GKO_World::worldObject->world[i]];
-        printf("%i: %s(%i)\n", e->depth, e->name.c_str(), e->treeSize);
-      }
+      Debug::printWorld();
     }
 
     //printf("Time: %f\n", currentTime);

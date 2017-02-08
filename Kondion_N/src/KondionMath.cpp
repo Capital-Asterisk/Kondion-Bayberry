@@ -37,6 +37,21 @@ void printMatrix(const glm::mat4x4& a) {
       << b[3] << ", " << b[7] << ", " << b[11] << ", " << b[15] << "\n";
 }
 
+void printWorld() {
+  // Print the world
+  printf("---- WORLD: %i objects\n", KObj::GKO_World::worldObject->treeSize);
+  for (uint16_t i = 0; i < KObj::GKO_World::worldObject->treeSize; i ++) {
+    KObj_Node* e = KObj_Node::all[KObj::GKO_World::worldObject->world[i]];
+    printf("%i: %s(%i)\n", e->depth, e->name.c_str(), e->treeSize);
+  }
+  printf("---- ALL NODES: %i\n", KObj_Node::all.size());
+    for (uint16_t i = 0; i < KObj_Node::all.size(); i ++) {
+      KObj_Node* e = KObj_Node::all[i];
+      printf("%i: %s(%i) par:%i\n", e->depth, e->name.c_str(), e->treeSize,
+             (e->getParent() == NULL) ? -1 : e->getParent()->allIndex);
+    }
+}
+
 }
 
 }

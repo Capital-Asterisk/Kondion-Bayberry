@@ -174,7 +174,7 @@ namespace KObj {
 
 class GKO_World : public KObj_Node {
  public:
-  float timescale;
+  float timescale = 0;
   std::vector<uint16_t> world;
 
 };
@@ -456,7 +456,7 @@ void Dispose(size_t id);
 
 namespace Debug {
 void printMatrix(const glm::mat4& a);
-
+void printWorld();
 }
 
 }

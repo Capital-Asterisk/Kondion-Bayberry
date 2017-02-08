@@ -97,9 +97,10 @@ void Callback_KObj_Entity(const FunctionCallbackInfo<v8::Value>& args) {
 void Callback_GKO_World(const FunctionCallbackInfo<v8::Value>& args) {
   HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {
-    printf("New Entity\n");
-    KObj::GKO_World* o = new KObj::GKO_World();
+    printf("New World\n");
+    KObj::GKO_World* o = new KObj::GKO_World;
     //o->components.push_back(new Component::CPN_Cube);
+    o->name = "World";
     o->jsObject = new Persistent<v8::Object,
         CopyablePersistentTraits<v8::Object>>(isolate, args.This());
     //Kondion::world.push_back(o);
