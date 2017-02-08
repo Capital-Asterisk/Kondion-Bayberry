@@ -60,14 +60,15 @@ KObj_Node* KObj_Node::getParent() {
 }
 
 void KObj_Node::setParent(KObj_Node* node) {
-  // TODO loop parenting
+  // TODO loop parenting, changing parent
   if (node == this) {
     // Prevent self parenting
     perror("An object will never be parented to itself.\n");
     return;
   }
   if (parent != NULL) {
-    parent->children[myIndex] = NULL;
+    // TODO
+    //parent->children[myIndex] = NULL;
   }
   printf("my type: %i, ", this->getType());
   parent = node;
@@ -88,7 +89,9 @@ void KObj_Node::setParent(KObj_Node* node) {
   // world related stuff
   // Go through the chain if parents, check for parent looping, and treeSize ++
   KObj_Node* top = parent;
+  uint16_t index = 0;
   for (uint8_t i = 0; i < depth; i ++) {
+    index += top->myIndex + 1;
     top->treeSize ++;
     if (top->depth != 0) {
       top = top->parent;
@@ -99,7 +102,11 @@ void KObj_Node::setParent(KObj_Node* node) {
   if (top == KObj::GKO_World::worldObject) {
     // it's a world, add it to the list of the entire tree
     // TODO: do something that puts the node into the right place
-    KObj::GKO_World::worldObject->world.push_back(allIndex);
+    printf("Index: %i\n", index);
+    KObj::GKO_World::worldObject->world.insert(
+        KObj::GKO_World::worldObject->world.begin() + index - 1,
+        allIndex);
+    //KObj::GKO_World::worldObject->world.push_back(allIndex);
 
   }
   Debug::printWorld();
@@ -293,10 +300,11 @@ void GameLoop() {
       KObj_Node::worldObject->children[i]->updateA();
     }
 
-    for (size_t i = 0; i < KObj_Node::worldObject->children.size(); i++) {
-      if (KObj_Node::worldObject->children[i]->getType() == 2
-          || KObj_Node::worldObject->children[i]->getType() == 3) {
-        static_cast<KObj_Oriented*>(KObj_Node::worldObject->children[i])
+    // All objects in the world tree are looped through
+    for (size_t i = 0; i < KObj_Node::worldObject->world.size(); i++) {
+      if (KObj_Node::all[KObj_Node::worldObject->world[i]]->getType() == 2
+          || KObj_Node::all[KObj_Node::worldObject->world[i]]->getType() == 3) {
+        static_cast<KObj_Oriented*>(KObj_Node::all[KObj_Node::worldObject->world[i]])
             ->parentTransform();
       }
     }
