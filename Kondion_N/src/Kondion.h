@@ -59,7 +59,9 @@ class KObj_Node {
   std::vector<KObj_Node*> children;
   // How deep the object is in the tree. World is 0, object in world is 1.
   uint8_t depth;
-  // My index out of all of the KObj_Nodes in existance
+  // Index out of all of the KObj_Nodes in existance
+  uint16_t allIndex;
+  // My index out of all of siblings
   uint16_t myIndex;
   // How large the tree is, this as root. (all of children's children...)
   uint16_t treeSize;
@@ -171,6 +173,7 @@ class KMaterial {
 namespace KObj {
 
 class GKO_World : public KObj_Node {
+ public:
   float timescale;
   std::vector<uint16_t> world;
 

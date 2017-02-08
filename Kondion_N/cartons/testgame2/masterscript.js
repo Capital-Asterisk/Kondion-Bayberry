@@ -34,7 +34,6 @@ kdion.initialize(function() {
 	
 	var drag = new KObj_Entity();
 	drag.translate(0.0, 1.5, 0.4);
-	drag.setParent(kdion.World);
 	
 	var camera = new OKO_Camera();
 	
@@ -43,6 +42,8 @@ kdion.initialize(function() {
 	
 	camera.setParent(kdion.World);
 	e.setParent(kdion.World, "hey theretttt", 5, 5, 8);
+	drag.setParent(e);
+	
 	kdion.load({textures: ["tiles_diff", "tiles_norm"]});
 	kdion.load({textures: 5});
 	kdion.camera = camera;

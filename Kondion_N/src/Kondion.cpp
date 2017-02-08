@@ -43,13 +43,15 @@ std::vector<Renderer::RenderPass*> Renderer::RenderPass::passes;
 
 KObj_Node::KObj_Node() {
   jsObject = NULL;
-  myIndex = 0;
   depth = 0;
+  myIndex = 0;
   treeSize = 0;
   drawLayer = 1;
   name = "NotSmoothBlockModel";
   printf("hey there\n");
+  // TODO make this not overflow
   all.push_back(this);
+  allIndex = all.size() - 1;
 }
 
 KObj_Node* KObj_Node::getParent() {
@@ -83,7 +85,22 @@ void KObj_Node::setParent(KObj_Node* node) {
   parent->children.push_back(this);
   depth = parent->depth + 1;
   // world related stuff
+  // Go through the chain if parents, check for parent looping, and treeSize ++
+  KObj_Node* top = parent;
+  for (uint8_t i = 0; i < depth; i ++) {
+    if (top->depth != 0) {
+      top = top->parent;
+    }
+    top->treeSize ++;
+  }
+  printf("Top: %s\n", top->name);
+  // TODO: instanceof world
+  if (top == KObj::GKO_World::worldObject) {
+    // it's a world, add it to the list of the entire tree
+    // TODO: do something that puts the node into the right place
+    KObj::GKO_World::worldObject->world.push_back(allIndex);
 
+  }
 }
 
 void KObj_Oriented::parentTransform() {
@@ -94,7 +111,7 @@ void KObj_Oriented::parentTransform() {
   //std::cout << "pork " << parent << "\n";
   if (parent) {
     if (parent->getType() >= 2)
-      transform *= (dynamic_cast<KObj_Oriented*>(parent))->transform;
+      transform *= (static_cast<KObj_Oriented*>(parent))->transform;
 
     //if (!transferScale) {
     //actTransform.normalize3x3();
@@ -214,6 +231,8 @@ void GameLoop() {
   double currentTime = 0;
   double delta;
 
+  glfwSetTime(15.0);
+
   //float yaw = 0.0f;
   //float pitch = 0.0f
   while (Window::Active()) {
@@ -229,6 +248,15 @@ void GameLoop() {
     if (currentTime > 16.0) {
       glfwSetTime(currentTime - 16.0);
       lastTime -= 16.0;
+
+
+      // Print the world, put here not to spam the output
+      printf("---- WORLD: %i objects, %i total\n", KObj::GKO_World::worldObject->treeSize,
+             KObj_Node::all.size());
+      for (uint16_t i = 0; i < KObj::GKO_World::worldObject->treeSize; i++) {
+        KObj_Node* e = KObj_Node::all[KObj::GKO_World::worldObject->world[i]];
+        printf("%i: %s(%i)\n", e->depth, e->name.c_str(), e->treeSize);
+      }
     }
 
     //printf("Time: %f\n", currentTime);
@@ -272,7 +300,7 @@ void GameLoop() {
     for (size_t i = 0; i < KObj_Node::worldObject->children.size(); i++) {
       if (KObj_Node::worldObject->children[i]->getType() == 2
           || KObj_Node::worldObject->children[i]->getType() == 3) {
-        dynamic_cast<KObj_Oriented*>(KObj_Node::worldObject->children[i])
+        static_cast<KObj_Oriented*>(KObj_Node::worldObject->children[i])
             ->parentTransform();
       }
     }
