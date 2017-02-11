@@ -27,6 +27,8 @@
 #include <string.h>
 #include <vector>
 
+// TODO: eventually replace a bunch of uint16_t with 32_t because of object count
+
 namespace Kondion {
 
 class KObj_Node;
@@ -176,6 +178,7 @@ class GKO_World : public KObj_Node {
  public:
   float timescale = 0;
   std::vector<uint16_t> world;
+  std::vector<uint16_t> forces;
 
 };
 
@@ -189,17 +192,35 @@ class OKO_Camera_ : public KObj_Oriented {
 
 class OKO_Force : public KObj_Oriented {
  public:
-  // 0: unused
-  // 1: direction
-  // 2:
+
+  // 0: typical acceleration
+  // 1: constant velocity
+  // 2: drag
+  // 3: multiply
   uint8_t type;
+
+  // 0: towards center
+  // 1: towards orientation (OKO -z)
+  // 2: towards association 0
+  // 3: towards trajectory (speed up)
+  uint8_t direction;
+
+  // 0: sphere/point
+  // 100: associations collision
+  uint8_t shape;
+
   // 0: linear
   // 1: inverse square
   // 2: constant
-  uint8_t falloff;
+  uint8_t falloffa;
+
   float strength;
-  // 0 is global
+  //float multiplier;
+
+  // probably in meters
   float range;
+
+  std::vector<uint16_t> associations;
 
   void parentTransform();
 };

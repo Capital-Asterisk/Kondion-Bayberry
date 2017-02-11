@@ -62,7 +62,7 @@ kdion.globalUpdate(function() {
 	//kdion.log(kdion.input["MOUSE_X"]);
 	//kdion.log(new Date().getTime());
 	kdion.camera.pointAt(kdion.e);
-	kdion.camera.rotate([(Math.random() - 0.5) / 10, (Math.random() - 0.5) / 10 + 3, (Math.random() - 0.5) / 10]);
+	kdion.camera.rotate([(Math.random() - 0.5) / 100, (Math.random() - 0.5) / 100 + 3, (Math.random() - 0.5) / 100]);
 	kdion.e.translate(-kdion.input["MOVE_X"] * 0.06, 0.0, kdion.input["MOVE_Y"] * 0.06);
 	//kdion.log(kdion.camera);
 	//kdion.camera.translate(0.0, 0.01, kdion.input["MOVE_Y"] * 0.03);
