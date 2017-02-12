@@ -32,6 +32,7 @@ namespace {
 char* dir;
 uint64_t timeNow;
 int64_t timeCurrent;
+double delta;
 }
 
 std::vector<KObj_Node *> KObj_Node::all;
@@ -104,15 +105,19 @@ void KObj_Node::setParent(KObj_Node* node) {
       top = top->parent;
     }
   }
-  printf("Top: %s\n", top->name);
-  // TODO: instanceof world
-  if (top == KObj::GKO_World::worldObject) {
+  //printf("Top: %s\n", top->name);
+  // pointer comparison, (instanceof world)
+  if (top->getClass() == &KObj::GKO_World::myClass) {
     // it's a world, add it to the list of the entire tree
-    // TODO: do something that puts the node into the right place
+    // mightbedoneTODO: do something that puts the node into the right place
     printf("Index: %i\n", index);
     KObj::GKO_World::worldObject->world.insert(
         KObj::GKO_World::worldObject->world.begin() + index - 1,
         allIndex);
+    if (getClass() == &KObj::OKO_Force::myClass) {
+      //i am a force, add to forces
+      KObj::GKO_World::worldObject->forces.push_back(allIndex);
+    }
     //KObj::GKO_World::worldObject->world.push_back(allIndex);
 
   }
@@ -140,12 +145,22 @@ void KObj_Oriented::parentTransform() {
 
 void KObj_Entity::updateA() {
   //rotVelocity = glm::quat(glm::vec3(0.0, 0.01, 0.0));
-  velocity.y += 0.000004f;
+  // TODO, add previous velocity, then use the acceleration equation from physics
   orientation = orientation * glm::toMat4(rotVelocity);
   if (physics != 0) {
-    orientation[3][0] += velocity.x;
-    orientation[3][1] += velocity.y;
-    orientation[3][2] += velocity.z;
+    //velocity.y += 0.000004f;
+    for (uint16_t i = 0; i < KObj_Node::worldObject->forces.size(); i ++) {
+      KObj::OKO_Force* f = static_cast<KObj::OKO_Force*>
+        (KObj_Node::all[KObj_Node::worldObject->forces[i]]);
+      velocity.x -= f->orientation[2][0] * delta;
+      velocity.y -= f->orientation[2][1] * delta;
+      velocity.z -= f->orientation[2][2] * delta;
+      printf("vz: %f\n", velocity.z);
+      //Debug::printMatrix(f->orientation);
+    }
+    orientation[3][0] += velocity.x * delta;
+    orientation[3][1] += velocity.y * delta;
+    orientation[3][2] += velocity.z * delta;
   }
 }
 
@@ -222,11 +237,11 @@ void GameLoop() {
   gravity->strength = 1;
   gravity->size = 0;
   // rotate to point downwards
-  gravity->orientation = glm::rotate(
-    gravity->orientation, -glm::pi<float>() / 2,
-    glm::vec3(1.0f, 0.0f, 0.0f));
+  //gravity->orientation = glm::rotate(
+  //  gravity->orientation, -glm::pi<float>() / 2,
+  //  glm::vec3(1.0f, 0.0f, 0.0f));
   gravity->name = "Gravity";
-
+  gravity->setParent(KObj_Node::worldObject);
 
   //player->setParent(worldObject);
   //a->setParent(KObj_Node::worldObject);
@@ -260,12 +275,11 @@ void GameLoop() {
 
   Input::MouseLock(true);
 
+  glfwSetTime(15.0);
+
   double startTime = glfwGetTime();
   double lastTime = startTime;
   double currentTime = 0;
-  double delta;
-
-  glfwSetTime(15.0);
 
   //float yaw = 0.0f;
   //float pitch = 0.0f
@@ -285,6 +299,8 @@ void GameLoop() {
 
       Debug::printWorld();
     }
+
+
 
     //printf("Time: %f\n", currentTime);
 

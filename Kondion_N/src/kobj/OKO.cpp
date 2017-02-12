@@ -24,23 +24,36 @@ void OKO_Camera_::prespective() {
 
 void OKO_Camera_::parentTransform() {
   KObj_Oriented::parentTransform();
+  // OLD METHOD
   // Calculate Center
-  center = glm::vec3(0.0f, 0.0f, -6.0f);
+  //center = glm::vec3(0.0f, 0.0f, -6.0f);
   //center.x = 0.0f;
   //center.y = 0.0f;
   //center.z = -6.0f;
-  center = glm::vec3(transform * glm::vec4(center, 1.0f));
+  //center = glm::vec3(transform * glm::vec4(center, 1.0f));
   //center += glm::trans
-  up.x = 0.0f;
-  up.y = 1.0f;
-  up.z = 0.0f;
-  up = glm::vec3(transform * glm::vec4(up, 0.0f));
+
+  //up.x = 0.0f;
+  //up.y = 1.0f;
+  //up.z = 0.0f;
+  //up = glm::vec3(transform * glm::vec4(up, 0.0f));
+
   //std::cout << center.x << ", " << center.y << ", " << center.z << ", " << glm::vec4(center, 1.0f).w << " | " << up.x << ", " << up.y << ", " << up.z << "\n";
   //center.vector(0.0f, 0.0f, 6.0f);
   //center.
   //center.tvec3(0, 0, -6);
   //center *= transform;
   //Kondion::Math::transform3f(transform, center);
+
+  // New one
+  center.x = -orientation[2][0] + orientation[3][0];
+  center.y = -orientation[2][1] + orientation[3][1];
+  center.z = -orientation[2][2] + orientation[3][2];
+
+  up.x = orientation[1][0];
+  up.y = orientation[1][1];
+  up.z = orientation[1][2];
+
 }
 
 void OKO_Force::parentTransform() {
