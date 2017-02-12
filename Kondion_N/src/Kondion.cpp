@@ -34,10 +34,17 @@ uint64_t timeNow;
 int64_t timeCurrent;
 }
 
-
-
 std::vector<KObj_Node *> KObj_Node::all;
 KObj::GKO_World* KObj_Node::worldObject;
+
+const std::string KObj_Node::myClass = "error_node";
+const std::string KObj_Oriented::myClass = "error_oriented";
+const std::string KObj_Renderable::myClass = "error_renderable";
+const std::string KObj_Entity::myClass = "entity";
+const std::string KObj_Instance::myClass = "instance";
+const std::string KObj::GKO_World::myClass = "world";
+const std::string KObj::OKO_Camera_::myClass = "camera";
+const std::string KObj::OKO_Force::myClass = "force";
 
 std::vector<Renderer::RenderPass*> Renderer::RenderPass::passes;
 
@@ -204,6 +211,23 @@ void GameLoop() {
   //Renderer::currentCamera = a;
 
   b->setParent(KObj_Node::worldObject);
+
+  // TODO: make a nice constructor, or not
+  // gravity!
+  KObj::OKO_Force* gravity = new KObj::OKO_Force;
+  gravity->type = 0;
+  gravity->direction = 1;
+  gravity->shape = 0;
+  gravity->falloff = 0;
+  gravity->strength = 1;
+  gravity->size = 0;
+  // rotate to point downwards
+  gravity->orientation = glm::rotate(
+    gravity->orientation, -glm::pi<float>() / 2,
+    glm::vec3(1.0f, 0.0f, 0.0f));
+  gravity->name = "Gravity";
+
+
   //player->setParent(worldObject);
   //a->setParent(KObj_Node::worldObject);
   //w.insert(world.end(), b);

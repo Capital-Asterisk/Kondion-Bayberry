@@ -43,5 +43,9 @@ void OKO_Camera_::parentTransform() {
   //Kondion::Math::transform3f(transform, center);
 }
 
+void OKO_Force::parentTransform() {
+  KObj_Oriented::parentTransform();
+}
+
 }
 }
