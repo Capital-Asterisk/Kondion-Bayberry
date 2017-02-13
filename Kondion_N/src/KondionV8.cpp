@@ -15,7 +15,8 @@
 #include <include/v8.h>
 
 #include "Kondion.h"
-#include "FunctionsV8.h"
+#include "V8_Functions.h"
+#include "V8_OKO_Functions.h"
 
 using namespace v8;
 

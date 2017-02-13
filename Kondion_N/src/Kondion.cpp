@@ -152,9 +152,9 @@ void KObj_Entity::updateA() {
     for (uint16_t i = 0; i < KObj_Node::worldObject->forces.size(); i ++) {
       KObj::OKO_Force* f = static_cast<KObj::OKO_Force*>
         (KObj_Node::all[KObj_Node::worldObject->forces[i]]);
-      velocity.x -= f->orientation[2][0] * delta;
-      velocity.y -= f->orientation[2][1] * delta;
-      velocity.z -= f->orientation[2][2] * delta;
+      velocity.x -= f->orientation[2][0] * delta * f->strength;
+      velocity.y -= f->orientation[2][1] * delta * f->strength;
+      velocity.z -= f->orientation[2][2] * delta * f->strength;
       printf("vz: %f\n", velocity.z);
       //Debug::printMatrix(f->orientation);
     }
@@ -234,7 +234,7 @@ void GameLoop() {
   gravity->direction = 1;
   gravity->shape = 0;
   gravity->falloff = 0;
-  gravity->strength = 1;
+  gravity->strength = 9.80665223;
   gravity->size = 0;
   // rotate to point downwards
   //gravity->orientation = glm::rotate(
