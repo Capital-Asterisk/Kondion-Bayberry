@@ -5,6 +5,8 @@
  *      Author: neal
  */
 
+#include <sstream>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/matrix_decompose.hpp>
@@ -232,6 +234,31 @@ void Callback_Bird_SetIntegrity(Local<String> property, Local<Value> value,
   static_cast<Bird*>(pointer)->integrity = value->Int32Value();
 }
 
+void Callback_Kdion_GlobalUpdate(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (args.Length() < 1)
+    return;
+  HandleScope handle_scope(isolate);
+  Local<Value> arg0 = args[0];
+  if (arg0->IsFunction()) {
+    Local<Array> a = Local<Array>::New(isolate, p_gupdate);
+    a->Set(a->Length(), arg0);
+  }
+}
+
+void Callback_Kdion_Initialize(
+    const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (args.Length() < 1)
+    return;
+  HandleScope handle_scope(isolate);
+  Local<Value> arg0 = args[0];
+  if (arg0->IsFunction()) {
+    p_initialize.Reset();
+    p_initialize = Persistent<Function, CopyablePersistentTraits<Function>>(
+        isolate, Local<Function>::Cast(arg0));
+  }
+}
+
 void Callback_Kdion_Load(const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (args.Length() < 1)
     return;
@@ -262,30 +289,18 @@ void Callback_Kdion_Log(const v8::FunctionCallbackInfo<v8::Value>& args) {
   printf("%s\n", *String::Utf8Value(args[0]));
 }
 
-void Callback_Kdion_Initialize(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
+
+void Callback_Kdion_Require(const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (args.Length() < 1)
     return;
-  HandleScope handle_scope(isolate);
-  Local<Value> arg0 = args[0];
-  if (arg0->IsFunction()) {
-    p_initialize.Reset();
-    p_initialize = Persistent<Function, CopyablePersistentTraits<Function>>(
-        isolate, Local<Function>::Cast(arg0));
-  }
+  printf("[JS] Running script: %s\n", *String::Utf8Value(args[0]));
+  Resources::Raw* f = Resources::Get(std::string(*String::Utf8Value(args[0])));
+  std::ostringstream ostring;
+  ostring << f->stream->rdbuf();
+  Kondion::JS::Eval(ostring.str());
+
 }
 
-void Callback_Kdion_GlobalUpdate(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
-  if (args.Length() < 1)
-    return;
-  HandleScope handle_scope(isolate);
-  Local<Value> arg0 = args[0];
-  if (arg0->IsFunction()) {
-    Local<Array> a = Local<Array>::New(isolate, p_gupdate);
-    a->Set(a->Length(), arg0);
-  }
-}
 
 }
 }

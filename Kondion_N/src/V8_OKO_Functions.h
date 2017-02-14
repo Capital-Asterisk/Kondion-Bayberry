@@ -24,7 +24,6 @@ using namespace v8;
 namespace Kondion {
 namespace JS {
 
-
 void Callback_Oriented_SetOffsetPosition(
     const FunctionCallbackInfo<v8::Value>& args) {
   if (args.IsConstructCall() || args.Length() == 0)

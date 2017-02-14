@@ -342,6 +342,8 @@ void Setup() {
              FunctionTemplate::New(isolate, Callback_Kdion_Load));
   kdion->Set(String::NewFromUtf8(isolate, "log"),
              FunctionTemplate::New(isolate, Callback_Kdion_Log));
+  kdion->Set(String::NewFromUtf8(isolate, "require"),
+             FunctionTemplate::New(isolate, Callback_Kdion_Require));
   kdion->Set(String::NewFromUtf8(isolate, "initialize"),
              FunctionTemplate::New(isolate, Callback_Kdion_Initialize));
   kdion->Set(String::NewFromUtf8(isolate, "globalUpdate"),
@@ -381,6 +383,9 @@ void Setup() {
   Local<FunctionTemplate> kobj_oriented = FunctionTemplate::New(isolate);
   kobj_oriented->InstanceTemplate()->SetInternalFieldCount(1);
   kobj_oriented->Inherit(kobj_node);
+  //kobj_oriented->PrototypeTemplate()->Set(
+  //      String::NewFromUtf8(isolate, "getPosition"),
+  //      FunctionTemplate::New(isolate, Callback_Oriented_GetOffsetPosition));
   kobj_oriented->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "setPosition"),
       FunctionTemplate::New(isolate, Callback_Oriented_SetOffsetPosition));
