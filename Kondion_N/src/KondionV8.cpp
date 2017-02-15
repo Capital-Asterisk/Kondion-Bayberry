@@ -383,21 +383,21 @@ void Setup() {
   Local<FunctionTemplate> kobj_oriented = FunctionTemplate::New(isolate);
   kobj_oriented->InstanceTemplate()->SetInternalFieldCount(1);
   kobj_oriented->Inherit(kobj_node);
-  //kobj_oriented->PrototypeTemplate()->Set(
-  //      String::NewFromUtf8(isolate, "getPosition"),
-  //      FunctionTemplate::New(isolate, Callback_Oriented_GetOffsetPosition));
+  kobj_oriented->PrototypeTemplate()->Set(
+        String::NewFromUtf8(isolate, "getPosition"),
+        FunctionTemplate::New(isolate, Callback_OKO_GetOffsetPosition));
   kobj_oriented->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "setPosition"),
-      FunctionTemplate::New(isolate, Callback_Oriented_SetOffsetPosition));
+      FunctionTemplate::New(isolate, Callback_OKO_SetOffsetPosition));
   kobj_oriented->PrototypeTemplate()->Set(
         String::NewFromUtf8(isolate, "translate"),
-        FunctionTemplate::New(isolate, Callback_Oriented_Translate));
+        FunctionTemplate::New(isolate, Callback_OKO_Translate));
   kobj_oriented->PrototypeTemplate()->Set(
         String::NewFromUtf8(isolate, "rotate"),
-        FunctionTemplate::New(isolate, Callback_Oriented_Rotate));
+        FunctionTemplate::New(isolate, Callback_OKO_Rotate));
   kobj_oriented->PrototypeTemplate()->Set(
           String::NewFromUtf8(isolate, "pointAt"),
-          FunctionTemplate::New(isolate, Callback_Oriented_PointAt));
+          FunctionTemplate::New(isolate, Callback_OKO_PointAt));
 
   Local<FunctionTemplate> kobj_entity = FunctionTemplate::New(
       isolate, Callback_KObj_Entity);

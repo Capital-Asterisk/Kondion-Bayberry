@@ -111,21 +111,6 @@ void Callback_GKO_World(const FunctionCallbackInfo<v8::Value>& args) {
   }
 }
 
-void Callback_OKO_Camera(const FunctionCallbackInfo<v8::Value>& args) {
-  HandleScope handle_scope(isolate);
-  if (args.IsConstructCall()) {
-    printf("New Camera\n");
-    KObj::OKO_Camera_* o = new KObj::OKO_Camera_();
-    //o->components.push_back(new Component::CPN_Cube);
-    o->jsObject = new Persistent<v8::Object,
-        CopyablePersistentTraits<v8::Object>>(isolate, args.This());
-    o->name = "Camera";
-    //Kondion::world.push_back(o);
-    args.This()->SetInternalField(0, External::New(isolate, o));
-    args.GetReturnValue().Set(args.This());
-  }
-}
-
 void Callback_Kdion_Blank(const v8::FunctionCallbackInfo<v8::Value>& args) {
   //HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {

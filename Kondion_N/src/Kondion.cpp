@@ -155,7 +155,7 @@ void KObj_Entity::updateA() {
       velocity.x -= f->orientation[2][0] * delta * f->strength;
       velocity.y -= f->orientation[2][1] * delta * f->strength;
       velocity.z -= f->orientation[2][2] * delta * f->strength;
-      printf("vz: %f\n", velocity.z);
+      //printf("vz: %f\n", velocity.z);
       //Debug::printMatrix(f->orientation);
     }
     orientation[3][0] += velocity.x * delta;
@@ -234,7 +234,7 @@ void GameLoop() {
   gravity->direction = 1;
   gravity->shape = 0;
   gravity->falloff = 0;
-  gravity->strength = 9.80665223;
+  gravity->strength = 0.0;//9.80665223;
   gravity->size = 0;
   // rotate to point downwards
   //gravity->orientation = glm::rotate(

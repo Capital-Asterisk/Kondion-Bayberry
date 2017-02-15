@@ -24,12 +24,48 @@ using namespace v8;
 namespace Kondion {
 namespace JS {
 
-void Callback_Oriented_SetOffsetPosition(
+void Callback_OKO_Camera(const FunctionCallbackInfo<v8::Value>& args) {
+  if (!args.IsConstructCall())
+    return;
+  HandleScope handle_scope(isolate);
+  printf("New Camera\n");
+  KObj::OKO_Camera_* o = new KObj::OKO_Camera_();
+  //o->components.push_back(new Component::CPN_Cube);
+  o->jsObject = new Persistent<v8::Object,
+      CopyablePersistentTraits<v8::Object>>(isolate, args.This());
+  o->name = "Camera";
+  //Kondion::world.push_back(o);
+  args.This()->SetInternalField(0, External::New(isolate, o));
+  args.GetReturnValue().Set(args.This());
+}
+
+void Callback_OKO_GetOffsetPosition(
+    const FunctionCallbackInfo<v8::Value>& args) {
+  if (args.IsConstructCall() || args.Length() == 0
+      || !(args[0]->IsFloat32Array() || args[0]->IsArray()))
+    return;
+  KObj_Oriented* pointer_this =
+          static_cast<KObj_Oriented*>(Local<External>::Cast(
+              args.This()->GetInternalField(0))->Value());
+  Local<Array> a = Local<Array>::Cast(args[0]);
+  a->Set(0, Number::New(isolate, pointer_this->orientation[3][0]));
+  a->Set(1, Number::New(isolate, pointer_this->orientation[3][1]));
+  a->Set(2, Number::New(isolate, pointer_this->orientation[3][2]));
+  //const float* b = glm::value_ptr(pointer_this->offset);
+  //b[12] = a->Get(0)->NumberValue();
+  //b[13] = a->Get(1)->NumberValue();
+  //b[14] = a->Get(2)->NumberValue();
+  //pointer_this->transform;
+}
+
+void Callback_OKO_SetOffsetPosition(
     const FunctionCallbackInfo<v8::Value>& args) {
   if (args.IsConstructCall() || args.Length() == 0)
     return;
-  if (!args[0]->IsArray())
+  //printf("eggsa");
+  if (!(args[0]->IsFloat32Array() || args[0]->IsArray()))
     return;
+  //printf("eggs!");
   Local<Array> a = Local<Array>::Cast(args[0]);
   KObj_Oriented* pointer_this =
       static_cast<KObj_Oriented*>(Local<External>::Cast(
@@ -44,10 +80,10 @@ void Callback_Oriented_SetOffsetPosition(
   //pointer_this->transform;
 }
 
-void Callback_Oriented_Translate(const FunctionCallbackInfo<v8::Value>& args) {
+void Callback_OKO_Translate(const FunctionCallbackInfo<v8::Value>& args) {
   if (args.IsConstructCall() || args.Length() < 3)
     return;
-  //Local<Array> a = Local<Array>::Cast(args[0]);
+  Local<Array> a = Local<Array>::Cast(args[0]);
   KObj_Oriented* pointer_this =
       static_cast<KObj_Oriented*>(Local<External>::Cast(
           args.This()->GetInternalField(0))->Value());
@@ -60,7 +96,7 @@ void Callback_Oriented_Translate(const FunctionCallbackInfo<v8::Value>& args) {
   //pointer_this->offset[3][2] = a->Get(2)->NumberValue();
 }
 
-void Callback_Oriented_PointAt(const FunctionCallbackInfo<v8::Value>& args) {
+void Callback_OKO_PointAt(const FunctionCallbackInfo<v8::Value>& args) {
   //// x, y, z, up x, up y, up z, origin
   // at, up x, up y, up z, origin
   if (args.IsConstructCall())
@@ -154,7 +190,7 @@ void Callback_Oriented_PointAt(const FunctionCallbackInfo<v8::Value>& args) {
   //pointer_this->offset[3][2] = a->Get(2)->NumberValue();
 }
 
-void Callback_Oriented_Rotate(const FunctionCallbackInfo<v8::Value>& args) {
+void Callback_OKO_Rotate(const FunctionCallbackInfo<v8::Value>& args) {
   if (args.IsConstructCall() || args.Length() == 0)
     return;
   if (!args[0]->IsArray())
