@@ -122,6 +122,14 @@ void Callback_Kdion_Blank(const v8::FunctionCallbackInfo<v8::Value>& args) {
   }
 }
 
+void Callback_KObj_SetName(const FunctionCallbackInfo<v8::Value>& args) {
+  KObj_Oriented* pointer_this =
+          static_cast<KObj_Oriented*>(Local<External>::Cast(
+              args.This()->GetInternalField(0))->Value());
+  pointer_this->name = std::string(*String::Utf8Value(args[0]));
+  //static_cast<Bird*>(pointer)->integrity = value->Int32Value();
+}
+
 void Callback_KObj_GetParent(const v8::FunctionCallbackInfo<v8::Value>& args) {
   //HandleScope handle_scope(isolate);
   if (!args.IsConstructCall()) {

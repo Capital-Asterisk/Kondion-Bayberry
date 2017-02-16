@@ -35,13 +35,15 @@ kdion.initialize(function() {
 	var e = new KObj_Entity();
 	e.translate(0.0, 0.5, 0.0);
 	kdion.e = e;
+	e.setName("Cube_Base");
 	
 	var left = new KObj_Entity();
 	left.translate(-1.0, -0.5, 0.0);
+	left.setName("Cube_Left");
 	
 	var top = new KObj_Entity();
 	top.translate(0.5, 1.0, 0.0);
-	
+	top.setName("Cube_Top");
 	
 	
 	camera.translate(0.0, 2.0, 6.0);

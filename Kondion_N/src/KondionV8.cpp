@@ -373,6 +373,9 @@ void Setup() {
   Local<FunctionTemplate> kobj_node = FunctionTemplate::New(isolate);
   kobj_node->InstanceTemplate()->SetInternalFieldCount(1);
   kobj_node->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "setName"),
+      FunctionTemplate::New(isolate, Callback_KObj_SetName));
+  kobj_node->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "getParent"),
       FunctionTemplate::New(isolate, Callback_KObj_GetParent));
   kobj_node->PrototypeTemplate()->Set(
