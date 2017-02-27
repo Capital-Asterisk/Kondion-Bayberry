@@ -47,6 +47,10 @@ const std::string KObj::GKO_World::myClass = "world";
 const std::string KObj::OKO_Camera_::myClass = "camera";
 const std::string KObj::OKO_Force::myClass = "force";
 
+const std::string KComponent::myClass = "how did this get here?";
+const std::string Component::CPN_Cube::myClass = "cube";
+const std::string Component::CPN_InfinitePlane::myClass = "infplane";
+
 std::vector<Renderer::RenderPass*> Renderer::RenderPass::passes;
 
 KObj_Node::KObj_Node() {
@@ -206,26 +210,16 @@ void GameLoop() {
   new Renderer::RenderPass(Renderer::RenderPass::DEFAULT, 1, 0, 0, true);
 
   JS::Start();
-  //printf("objects in world: %i\n", worldObject->children.size());
-  //KObj::OKO_Camera_ *a = new KObj::OKO_Camera_;
-  //a->offset = glm::translate(a->offset, glm::vec3(0.0f, 0.7f, 0.0f));
-  //a->offset = glm::rotate(a->offset, 0.3f, glm::vec3(1.0f, 0.0f, 0.0f));
-  KObj_Entity *b = new KObj_Entity;
-  b->components.insert(b->components.end(), new Component::CPN_InfinitePlane);
-  b->components[0]->offset = glm::rotate(b->components[0]->offset, 3.14159f / 2,
-                                         glm::vec3(1, 0, 0));
-  b->orientation = glm::translate(b->orientation, glm::vec3(0.0f, -0.0f, 0.0f));
-  b->physics = 0;
-  b->name = "Ground";
-  //printf("type: %i\n", a->getType());
-  //KObj_Entity *player = new KObj_Entity;
-  //player->components.insert(player->components.end(), new Component::CPN_Cube);
-  //player->offset = glm::translate(player->offset, glm::vec3(0.0f, 0.25f, 0.0f));
-  //player->offset = glm::rotate(player->offset, 0.1f, glm::vec3(1.0f, 0.0f, 0.0f));
-  //a->setParent(player);
-  //Renderer::currentCamera = a;
 
-  b->setParent(KObj_Node::worldObject);
+  //KObj_Entity *b = new KObj_Entity;
+  //b->components.insert(b->components.end(), new Component::CPN_InfinitePlane);
+  //b->components[0]->offset = glm::rotate(b->components[0]->offset, 3.14159f / 2,
+  //                                       glm::vec3(1, 0, 0));
+  //b->orientation = glm::translate(b->orientation, glm::vec3(0.0f, -0.0f, 0.0f));
+  //b->physics = 0;
+  //b->name = "Ground";
+
+  //b->setParent(KObj_Node::worldObject);
 
   // TODO: make a nice constructor, or not
   // gravity!
@@ -252,8 +246,8 @@ void GameLoop() {
   Input::AddControl("MOUSE_X", Input::INPUT_SYSTEM, Input::MOUSE_POSX);
   Input::AddControl("MOUSE_Y", Input::INPUT_SYSTEM, Input::MOUSE_POSY);
   Input::AddControl("MOUSE_BUTTON0", Input::INPUT_SYSTEM, Input::MOUSE_BUTTON);
-  Input::AddControl("D_R", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 0);
-  Input::AddControl("D_U", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 1);
+  //Input::AddControl("D_R", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 0);
+  //Input::AddControl("D_U", Input::INPUT_CONTROLLER, Input::CONTROLLER_AXIS + 1);
   Input::VirtualJoystick* f = new Input::VirtualJoystick(true, "MOVE");
   Input::AddControl("D_U", Input::INPUT_SYSTEM, 'W');
   Input::AddControl("D_L", Input::INPUT_SYSTEM, 'A');
@@ -263,7 +257,6 @@ void GameLoop() {
   //Input::AddControl("MOVE_X", Input::INPUT_SYSTEM, 'A');
   //Input::AddControl("MOVE_Y", Input::INPUT_SYSTEM, '2');
   //Input::AddControl("MOVE_Y", Input::INPUT_SYSTEM, 'W');
-
 
   Input::AddControl("DEBUGA", Input::INPUT_SYSTEM, 'K');
   Input::AddControl("DEBUGB", Input::INPUT_SYSTEM, 'L');

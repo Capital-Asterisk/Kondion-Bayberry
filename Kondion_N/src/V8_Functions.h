@@ -37,6 +37,8 @@ Persistent<Function, CopyablePersistentTraits<Function>> p_initialize;
 Persistent<Array, CopyablePersistentTraits<Array>> p_gupdate;
 Persistent<Object, CopyablePersistentTraits<Object>> p_input;
 
+Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_component;
+
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_kobj_node;
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_oko_camera;
 
@@ -77,6 +79,31 @@ void Callback_Kdion_Bird(const v8::FunctionCallbackInfo<v8::Value>& args) {
     args.This()->Set(String::NewFromUtf8(isolate, "crushed"),
                      Boolean::New(isolate, false));
     args.This()->SetInternalField(0, External::New(isolate, new Bird()));
+    args.GetReturnValue().Set(args.This());
+  }
+}
+
+void Callback_Component(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  //if (args.Length() < 1) return;
+  HandleScope handle_scope(isolate);
+
+  if (args.IsConstructCall()) {
+    //uprintf("A new bird has been created!\n");
+    KComponent* o;
+    std::string arg = std::string(*String::Utf8Value(args[0]));
+    if (arg == "infplane") {
+      o = new Component::CPN_InfinitePlane;
+    } else {
+      o = new Component::CPN_Cube;
+    }
+    //switch (*String::Utf8Value(args[0]))
+    //case "infplane":
+    //  o = new Component::CPN_InfinitePlane;
+    //  break;
+    //default:
+    //  o = new Component::CPN_Cube;
+    //  break;
+    args.This()->SetInternalField(0, External::New(isolate, o));
     args.GetReturnValue().Set(args.This());
   }
 }

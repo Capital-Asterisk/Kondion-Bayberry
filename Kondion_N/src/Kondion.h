@@ -171,10 +171,14 @@ class KObj_Instance : public KObj_Renderable {
 // Component part
 class KComponent {
  public:
+  static const std::string myClass;
   bool collide;
   bool renderable;
   KObj_Entity* parent;  // this caused my first circular dependency
   glm::mat4x4 offset;
+  virtual const std::string* getClass() {
+    return &myClass;
+  }
   virtual void render() {
 
   }
@@ -264,11 +268,19 @@ namespace Component {
 
 class CPN_Cube : public Kondion::KComponent {
  public:
+  static const std::string myClass;
+  const std::string* getClass() {
+    return &myClass;
+  }
   void render();
 };
 
 class CPN_InfinitePlane : public Kondion::KComponent {
  public:
+  static const std::string myClass;
+  const std::string* getClass() {
+    return &myClass;
+  }
   void render();
 };
 }
