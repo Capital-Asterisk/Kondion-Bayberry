@@ -368,6 +368,13 @@ void Setup() {
   chicken->Inherit(bird);
   chicken->InstanceTemplate()->SetInternalFieldCount(1);
 
+  // Component
+
+  Local<FunctionTemplate> kcomponent = FunctionTemplate::New(
+      isolate, Callback_Component);
+  kcomponent->InstanceTemplate()->SetInternalFieldCount(1);
+
+
   // KObj constructors
 
   Local<FunctionTemplate> kobj_node = FunctionTemplate::New(isolate);
@@ -381,6 +388,9 @@ void Setup() {
   kobj_node->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "setParent"),
       FunctionTemplate::New(isolate, Callback_KObj_SetParent));
+  kobj_node->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "addComponent"),
+      FunctionTemplate::New(isolate, Callback_KObj_AddComponent));
   //kobj_node->HasInstance(object)
 
   Local<FunctionTemplate> kobj_oriented = FunctionTemplate::New(isolate);
@@ -434,6 +444,7 @@ void Setup() {
 
   global->Set(String::NewFromUtf8(isolate, "kdion"), kdion);
 
+  global->Set(String::NewFromUtf8(isolate, "KCompnent"), kcomponent);
   global->Set(String::NewFromUtf8(isolate, "KObj_Node"), kobj_node);
   global->Set(String::NewFromUtf8(isolate, "KObj_Oriented"), kobj_oriented);
   global->Set(String::NewFromUtf8(isolate, "KObj_Entity"), kobj_entity);
@@ -500,6 +511,8 @@ void Setup() {
   // Make persistent handles
   p_context = Persistent<Context, CopyablePersistentTraits<Context>>(isolate,
                                                                      context);
+  p_component = Persistent<FunctionTemplate,
+       CopyablePersistentTraits<FunctionTemplate>>(isolate, kcomponent);
   p_kobj_node = Persistent<FunctionTemplate,
       CopyablePersistentTraits<FunctionTemplate>>(isolate, kobj_node);
   p_gupdate = Persistent<Array, CopyablePersistentTraits<Array>>(

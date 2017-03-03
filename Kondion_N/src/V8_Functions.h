@@ -96,6 +96,9 @@ void Callback_Component(const v8::FunctionCallbackInfo<v8::Value>& args) {
     } else {
       o = new Component::CPN_Cube;
     }
+    o->jsObject = new Persistent<v8::Object,
+        CopyablePersistentTraits<v8::Object>>(isolate, args.This());
+    printf("New component: %s\n", o->getClass()->c_str());
     //switch (*String::Utf8Value(args[0]))
     //case "infplane":
     //  o = new Component::CPN_InfinitePlane;
@@ -171,6 +174,24 @@ void Callback_KObj_GetParent(const v8::FunctionCallbackInfo<v8::Value>& args) {
     Local<v8::Object> o = Local<v8::Object>::New(isolate, *p);
     args.GetReturnValue().Set(o);
   }
+}
+
+void Callback_KObj_AddComponent(const v8::FunctionCallbackInfo<v8::Value>& args) {
+  if (args.IsConstructCall() || args.Length() == 0)
+    return;
+
+  Local<FunctionTemplate> f = Local<FunctionTemplate>::New(isolate,
+                                                           p_component);
+  printf("Arg0 is component: %i\n", f->HasInstance(args[0]));
+
+  if (!f->HasInstance(args[0]))
+    return;
+  KObj_Entity* pointer_this = static_cast<KObj_Entity*>(Local<External>::Cast(
+      args.This()->GetInternalField(0))->Value());
+  KComponent* pointer_arg0 = static_cast<KComponent*>(Local<External>::Cast(
+      Local<Object>::Cast(args[0])->GetInternalField(0))->Value());
+
+  pointer_this->components.push_back(pointer_arg0);
 }
 
 void Callback_KObj_SetParent(const v8::FunctionCallbackInfo<v8::Value>& args) {

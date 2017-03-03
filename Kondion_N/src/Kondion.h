@@ -175,6 +175,7 @@ class KComponent {
   bool collide;
   bool renderable;
   KObj_Entity* parent;  // this caused my first circular dependency
+  void* jsObject;
   glm::mat4x4 offset;
   virtual const std::string* getClass() {
     return &myClass;

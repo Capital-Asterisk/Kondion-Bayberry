@@ -29,10 +29,13 @@ kdion.initialize(function() {
 	kdion.log("Bird is integrity: " + c.integrity);
 	kdion.log("World: " + kdion.World)
 	
+	var flor = new KCompnent("infplane");
+	
 	var camera = new OKO_Camera_();
 	camera.setParent(kdion.World);
 	
 	var e = new KObj_Entity();
+	e.addComponent(flor);
 	e.translate(0.0, 0.5, 0.0);
 	kdion.e = e;
 	e.setName("Cube_Base");
