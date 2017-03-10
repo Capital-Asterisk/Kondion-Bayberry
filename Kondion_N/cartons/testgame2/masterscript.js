@@ -33,7 +33,7 @@ kdion.initialize(function() {
 	
 	var camera = new OKO_Camera_();
 	camera.setParent(kdion.World);
-	
+
 	var e = new KObj_Entity();
 	e.addComponent(flor);
 	e.translate(0.0, 0.5, 0.0);
@@ -60,6 +60,18 @@ kdion.initialize(function() {
 	kdion.load({textures: ["tiles_diff", "tiles_norm"]});
 	kdion.load({textures: 5});
 	kdion.camera = camera;
+	
+	//kdion.log(mat4.identity);
+	var tm = mat4.fromValues(1);
+	mat4.identity(tm);
+	kdion.log("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
+	//kdion.log("[" + tm.join(", ") + "]");
+	kdion.log("["
+		+ tm[0] + ", " + tm[1] + ", " + tm[2] + ", " + tm[3] + "]\n["
+		+ tm[4] + ", " + tm[5] + ", " + tm[6] + ", " + tm[7] + "]\n["
+		+ tm[8] + ", " + tm[9] + ", " + tm[10] + ", " + tm[11] + "]\n["
+		+ tm[12] + ", " + tm[13] + ", " + tm[14] + ", " + tm[15] + "]\n");
+	flor.setMatrix(tm);
 });
 
 kdion.globalUpdate(function() {

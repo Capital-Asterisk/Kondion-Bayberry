@@ -259,6 +259,7 @@ void Destroy() {
   p_kobj_node.Reset();
   p_oko_camera.Reset();
   p_context.Reset();
+  p_component.Reset();
   p_gupdate.Reset();
   p_input.Reset();
   //for (uint16_t i = 0; i < ON::objects.size(); i++) {
@@ -373,6 +374,10 @@ void Setup() {
   Local<FunctionTemplate> kcomponent = FunctionTemplate::New(
       isolate, Callback_Component);
   kcomponent->InstanceTemplate()->SetInternalFieldCount(1);
+
+  kcomponent->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "setMatrix"),
+      FunctionTemplate::New(isolate, Callback_Component_SetMatrix));
 
 
   // KObj constructors

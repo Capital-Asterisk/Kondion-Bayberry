@@ -111,6 +111,15 @@ void Callback_Component(const v8::FunctionCallbackInfo<v8::Value>& args) {
   }
 }
 
+void Callback_Component_SetMatrix(const FunctionCallbackInfo<v8::Value>& args) {
+  KComponent* pointer_this =
+          static_cast<KComponent*>(Local<External>::Cast(
+              args.This()->GetInternalField(0))->Value());
+  Debug::printMatrix(pointer_this->offset);
+  //pointer_this->offset[0][0];
+  //static_cast<Bird*>(pointer)->integrity = value->Int32Value();
+}
+
 void Callback_KObj_Entity(const FunctionCallbackInfo<v8::Value>& args) {
   HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {
@@ -118,21 +127,6 @@ void Callback_KObj_Entity(const FunctionCallbackInfo<v8::Value>& args) {
     KObj_Entity* o = new KObj_Entity();
     o->physics = 1;
     o->components.push_back(new Component::CPN_Cube);
-    o->jsObject = new Persistent<v8::Object,
-        CopyablePersistentTraits<v8::Object>>(isolate, args.This());
-    //Kondion::world.push_back(o);
-    args.This()->SetInternalField(0, External::New(isolate, o));
-    args.GetReturnValue().Set(args.This());
-  }
-}
-
-void Callback_GKO_World(const FunctionCallbackInfo<v8::Value>& args) {
-  HandleScope handle_scope(isolate);
-  if (args.IsConstructCall()) {
-    printf("New World\n");
-    KObj::GKO_World* o = new KObj::GKO_World;
-    //o->components.push_back(new Component::CPN_Cube);
-    o->name = "World";
     o->jsObject = new Persistent<v8::Object,
         CopyablePersistentTraits<v8::Object>>(isolate, args.This());
     //Kondion::world.push_back(o);
@@ -229,6 +223,21 @@ void Callback_KObj_SetParent(const v8::FunctionCallbackInfo<v8::Value>& args) {
       Local<Object>::Cast(args[0])->GetInternalField(0))->Value());
 
   pointer_this->setParent(pointer_arg0);
+}
+
+void Callback_GKO_World(const FunctionCallbackInfo<v8::Value>& args) {
+  HandleScope handle_scope(isolate);
+  if (args.IsConstructCall()) {
+    printf("New World\n");
+    KObj::GKO_World* o = new KObj::GKO_World;
+    //o->components.push_back(new Component::CPN_Cube);
+    o->name = "World";
+    o->jsObject = new Persistent<v8::Object,
+        CopyablePersistentTraits<v8::Object>>(isolate, args.This());
+    //Kondion::world.push_back(o);
+    args.This()->SetInternalField(0, External::New(isolate, o));
+    args.GetReturnValue().Set(args.This());
+  }
 }
 
 void Callback_KObj_World_GetCamera(Local<String> property,
