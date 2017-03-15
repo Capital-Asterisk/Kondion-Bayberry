@@ -66,6 +66,7 @@ kdion.initialize(function() {
 	mat4.identity(tm);
 	kdion.log("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
 	//kdion.log("[" + tm.join(", ") + "]");
+	mat4.translate(tm, tm, [11, 22, 33]);
 	kdion.log("["
 		+ tm[0] + ", " + tm[1] + ", " + tm[2] + ", " + tm[3] + "]\n["
 		+ tm[4] + ", " + tm[5] + ", " + tm[6] + ", " + tm[7] + "]\n["

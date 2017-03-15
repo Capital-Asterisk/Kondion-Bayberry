@@ -49,7 +49,7 @@ Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_oko_c
 // position(in, origin);
 // getMatrix(in, what, origin (optional))
 
-class ArrayBufferAllocator : public v8::ArrayBuffer::Allocator {
+class ArrayBufferAllocator : public ArrayBuffer::Allocator {
  public:
   virtual void* Allocate(size_t length) {
     void* data = AllocateUninitialized(length);
@@ -68,7 +68,7 @@ class Bird {
   uint32_t integrity = 0;
 };
 
-void Callback_Kdion_Bird(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void Callback_Kdion_Bird(const FunctionCallbackInfo<Value>& args) {
   //if (args.Length() < 1) return;
   HandleScope handle_scope(isolate);
   //Local<ObjectTemplate> f = ObjectTemplate::New(isolate);
@@ -83,7 +83,7 @@ void Callback_Kdion_Bird(const v8::FunctionCallbackInfo<v8::Value>& args) {
   }
 }
 
-void Callback_Component(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void Callback_Component(const FunctionCallbackInfo<Value>& args) {
   //if (args.Length() < 1) return;
   HandleScope handle_scope(isolate);
 
@@ -96,8 +96,8 @@ void Callback_Component(const v8::FunctionCallbackInfo<v8::Value>& args) {
     } else {
       o = new Component::CPN_Cube;
     }
-    o->jsObject = new Persistent<v8::Object,
-        CopyablePersistentTraits<v8::Object>>(isolate, args.This());
+    o->jsObject = new Persistent<Object,
+        CopyablePersistentTraits<Object>>(isolate, args.This());
     printf("New component: %s\n", o->getClass()->c_str());
     //switch (*String::Utf8Value(args[0]))
     //case "infplane":
@@ -111,31 +111,82 @@ void Callback_Component(const v8::FunctionCallbackInfo<v8::Value>& args) {
   }
 }
 
-void Callback_Component_SetMatrix(const FunctionCallbackInfo<v8::Value>& args) {
+void Callback_Component_GetMatrix(const FunctionCallbackInfo<Value>& args) {
+  if (args.IsConstructCall() || args.Length() == 0
+      || !(args[0]->IsFloat32Array() || args[0]->IsArray()))
+    return;
   KComponent* pointer_this =
           static_cast<KComponent*>(Local<External>::Cast(
               args.This()->GetInternalField(0))->Value());
   Debug::printMatrix(pointer_this->offset);
+
+  Local<Float32Array> a = Local<Float32Array>::Cast(args[0]);
+  a->Set(0, Number::New(isolate, pointer_this->offset[3][0]));
+  a->Set(1, Number::New(isolate, pointer_this->offset[3][1]));
+  a->Set(2, Number::New(isolate, pointer_this->offset[3][2]));
   //pointer_this->offset[0][0];
   //static_cast<Bird*>(pointer)->integrity = value->Int32Value();
 }
 
-void Callback_KObj_Entity(const FunctionCallbackInfo<v8::Value>& args) {
+void Callback_Component_SetMatrix(const FunctionCallbackInfo<Value>& args) {
+  if (args.IsConstructCall() || args.Length() == 0
+      || !(args[0]->IsFloat32Array() || args[0]->IsArray()))
+    return;
+
+  KComponent* pointer_this =
+          static_cast<KComponent*>(Local<External>::Cast(
+              args.This()->GetInternalField(0))->Value());
+  //pointer_this->offset = glm::translate(pointer_this->offset, glm::vec3(111, 222, 333));
+
+  Local<Float32Array> a = Local<Float32Array>::Cast(args[0]);
+
+  //const float* b = glm::value_ptr(pointer_this->offset);
+  //for (uint8_t i = 0; i < 16; i ++)
+  //  b[i] = a->Get(i)->NumberValue();
+
+  // TODO: make this more efficient or something
+
+  pointer_this->offset[0][0] = a->Get(0)->NumberValue();
+  pointer_this->offset[0][1] = a->Get(1)->NumberValue();
+  pointer_this->offset[0][2] = a->Get(2)->NumberValue();
+  pointer_this->offset[0][3] = a->Get(3)->NumberValue();
+
+  pointer_this->offset[1][0] = a->Get(4)->NumberValue();
+  pointer_this->offset[1][1] = a->Get(5)->NumberValue();
+  pointer_this->offset[1][2] = a->Get(6)->NumberValue();
+  pointer_this->offset[1][3] = a->Get(7)->NumberValue();
+
+  pointer_this->offset[2][0] = a->Get(8)->NumberValue();
+  pointer_this->offset[2][1] = a->Get(9)->NumberValue();
+  pointer_this->offset[2][2] = a->Get(10)->NumberValue();
+  pointer_this->offset[2][3] = a->Get(11)->NumberValue();
+
+  pointer_this->offset[3][0] = a->Get(12)->NumberValue();
+  pointer_this->offset[3][1] = a->Get(13)->NumberValue();
+  pointer_this->offset[3][2] = a->Get(14)->NumberValue();
+  pointer_this->offset[3][3] = a->Get(15)->NumberValue();
+
+  printf("New matrix: \n");
+  Debug::printMatrix(pointer_this->offset);
+  //static_cast<Bird*>(pointer)->integrity = value->Int32Value();
+}
+
+void Callback_KObj_Entity(const FunctionCallbackInfo<Value>& args) {
   HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {
     printf("New Entity\n");
     KObj_Entity* o = new KObj_Entity();
     o->physics = 1;
     o->components.push_back(new Component::CPN_Cube);
-    o->jsObject = new Persistent<v8::Object,
-        CopyablePersistentTraits<v8::Object>>(isolate, args.This());
+    o->jsObject = new Persistent<Object,
+        CopyablePersistentTraits<Object>>(isolate, args.This());
     //Kondion::world.push_back(o);
     args.This()->SetInternalField(0, External::New(isolate, o));
     args.GetReturnValue().Set(args.This());
   }
 }
 
-void Callback_Kdion_Blank(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void Callback_Kdion_Blank(const FunctionCallbackInfo<Value>& args) {
   //HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {
     //KObj_Entity* f = new KObj_Entity();
@@ -146,7 +197,7 @@ void Callback_Kdion_Blank(const v8::FunctionCallbackInfo<v8::Value>& args) {
   }
 }
 
-void Callback_KObj_SetName(const FunctionCallbackInfo<v8::Value>& args) {
+void Callback_KObj_SetName(const FunctionCallbackInfo<Value>& args) {
   KObj_Oriented* pointer_this =
           static_cast<KObj_Oriented*>(Local<External>::Cast(
               args.This()->GetInternalField(0))->Value());
@@ -154,23 +205,23 @@ void Callback_KObj_SetName(const FunctionCallbackInfo<v8::Value>& args) {
   //static_cast<Bird*>(pointer)->integrity = value->Int32Value();
 }
 
-void Callback_KObj_GetParent(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void Callback_KObj_GetParent(const FunctionCallbackInfo<Value>& args) {
   //HandleScope handle_scope(isolate);
   if (!args.IsConstructCall()) {
-    //printf("%s\n", static_cast<Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>>(static_cast<KObj_Node*>(args.This()->GetInternalField(0)->Value())->getParent()->jsObject)->name);
+    //printf("%s\n", static_cast<Persistent<Object, CopyablePersistentTraits<Object>>>(static_cast<KObj_Node*>(args.This()->GetInternalField(0)->Value())->getParent()->jsObject)->name);
     Local<External> wrap = Local<External>::Cast(
         args.This()->GetInternalField(0));
     KObj_Node* pointer = static_cast<KObj_Node*>(wrap->Value());
-    Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>* p;
+    Persistent<Object, CopyablePersistentTraits<Object>>* p;
     p =
-        static_cast<Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>*>(pointer
+        static_cast<Persistent<Object, CopyablePersistentTraits<Object>>*>(pointer
             ->jsObject);
-    Local<v8::Object> o = Local<v8::Object>::New(isolate, *p);
+    Local<Object> o = Local<Object>::New(isolate, *p);
     args.GetReturnValue().Set(o);
   }
 }
 
-void Callback_KObj_AddComponent(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void Callback_KObj_AddComponent(const FunctionCallbackInfo<Value>& args) {
   if (args.IsConstructCall() || args.Length() == 0)
     return;
 
@@ -188,7 +239,7 @@ void Callback_KObj_AddComponent(const v8::FunctionCallbackInfo<v8::Value>& args)
   pointer_this->components.push_back(pointer_arg0);
 }
 
-void Callback_KObj_SetParent(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void Callback_KObj_SetParent(const FunctionCallbackInfo<Value>& args) {
   if (args.IsConstructCall() || args.Length() == 0)
     return;
   // A mess
@@ -207,9 +258,9 @@ void Callback_KObj_SetParent(const v8::FunctionCallbackInfo<v8::Value>& args) {
   //    args.This()->GetInternalField(0))->Value());
   //printf("args: %i\n", args.Length());
   //pointer->setParent(node);
-  //Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>* p;
-  //p = static_cast<Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>*>(pointer->jsObject);
-  //Local<v8::Object> o = Local<v8::Object>::New(isolate, *p);
+  //Persistent<Object, CopyablePersistentTraits<Object>>* p;
+  //p = static_cast<Persistent<Object, CopyablePersistentTraits<Object>>*>(pointer->jsObject);
+  //Local<Object> o = Local<Object>::New(isolate, *p);
   //args.GetReturnValue().Set(o);
   Local<FunctionTemplate> f = Local<FunctionTemplate>::New(isolate,
                                                            p_kobj_node);
@@ -225,15 +276,15 @@ void Callback_KObj_SetParent(const v8::FunctionCallbackInfo<v8::Value>& args) {
   pointer_this->setParent(pointer_arg0);
 }
 
-void Callback_GKO_World(const FunctionCallbackInfo<v8::Value>& args) {
+void Callback_GKO_World(const FunctionCallbackInfo<Value>& args) {
   HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {
     printf("New World\n");
     KObj::GKO_World* o = new KObj::GKO_World;
     //o->components.push_back(new Component::CPN_Cube);
     o->name = "World";
-    o->jsObject = new Persistent<v8::Object,
-        CopyablePersistentTraits<v8::Object>>(isolate, args.This());
+    o->jsObject = new Persistent<Object,
+        CopyablePersistentTraits<Object>>(isolate, args.This());
     //Kondion::world.push_back(o);
     args.This()->SetInternalField(0, External::New(isolate, o));
     args.GetReturnValue().Set(args.This());
@@ -247,10 +298,10 @@ void Callback_KObj_World_GetCamera(Local<String> property,
   //void* pointer = wrap->Value();
   if (Renderer::currentCamera == NULL)
     return;
-  Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>* p =
-      static_cast<Persistent<v8::Object, CopyablePersistentTraits<v8::Object>>*>(Renderer::currentCamera
+  Persistent<Object, CopyablePersistentTraits<Object>>* p =
+      static_cast<Persistent<Object, CopyablePersistentTraits<Object>>*>(Renderer::currentCamera
           ->jsObject);
-  Local<v8::Object> o = Local<v8::Object>::New(isolate, *p);
+  Local<Object> o = Local<Object>::New(isolate, *p);
   info.GetReturnValue().Set(o);
 }
 
@@ -285,7 +336,7 @@ void Callback_Bird_SetIntegrity(Local<String> property, Local<Value> value,
 }
 
 void Callback_Kdion_GlobalUpdate(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
+    const FunctionCallbackInfo<Value>& args) {
   if (args.Length() < 1)
     return;
   HandleScope handle_scope(isolate);
@@ -297,7 +348,7 @@ void Callback_Kdion_GlobalUpdate(
 }
 
 void Callback_Kdion_Initialize(
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
+    const FunctionCallbackInfo<Value>& args) {
   if (args.Length() < 1)
     return;
   HandleScope handle_scope(isolate);
@@ -309,7 +360,7 @@ void Callback_Kdion_Initialize(
   }
 }
 
-void Callback_Kdion_Load(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void Callback_Kdion_Load(const FunctionCallbackInfo<Value>& args) {
   if (args.Length() < 1)
     return;
   if (!args[0]->IsObject())
@@ -332,7 +383,7 @@ void Callback_Kdion_Load(const v8::FunctionCallbackInfo<v8::Value>& args) {
   //printf("%s\n", *String::Utf8Value(args[0]));
 }
 
-void Callback_Kdion_Log(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void Callback_Kdion_Log(const FunctionCallbackInfo<Value>& args) {
   if (args.Length() < 1)
     return;
   HandleScope handle_scope(isolate);
@@ -340,7 +391,7 @@ void Callback_Kdion_Log(const v8::FunctionCallbackInfo<v8::Value>& args) {
 }
 
 
-void Callback_Kdion_Require(const v8::FunctionCallbackInfo<v8::Value>& args) {
+void Callback_Kdion_Require(const FunctionCallbackInfo<Value>& args) {
   if (args.Length() < 1)
     return;
   printf("[JS] Running script: %s\n", *String::Utf8Value(args[0]));
