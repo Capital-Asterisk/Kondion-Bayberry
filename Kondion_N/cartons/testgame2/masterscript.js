@@ -9,70 +9,55 @@ kdion.initialize(function() {
 	
 	kdion.log("Hello world");
 	kdion.Bird();
-	var f = new kdion.Bird();
-	kdion.log("Bird: " + f);
-	kdion.log("Bird is crushed: " + f.crushed);
-	kdion.log("Bird integrity: " + f.integrity);
-	kdion.log("Crushing bird...");
-	f.crushed = true;
-	f.integrity = 5.5;
-	kdion.log("Bird is crushed: " + f.crushed);
-	kdion.log("Bird is integrity: " + f.integrity);
-	var c = new kdion.Chicken();
-	kdion.log("Bird: " + c);
-	kdion.log("Bird is crushed: " + c.crushed);
-	kdion.log("Bird integrity: " + c.integrity);
-	kdion.log("Crushing bird...");
-	c.crushed = true;
-	c.integrity = 5.5;
-	kdion.log("Bird is crushed: " + c.crushed);
-	kdion.log("Bird is integrity: " + c.integrity);
-	kdion.log("World: " + kdion.World)
 	
-	var flor = new KCompnent("infplane");
+	var ground = new KObj_Entity();
+	var flat = new KCompnent("infplane");
+	var tm = mat4.create();
+	mat4.rotateX(tm, tm, Math.PI / 2);
+	flat.setMatrix(tm);
+	ground.addComponent(flat);
+	ground.translate(0.0, -0.0, 0.0);
+	ground.setName("Ground");
+	ground.setParent(kdion.World);
 	
 	var camera = new OKO_Camera_();
+	camera.translate(0.0, 2.0, 6.0);
 	camera.setParent(kdion.World);
 
+	// BUG: add children after adding it to the world
+	
 	var e = new KObj_Entity();
-	e.addComponent(flor);
 	e.translate(0.0, 0.5, 0.0);
-	kdion.e = e;
 	e.setName("Cube_Base");
+	e.setParent(kdion.World);
+	kdion.e = e;
 	
 	var left = new KObj_Entity();
-	left.translate(-1.0, -0.5, 0.0);
+	left.translate(-0.5, 0.5, 0.0);
 	left.setName("Cube_Left");
+	left.setParent(e);
 	
 	var top = new KObj_Entity();
 	top.translate(0.5, 1.0, 0.0);
 	top.setName("Cube_Top");
-	
-	
-	camera.translate(0.0, 2.0, 6.0);
-	//kdion.log(kdion.camera);
-	
-	
-	e.setParent(kdion.World, "hey theretttt", 5, 5, 8);
 	top.setParent(e);
-	left.setParent(top);
 	
 	kdion.load({textures: ["tiles_diff", "tiles_norm"]});
 	kdion.load({textures: 5});
 	kdion.camera = camera;
 	
 	//kdion.log(mat4.identity);
-	var tm = mat4.fromValues(1);
-	mat4.identity(tm);
+	//var tm = mat4.fromValues(1);
+	//mat4.identity(tm);
 	kdion.log("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
 	//kdion.log("[" + tm.join(", ") + "]");
-	mat4.translate(tm, tm, [11, 22, 33]);
-	kdion.log("["
-		+ tm[0] + ", " + tm[1] + ", " + tm[2] + ", " + tm[3] + "]\n["
-		+ tm[4] + ", " + tm[5] + ", " + tm[6] + ", " + tm[7] + "]\n["
-		+ tm[8] + ", " + tm[9] + ", " + tm[10] + ", " + tm[11] + "]\n["
-		+ tm[12] + ", " + tm[13] + ", " + tm[14] + ", " + tm[15] + "]\n");
-	flor.setMatrix(tm);
+	//mat4.translate(tm, tm, [11, 22, 33]);
+	//mat4.rotateX(tm, tm, Math.PI / 2);
+	//kdion.log("["
+	//	+ tm[0] + ", " + tm[1] + ", " + tm[2] + ", " + tm[3] + "]\n["
+	//	+ tm[4] + ", " + tm[5] + ", " + tm[6] + ", " + tm[7] + "]\n["
+	//	+ tm[8] + ", " + tm[9] + ", " + tm[10] + ", " + tm[11] + "]\n["
+	//	+ tm[12] + ", " + tm[13] + ", " + tm[14] + ", " + tm[15] + "]\n");
 });
 
 kdion.globalUpdate(function() {
