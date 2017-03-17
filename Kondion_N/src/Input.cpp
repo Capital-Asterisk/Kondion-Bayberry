@@ -1,5 +1,5 @@
 /*
- * Input.cpp
+p * Input.cpp
  *
  *  Created on: Oct 29, 2016
  *      Author: neal
@@ -88,13 +88,13 @@ uint16_t AddControl(const std::string& name, uint8_t device, uint16_t button) {
     //printf("birds: %i, compared: %i\n", i, compared);
     //i--;
     //}
-    printf("BIRDS! %s\n", name.c_str());
+    //printf("BIRDS! %s\n", name.c_str());
     while (i != 0 && compared != 0) {
       i--;
       compared = name.compare(Control::controls[i]->name);
       //compared = strcmp(name.c_str(), controls[i]->name.c_str());
-      printf("%s -- %s comparison: %i\n", name.c_str(),
-             Control::controls[i]->name.c_str(), compared);
+      //printf("%s -- %s comparison: %i\n", name.c_str(),
+       //      Control::controls[i]->name.c_str(), compared);
     };
     i++;
   }

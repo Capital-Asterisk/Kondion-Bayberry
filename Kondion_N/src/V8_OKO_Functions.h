@@ -28,7 +28,7 @@ void Callback_OKO_Camera(const FunctionCallbackInfo<v8::Value>& args) {
   if (!args.IsConstructCall())
     return;
   HandleScope handle_scope(isolate);
-  printf("New Camera\n");
+  printf("NEW: Camera\n");
   KObj::OKO_Camera_* o = new KObj::OKO_Camera_();
   //o->components.push_back(new Component::CPN_Cube);
   o->jsObject = new Persistent<v8::Object,

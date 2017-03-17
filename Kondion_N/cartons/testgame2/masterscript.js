@@ -8,7 +8,7 @@ kdion.initialize(function() {
 	OKO_Camera_ = OKO_Camera;
 	
 	kdion.log("Hello world");
-	kdion.Bird();
+	//kdion.Bird();
 	
 	var ground = new KObj_Entity();
 	var flat = new KCompnent("infplane");

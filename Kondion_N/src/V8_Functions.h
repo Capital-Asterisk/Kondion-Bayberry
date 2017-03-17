@@ -98,7 +98,7 @@ void Callback_Component(const FunctionCallbackInfo<Value>& args) {
     }
     o->jsObject = new Persistent<Object,
         CopyablePersistentTraits<Object>>(isolate, args.This());
-    printf("New component: %s\n", o->getClass()->c_str());
+    printf("NEW: kcomponent: %s\n", o->getClass()->c_str());
     //switch (*String::Utf8Value(args[0]))
     //case "infplane":
     //  o = new Component::CPN_InfinitePlane;
@@ -166,15 +166,15 @@ void Callback_Component_SetMatrix(const FunctionCallbackInfo<Value>& args) {
   pointer_this->offset[3][2] = a->Get(14)->NumberValue();
   pointer_this->offset[3][3] = a->Get(15)->NumberValue();
 
-  printf("New matrix: \n");
-  Debug::printMatrix(pointer_this->offset);
+  //printf("New matrix: \n");
+  //Debug::printMatrix(pointer_this->offset);
   //static_cast<Bird*>(pointer)->integrity = value->Int32Value();
 }
 
 void Callback_KObj_Entity(const FunctionCallbackInfo<Value>& args) {
   HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {
-    printf("New Entity\n");
+    printf("NEW: Entity\n");
     KObj_Entity* o = new KObj_Entity();
     o->physics = 1;
     o->components.push_back(new Component::CPN_Cube);
@@ -227,7 +227,7 @@ void Callback_KObj_AddComponent(const FunctionCallbackInfo<Value>& args) {
 
   Local<FunctionTemplate> f = Local<FunctionTemplate>::New(isolate,
                                                            p_component);
-  printf("Arg0 is component: %i\n", f->HasInstance(args[0]));
+  //printf("Arg0 is component: %i\n", f->HasInstance(args[0]));
 
   if (!f->HasInstance(args[0]))
     return;
@@ -264,7 +264,7 @@ void Callback_KObj_SetParent(const FunctionCallbackInfo<Value>& args) {
   //args.GetReturnValue().Set(o);
   Local<FunctionTemplate> f = Local<FunctionTemplate>::New(isolate,
                                                            p_kobj_node);
-  printf("Arg0 is kobj_node: %i\n", f->HasInstance(args[0]));
+  //printf("Arg0 is kobj_node: %i\n", f->HasInstance(args[0]));
 
   if (!f->HasInstance(args[0]))
     return;
@@ -279,7 +279,7 @@ void Callback_KObj_SetParent(const FunctionCallbackInfo<Value>& args) {
 void Callback_GKO_World(const FunctionCallbackInfo<Value>& args) {
   HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {
-    printf("New World\n");
+    printf("NEW: World\n");
     KObj::GKO_World* o = new KObj::GKO_World;
     //o->components.push_back(new Component::CPN_Cube);
     o->name = "World";
@@ -309,7 +309,7 @@ void Callback_KObj_World_SetCamera(Local<String> property, Local<Value> value,
                                    const PropertyCallbackInfo<void>& info) {
   Local<FunctionTemplate> f = Local<FunctionTemplate>::New(isolate,
                                                            p_oko_camera);
-  printf("Arg0 is camera: %i\n", f->HasInstance(value));
+  //printf("Arg0 is camera: %i\n", f->HasInstance(value));
   if (!f->HasInstance(value))
     return;
   Local<External> wrap = Local<External>::Cast(
@@ -387,7 +387,7 @@ void Callback_Kdion_Log(const FunctionCallbackInfo<Value>& args) {
   if (args.Length() < 1)
     return;
   HandleScope handle_scope(isolate);
-  printf("%s\n", *String::Utf8Value(args[0]));
+  printf("JS Log: %s\n", *String::Utf8Value(args[0]));
 }
 
 

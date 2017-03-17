@@ -61,7 +61,7 @@ KObj_Node::KObj_Node() {
   treeSize = 0;
   drawLayer = 1;
   name = "NotSmoothBlockModel";
-  printf("hey there\n");
+  //printf("hey there\n");
   // TODO make this not overflow
   all.push_back(this);
   allIndex = all.size() - 1;
@@ -211,16 +211,6 @@ void GameLoop() {
 
   JS::Start();
 
-  //KObj_Entity *b = new KObj_Entity;
-  //b->components.insert(b->components.end(), new Component::CPN_InfinitePlane);
-  //b->components[0]->offset = glm::rotate(b->components[0]->offset, 3.14159f / 2,
-  //                                       glm::vec3(1, 0, 0));
-  //b->orientation = glm::translate(b->orientation, glm::vec3(0.0f, -0.0f, 0.0f));
-  //b->physics = 0;
-  //b->name = "Ground";
-
-  //b->setParent(KObj_Node::worldObject);
-
   // TODO: make a nice constructor, or not
   // gravity!
   KObj::OKO_Force* gravity = new KObj::OKO_Force;
@@ -228,7 +218,7 @@ void GameLoop() {
   gravity->direction = 1;
   gravity->shape = 0;
   gravity->falloff = 0;
-  gravity->strength = 0;//9.80665223;
+  gravity->strength = 0.0;//9.80665223;
   gravity->size = 0;
   // rotate to point downwards
   //gravity->orientation = glm::rotate(

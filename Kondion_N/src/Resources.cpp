@@ -273,7 +273,7 @@ Raw* Get(const std::string& url) {
           tinydir_readfile(&dir, &file);
 
           // print file name for fun
-          printf("%s\n", file.name);
+          //printf("%s\n", file.name);
 
           // choose the next file, for the next loop.
           tinydir_next(&dir);
@@ -294,7 +294,7 @@ Raw* Get(const std::string& url) {
               // now the name can be compared with the one in the current path.
               if (name == current) {
                 // the correct resource has been found, return a new raw data.
-                printf("Resource found: %s\n", file.path);
+                //printf("Resource found: %s\n", file.path);
                 return new Raw(std::string(file.path));
               }
             }
@@ -306,13 +306,13 @@ Raw* Get(const std::string& url) {
 
               // TODO make this more efficient
               if (name == current.substr(0, found)) {
-                printf("Enter directory: %s\n",
-                       current.substr(0, found).c_str());
+                //printf("Enter directory: %s\n",
+                //       current.substr(0, found).c_str());
 
                 tinydir_open(&dir, file.path);
 
                 current = current.substr(found + 1, current.size() - 1);
-                printf("entered directory, path: %s\n", current.c_str());
+                //printf("entered directory, path: %s\n", current.c_str());
 
               }
 

@@ -32,7 +32,8 @@ size_t Parse(const std::string& s) {
   HandleScope handle_scope(isolate);
   Local<Context> context = Local<Context>::New(isolate, p_context);
   Context::Scope context_scope(context);
-  printf("%s", s.c_str());
+  //printf("%s", s.c_str());
+  printf("Parsing some JSON\n");
   Local<String> str =
       String::NewFromUtf8(isolate, s.c_str(), NewStringType::kNormal)
           .ToLocalChecked();
@@ -476,12 +477,12 @@ void Setup() {
                                          input);
 
   // World
-  printf("something\n");
+  //printf("something\n");
   Local<Value> o = gko_world->GetFunction()->CallAsConstructor(context, 0, NULL)
       .ToLocalChecked();
-  printf("something else\n");
+  //printf("something else\n");
   Local<Object> world = o->ToObject(isolate);
-  printf("woot\n");
+  //printf("woot\n");
   KObj_Node::worldObject = static_cast<KObj::GKO_World*>(Local<External>::Cast(
       world->GetInternalField(0))->Value());
   // really?

@@ -121,7 +121,7 @@ void Setup() {
   baostring << bf->stream->rdbuf();
   //delete bf;
 
-  printf("abostring: %s", abostring.str().c_str());
+  //printf("abostring: %s", abostring.str().c_str());
 
   GLuint monotex_vert = CompileShader(GL_VERTEX_SHADER, aaostring.str(),
                                       "Temporary Monotexture shader (VERT)");
@@ -360,7 +360,7 @@ void RenderPass::consider(KObj_Renderable* a) {
 void RenderPass::generate() {
   // ids: fboId, brightnessTexture, depth.., diffuse, norms, final
   ids = new GLuint[6];
-  printf("GENERATE\n");
+  printf("RenderPass GENERATE\n");
   glGenFramebuffersEXT(1, ids);
   glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, *ids);
 
