@@ -82,7 +82,7 @@ void KObj_Node::setParent(KObj_Node* node) {
     // TODO
     //parent->children[myIndex] = NULL;
   }
-  printf("my type: %i, ", this->getType());
+  //printf("my type: %i, ", this->getType());
   parent = node;
   if (this->getType() == 3 || this->getType() == 4) {
     KObj_Renderable* a = (dynamic_cast<KObj_Renderable*>(this));
@@ -125,7 +125,7 @@ void KObj_Node::setParent(KObj_Node* node) {
     //KObj::GKO_World::worldObject->world.push_back(allIndex);
 
   }
-  Debug::printWorld();
+  //Debug::printWorld();
 }
 
 void KObj_Oriented::parentTransform() {
@@ -185,6 +185,10 @@ void KObj_Entity::render() {
   }
 }
 
+double Delta() {
+  return delta;
+}
+
 std::string Dir() {
   return std::string(dir);
 }
@@ -218,12 +222,12 @@ void GameLoop() {
   gravity->direction = 1;
   gravity->shape = 0;
   gravity->falloff = 0;
-  gravity->strength = 0.0;//9.80665223;
+  gravity->strength = 1.0;//9.80665223;
   gravity->size = 0;
   // rotate to point downwards
-  //gravity->orientation = glm::rotate(
-  //  gravity->orientation, -glm::pi<float>() / 2,
-  //  glm::vec3(1.0f, 0.0f, 0.0f));
+  gravity->orientation = glm::rotate(
+    gravity->orientation, -glm::pi<float>() / 2,
+    glm::vec3(1.0f, 0.0f, 0.0f));
   gravity->name = "Gravity";
   gravity->setParent(KObj_Node::worldObject);
 
@@ -250,6 +254,7 @@ void GameLoop() {
 
   Input::AddControl("DEBUGA", Input::INPUT_SYSTEM, 'K');
   Input::AddControl("DEBUGB", Input::INPUT_SYSTEM, 'L');
+  Input::AddControl("DEBUGC", Input::INPUT_SYSTEM, ' ');
 
   f->add(Input::ControlIndex("D_U"), 0, 1.0f);
   f->add(Input::ControlIndex("D_L"), 64, 1.0f);
@@ -282,8 +287,6 @@ void GameLoop() {
 
       Debug::printWorld();
     }
-
-
 
     //printf("Time: %f\n", currentTime);
 
@@ -332,12 +335,16 @@ void GameLoop() {
       }
     }
 
+    static_cast<KObj_Entity*>(KObj_Node::all[3])->velocity.y += Input::Get(Input::ControlIndex("DEBUGC"))->x * delta * 10;
+
     // do collisions here
     // DoCollisions
 
     //for (size_t i = 0; i < world.size(); i ++) {
     //	world[i]->updateB();
     //}
+
+    PhysicsUpdate();
 
     //printf("directions: %f %f\n", f->x, f->y);
 

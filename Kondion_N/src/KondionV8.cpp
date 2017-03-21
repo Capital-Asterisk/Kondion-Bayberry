@@ -306,6 +306,7 @@ void GlobalUpdate() {
   Local<Context> context = Local<Context>::New(isolate, p_context);
   Context::Scope context_scope(context);
   Local<Array> a = Local<Array>::New(isolate, p_gupdate);
+
   for (uint16_t i = 0; i < a->Length(); i++) {
     Local<Function>::Cast(a->Get(i))->Call(context, context->Global(), 0, NULL);
   }
@@ -354,6 +355,10 @@ void Setup() {
   kdion->SetAccessor(
         String::NewFromUtf8(isolate, "camera"), Callback_KObj_World_GetCamera,
         Callback_KObj_World_SetCamera);
+  kdion->SetAccessor(
+          String::NewFromUtf8(isolate, "delta"), Callback_Kdion_Delta,
+          Callback_KObj_World_SetCamera);
+
 
   // constructor functions, bird chicken test
 
@@ -394,9 +399,6 @@ void Setup() {
   kobj_node->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "setParent"),
       FunctionTemplate::New(isolate, Callback_KObj_SetParent));
-  kobj_node->PrototypeTemplate()->Set(
-      String::NewFromUtf8(isolate, "addComponent"),
-      FunctionTemplate::New(isolate, Callback_KObj_AddComponent));
   //kobj_node->HasInstance(object)
 
   Local<FunctionTemplate> kobj_oriented = FunctionTemplate::New(isolate);
@@ -422,6 +424,12 @@ void Setup() {
       isolate, Callback_KObj_Entity);
   kobj_entity->InstanceTemplate()->SetInternalFieldCount(1);
   kobj_entity->Inherit(kobj_oriented);
+  kobj_entity->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "addComponent"),
+      FunctionTemplate::New(isolate, Callback_Entity_AddComponent));
+  kobj_entity->PrototypeTemplate()->Set(
+        String::NewFromUtf8(isolate, "physLevel"),
+        FunctionTemplate::New(isolate, Callback_Entity_PhysLevel));
 
   Local<FunctionTemplate> kobj_instance = FunctionTemplate::New(
       isolate, Callback_KObj_Entity);

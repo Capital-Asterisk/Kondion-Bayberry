@@ -19,6 +19,7 @@ kdion.initialize(function() {
 	ground.translate(0.0, -0.0, 0.0);
 	ground.setName("Ground");
 	ground.setParent(kdion.World);
+	ground.physLevel(0);
 	
 	var camera = new OKO_Camera_();
 	camera.translate(0.0, 2.0, 6.0);
@@ -87,7 +88,8 @@ kdion.globalUpdate(function() {
 		// operation go smoothly
 		vec3.add(foo, unit, foo);
 		// Smoothly bar towards foo
-		vec3.lerp(bar, foo, bar, 0.95);
+		// NOT SMOOTHLY
+		vec3.lerp(bar, foo, bar, 0);
 		// self explanatory
 		kdion.camera.setPosition(bar);
 	}// else {
@@ -95,7 +97,7 @@ kdion.globalUpdate(function() {
 	//}
 	kdion.camera.pointAt(kdion.e);
 	//kdion.camera.rotate([(Math.random() - 0.5) / 100, (Math.random() - 0.5) / 100 + 3, (Math.random() - 0.5) / 100]);
-	kdion.e.translate(-kdion.input["MOVE_X"] * 0.3, 0.0, kdion.input["MOVE_Y"] * 0.3);
+	kdion.e.translate(-kdion.input["MOVE_X"] * kdion.delta * 6, 0.0, kdion.input["MOVE_Y"] * kdion.delta * 6);
 	//kdion.log(kdion.camera);
 	//kdion.camera.translate(0.0, 0.01, kdion.input["MOVE_Y"] * 0.03);
 	

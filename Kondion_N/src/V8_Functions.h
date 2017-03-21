@@ -186,6 +186,35 @@ void Callback_KObj_Entity(const FunctionCallbackInfo<Value>& args) {
   }
 }
 
+void Callback_Entity_AddComponent(const FunctionCallbackInfo<Value>& args) {
+  if (args.IsConstructCall() || args.Length() == 0)
+    return;
+
+  Local<FunctionTemplate> f = Local<FunctionTemplate>::New(isolate,
+                                                           p_component);
+  //printf("Arg0 is component: %i\n", f->HasInstance(args[0]));
+
+  if (!f->HasInstance(args[0]))
+    return;
+  KObj_Entity* pointer_this = static_cast<KObj_Entity*>(Local<External>::Cast(
+      args.This()->GetInternalField(0))->Value());
+  KComponent* pointer_arg0 = static_cast<KComponent*>(Local<External>::Cast(
+      Local<Object>::Cast(args[0])->GetInternalField(0))->Value());
+
+  pointer_this->components.push_back(pointer_arg0);
+}
+
+void Callback_Entity_PhysLevel(const FunctionCallbackInfo<Value>& args) {
+  if (args.IsConstructCall() || args.Length() == 0)
+    return;
+
+  KObj_Entity* pointer_this = static_cast<KObj_Entity*>(Local<External>::Cast(
+      args.This()->GetInternalField(0))->Value());
+  pointer_this->physics = uint8_t(args[0]->NumberValue());
+
+}
+
+
 void Callback_Kdion_Blank(const FunctionCallbackInfo<Value>& args) {
   //HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {
@@ -219,24 +248,6 @@ void Callback_KObj_GetParent(const FunctionCallbackInfo<Value>& args) {
     Local<Object> o = Local<Object>::New(isolate, *p);
     args.GetReturnValue().Set(o);
   }
-}
-
-void Callback_KObj_AddComponent(const FunctionCallbackInfo<Value>& args) {
-  if (args.IsConstructCall() || args.Length() == 0)
-    return;
-
-  Local<FunctionTemplate> f = Local<FunctionTemplate>::New(isolate,
-                                                           p_component);
-  //printf("Arg0 is component: %i\n", f->HasInstance(args[0]));
-
-  if (!f->HasInstance(args[0]))
-    return;
-  KObj_Entity* pointer_this = static_cast<KObj_Entity*>(Local<External>::Cast(
-      args.This()->GetInternalField(0))->Value());
-  KComponent* pointer_arg0 = static_cast<KComponent*>(Local<External>::Cast(
-      Local<Object>::Cast(args[0])->GetInternalField(0))->Value());
-
-  pointer_this->components.push_back(pointer_arg0);
 }
 
 void Callback_KObj_SetParent(const FunctionCallbackInfo<Value>& args) {
@@ -334,6 +345,12 @@ void Callback_Bird_SetIntegrity(Local<String> property, Local<Value> value,
   void* pointer = wrap->Value();
   static_cast<Bird*>(pointer)->integrity = value->Int32Value();
 }
+
+void Callback_Kdion_Delta(Local<String> property,
+                                   const PropertyCallbackInfo<Value>& info) {
+  info.GetReturnValue().Set(Number::New(isolate, Kondion::Delta()));
+}
+
 
 void Callback_Kdion_GlobalUpdate(
     const FunctionCallbackInfo<Value>& args) {

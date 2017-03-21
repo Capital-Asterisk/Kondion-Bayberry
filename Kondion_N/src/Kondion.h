@@ -131,6 +131,7 @@ class KObj_Entity : public KObj_Renderable {
  public:
   static const std::string myClass;
   glm::mat4x4 next;
+  glm::vec3 acceleration;
   glm::vec3 velocity;
   glm::quat rotVelocity;
 
@@ -290,6 +291,7 @@ double Delta();
 std::string Dir();
 void GameLoop();
 void Launch();
+void PhysicsUpdate();
 double Time();
 
 namespace Renderer {
