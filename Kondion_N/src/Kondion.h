@@ -67,6 +67,8 @@ class KObj_Node {
   uint16_t allIndex;
   // My index out of all of siblings
   uint16_t myIndex;
+  // Index of the object up the parent chain, usually the world
+  uint16_t topObject;
   // How large the tree is, this as root. (all of children's children...)
   uint16_t treeSize;
   // 32 bits of layers, use bitwise
@@ -131,7 +133,6 @@ class KObj_Entity : public KObj_Renderable {
  public:
   static const std::string myClass;
   glm::mat4x4 next;
-  glm::vec3 acceleration;
   glm::vec3 velocity;
   glm::quat rotVelocity;
 
@@ -140,6 +141,11 @@ class KObj_Entity : public KObj_Renderable {
   // 0: static
   // 1: something else
   uint8_t physics;
+
+  // physics stuff
+  glm::vec3 acceleration; // total calculated acceleration
+  uint16_t radius; // radius of influence (farthest component)
+  double accel;
 
   const std::string* getClass() {
     return &myClass;
@@ -184,6 +190,9 @@ class KComponent {
   virtual void render() {
 
   }
+  virtual void testCollision(KComponent comp) {
+
+  }
   virtual ~KComponent() {
 
   }
@@ -206,6 +215,7 @@ class GKO_World : public KObj_Node {
   static const std::string myClass;
   float timescale = 0;
   std::vector<uint16_t> world;
+  std::vector<uint16_t> terrain;
   std::vector<uint16_t> forces;
   const std::string* getClass() {
     return &myClass;
@@ -266,24 +276,44 @@ class OKO_Force : public KObj_Oriented {
 };
 }
 
-namespace Component {
+namespace Physics {
 
-class CPN_Cube : public Kondion::KComponent {
- public:
-  static const std::string myClass;
-  const std::string* getClass() {
-    return &myClass;
-  }
-  void render();
+struct CollisionInfo {
+  // Surface normals of collision
+  glm::vec3 normA;
+  glm::vec3 normB;
+
+  // Where the collisions happened
+  glm::vec3 spotA;
+  glm::vec3 spotB;
+
+  // Impact velocity from A-B relative to world, including rotations
+  glm::vec3 impact;
+  //double impactVelocity;
 };
 
-class CPN_InfinitePlane : public Kondion::KComponent {
+}
+
+namespace Component {
+
+class CPN_Cube : public KComponent {
  public:
   static const std::string myClass;
   const std::string* getClass() {
     return &myClass;
   }
   void render();
+  void testCollision(KComponent comp);
+};
+
+class CPN_InfinitePlane : public KComponent {
+ public:
+  static const std::string myClass;
+  const std::string* getClass() {
+    return &myClass;
+  }
+  void render();
+  void testCollision(KComponent comp);
 };
 }
 

@@ -211,6 +211,14 @@ void Callback_Entity_PhysLevel(const FunctionCallbackInfo<Value>& args) {
   KObj_Entity* pointer_this = static_cast<KObj_Entity*>(Local<External>::Cast(
       args.This()->GetInternalField(0))->Value());
   pointer_this->physics = uint8_t(args[0]->NumberValue());
+  //KObj_Node::worldObject
+  if (pointer_this->getParent() != NULL) {
+    if (KObj_Node::all[pointer_this->topObject]->getClass()
+        == &KObj::GKO_World::myClass) {
+      static_cast<KObj::GKO_World*>(KObj_Node::all[pointer_this->topObject])
+          ->terrain.push_back(pointer_this->allIndex);
+    }
+  }
 
 }
 

@@ -79,12 +79,15 @@ void KObj_Node::setParent(KObj_Node* node) {
     return;
   }
   if (parent != NULL) {
-    // TODO
+    // TODO change parent
     //parent->children[myIndex] = NULL;
   }
   //printf("my type: %i, ", this->getType());
   parent = node;
-  if (this->getType() == 3 || this->getType() == 4) {
+  bool entity = this->getType() == 3 || this->getType() == 4;
+
+  if (entity) {
+    // Add to renderer if renderable
     KObj_Renderable* a = (dynamic_cast<KObj_Renderable*>(this));
     Renderer::Consider(a);
   }
@@ -109,18 +112,25 @@ void KObj_Node::setParent(KObj_Node* node) {
       top = top->parent;
     }
   }
+  topObject = top->allIndex;
   //printf("Top: %s\n", top->name);
   // pointer comparison, (instanceof world)
   if (top->getClass() == &KObj::GKO_World::myClass) {
     // it's a world, add it to the list of the entire tree
-    // mightbedoneTODO: do something that puts the node into the right place
+    // mightbedone TODO: do something that puts the node into the right place
+
+    KObj::GKO_World* world = static_cast<KObj::GKO_World*>(top);
+
     printf("Index: %i\n", index);
-    KObj::GKO_World::worldObject->world.insert(
-        KObj::GKO_World::worldObject->world.begin() + index - 1,
-        allIndex);
-    if (getClass() == &KObj::OKO_Force::myClass) {
-      //i am a force, add to forces
-      KObj::GKO_World::worldObject->forces.push_back(allIndex);
+    world->world.insert(world->world.begin() + index - 1, allIndex);
+
+    if (entity) {
+      // I am terrain
+      if (static_cast<KObj_Entity*>(this)->physics == 0)
+        world->terrain.push_back(allIndex);
+    } else if (getClass() == &KObj::OKO_Force::myClass) {
+      // i am a force, add to forces
+      world->forces.push_back(allIndex);
     }
     //KObj::GKO_World::worldObject->world.push_back(allIndex);
 
@@ -153,18 +163,7 @@ void KObj_Entity::updateA() {
   orientation = orientation * glm::toMat4(rotVelocity);
   if (physics != 0) {
     //velocity.y += 0.000004f;
-    for (uint16_t i = 0; i < KObj_Node::worldObject->forces.size(); i ++) {
-      KObj::OKO_Force* f = static_cast<KObj::OKO_Force*>
-        (KObj_Node::all[KObj_Node::worldObject->forces[i]]);
-      velocity.x -= f->orientation[2][0] * delta * f->strength;
-      velocity.y -= f->orientation[2][1] * delta * f->strength;
-      velocity.z -= f->orientation[2][2] * delta * f->strength;
-      //printf("vz: %f\n", velocity.z);
-      //Debug::printMatrix(f->orientation);
-    }
-    orientation[3][0] += velocity.x * delta;
-    orientation[3][1] += velocity.y * delta;
-    orientation[3][2] += velocity.z * delta;
+
   }
 }
 

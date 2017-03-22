@@ -350,8 +350,8 @@ void Setup() {
   kdion->Set(String::NewFromUtf8(isolate, "initialize"),
              FunctionTemplate::New(isolate, Callback_Kdion_Initialize));
   kdion->Set(String::NewFromUtf8(isolate, "globalUpdate"),
-             FunctionTemplate::New(isolate, Callback_Kdion_GlobalUpdate));
 
+             FunctionTemplate::New(isolate, Callback_Kdion_GlobalUpdate));
   kdion->SetAccessor(
         String::NewFromUtf8(isolate, "camera"), Callback_KObj_World_GetCamera,
         Callback_KObj_World_SetCamera);
