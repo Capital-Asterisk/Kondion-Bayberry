@@ -18,7 +18,7 @@ void CPN_Cube::render() {
   //glBindTexture(GL_TEXTURE_2D, 7);
   glPushMatrix();
   glMultMatrixf(glm::value_ptr(offset));
-  Kondion::Renderer::RenderCube(0.5f);
+  Kondion::Renderer::RenderCube(1.0f);
   //glTranslatef(0, -1, 0);
   //Kondion::Renderer::RenderQuad(20, 20);
   glPopMatrix();

@@ -16,7 +16,7 @@ kdion.initialize(function() {
 	mat4.rotateX(tm, tm, Math.PI / 2);
 	flat.setMatrix(tm);
 	ground.addComponent(flat);
-	ground.translate(0.0, -0.0, 0.0);
+	ground.translate(0.0, -9.0, 0.0);
 	ground.setName("Ground");
 	ground.setParent(kdion.World);
 	ground.physLevel(0);
@@ -28,18 +28,18 @@ kdion.initialize(function() {
 	// BUG: add children after adding it to the world
 	
 	var e = new KObj_Entity();
-	e.translate(0.0, 0.5, 0.0);
+	e.translate(0.0, 1.0, 0.0);
 	e.setName("Cube_Base");
 	e.setParent(kdion.World);
 	kdion.e = e;
 	
 	var left = new KObj_Entity();
-	left.translate(-0.5, 0.5, 0.0);
+	left.translate(-1.0, 1.0, 0.0);
 	left.setName("Cube_Left");
 	left.setParent(e);
 	
 	var top = new KObj_Entity();
-	top.translate(0.5, 1.0, 0.0);
+	top.translate(1.0, 2.0, 0.0);
 	top.setName("Cube_Top");
 	top.setParent(e);
 	

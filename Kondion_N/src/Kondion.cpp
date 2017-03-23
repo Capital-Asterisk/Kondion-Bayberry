@@ -221,7 +221,7 @@ void GameLoop() {
   gravity->direction = 1;
   gravity->shape = 0;
   gravity->falloff = 0;
-  gravity->strength = 1.0;//9.80665223;
+  gravity->strength = 9.80665223;
   gravity->size = 0;
   // rotate to point downwards
   gravity->orientation = glm::rotate(
@@ -334,7 +334,10 @@ void GameLoop() {
       }
     }
 
-    static_cast<KObj_Entity*>(KObj_Node::all[3])->velocity.y += Input::Get(Input::ControlIndex("DEBUGC"))->x * delta * 10;
+    if (Input::Get(Input::ControlIndex("DEBUGC"))->x) {
+      // Temp jump
+      static_cast<KObj_Entity*>(KObj_Node::all[3])->velocity.y = 10;
+    }
 
     // do collisions here
     // DoCollisions
