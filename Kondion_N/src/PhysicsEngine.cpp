@@ -9,20 +9,46 @@
 
 namespace Kondion {
 
-namespace Component {
-void CPN_Cube::testCollision(KComponent comp) {
-
-}
-
-void CPN_InfinitePlane::testCollision(KComponent comp) {
-}
-
-}
-
-
 namespace Physics {
 
+  // used for calculations
+  glm::mat4 tmat4[2];
+  glm::vec4 tvec4[2];
+  glm::vec3 tvec3[2];
 
+
+  void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b) {
+
+
+
+
+    tmat4[0] = glm::inverse(b.offset);
+    // multiply by transform and store result in temp4
+    tmat4[1] = a.offset * tmat4[0];
+    // use x as some variable
+    tvec3[0].x = tmat4[1][3][2] - (glm::abs(tmat4[1][0][2]) + glm::abs(tmat4[1][1][2]) + glm::abs(tmat4[1][2][2])) / 2;
+
+    printf("Eggs: %f\n", tvec3[0].x);
+  }
+
+}
+
+
+namespace Component {
+
+void CPN_Cube::testCollision(KComponent& comp, Physics::CollisionInfo& ci) {
+  if (comp.getClass() == &CPN_InfinitePlane::myClass) {
+    // colliding with infinite plane
+    Physics::CubeVsInfPlane(*this, dynamic_cast<CPN_InfinitePlane&>(comp));
+  }
+}
+
+void CPN_InfinitePlane::testCollision(KComponent& comp, Physics::CollisionInfo& ci) {
+  if (comp.getClass() == &CPN_InfinitePlane::myClass) {
+    // colliding with cube
+
+  }
+}
 
 }
 
@@ -73,11 +99,19 @@ void PhysicsUpdate() {
         ent->orientation[3][1] += ent->velocity.y * steptime;
         ent->orientation[3][2] += ent->velocity.z * steptime;
 
+        Physics::CollisionInfo ci;
+        KObj_Entity* terrain;
+
         for (size_t j = 0; j < KObj_Node::worldObject->terrain.size(); j++) {
           //printf(
           //    "Terrain: %s\n",
           //    KObj_Node::all[KObj_Node::worldObject->terrain[j]]->name.c_str());
-
+          terrain = static_cast<KObj_Entity*>(KObj_Node::all[KObj_Node::worldObject->terrain[j]]);
+          for (uint8_t k = 0; k < ent->components.size(); k ++) {
+            for (uint8_t l = 0; l < terrain->components.size(); l ++) {
+              ent->components[k]->testCollision(*terrain->components[l], ci);
+            }
+          }
         }
 
       }

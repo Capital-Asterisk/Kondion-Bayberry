@@ -37,6 +37,10 @@ class KObj_Renderable;
 class KObj_Entity;
 class KObj_Instance;
 
+namespace Physics {
+class CollisionInfo;
+}
+
 namespace KObj {
 class GKO_World;
 }
@@ -190,7 +194,7 @@ class KComponent {
   virtual void render() {
 
   }
-  virtual void testCollision(KComponent comp) {
+  virtual void testCollision(KComponent& comp, Physics::CollisionInfo& ci) {
 
   }
   virtual ~KComponent() {
@@ -278,7 +282,9 @@ class OKO_Force : public KObj_Oriented {
 
 namespace Physics {
 
-struct CollisionInfo {
+class CollisionInfo {
+
+ public:
   // Surface normals of collision
   glm::vec3 normA;
   glm::vec3 normB;
@@ -303,7 +309,7 @@ class CPN_Cube : public KComponent {
     return &myClass;
   }
   void render();
-  void testCollision(KComponent comp);
+  void testCollision(KComponent& comp, Kondion::Physics::CollisionInfo& ci);
 };
 
 class CPN_InfinitePlane : public KComponent {
@@ -313,7 +319,7 @@ class CPN_InfinitePlane : public KComponent {
     return &myClass;
   }
   void render();
-  void testCollision(KComponent comp);
+  void testCollision(KComponent& comp, Kondion::Physics::CollisionInfo& ci);
 };
 }
 
