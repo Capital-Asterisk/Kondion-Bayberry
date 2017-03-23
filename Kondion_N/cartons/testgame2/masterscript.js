@@ -72,8 +72,10 @@ kdion.globalUpdate(function() {
 	kdion.e.getPosition(foo);
 	kdion.camera.getPosition(bar);
 	// Get the distance between the camera and the cube
-	var dist = vec3.distance(foo, bar);
-	//kdion.log("foo: " + vec3.distance(foo, bar));
+	var dist = vec2.distance(vec2.fromValues(foo[0], foo[2]),
+			vec2.fromValues(bar[0], bar[2]));
+	kdion.log("foo: " + dist);
+	
 	if (dist > 6) {
 		//kdion.camera.setPosition(vec3.add(bar, unit));
 		// raise foo, doesn't actually raise the cube, only this vector.
@@ -81,6 +83,7 @@ kdion.globalUpdate(function() {
 		foo[1] += 2.6;
 		// get a direction between the two objects
 		var unit = vec3.sub(vec3.fromValues(0, 0, 0), bar, foo);
+		unit[1] = 0;
 		vec3.normalize(unit, unit);
 		// then scale it to 6
 		vec3.scale(unit, unit, 6);
@@ -88,8 +91,7 @@ kdion.globalUpdate(function() {
 		// operation go smoothly
 		vec3.add(foo, unit, foo);
 		// Smoothly bar towards foo
-		// NOT SMOOTHLY
-		vec3.lerp(bar, foo, bar, 0);
+		vec3.lerp(bar, foo, bar, 0.96);
 		// self explanatory
 		kdion.camera.setPosition(bar);
 	}// else {
