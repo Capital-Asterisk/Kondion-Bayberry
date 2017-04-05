@@ -285,6 +285,9 @@ namespace Physics {
 class CollisionInfo {
 
  public:
+
+  bool collided;
+
   // Surface normals of collision
   glm::vec3 normA;
   glm::vec3 normB;

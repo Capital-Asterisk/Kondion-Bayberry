@@ -74,9 +74,9 @@ kdion.globalUpdate(function() {
 	// Get the distance between the camera and the cube
 	var dist = vec2.distance(vec2.fromValues(foo[0], foo[2]),
 			vec2.fromValues(bar[0], bar[2]));
-	kdion.log("foo: " + dist);
+	//kdion.log("foo: " + dist);
 	
-	if (dist > 6) {
+	if (dist > 12) {
 		//kdion.camera.setPosition(vec3.add(bar, unit));
 		// raise foo, doesn't actually raise the cube, only this vector.
 		// this makes the camera move towards a point above the cube
@@ -86,7 +86,7 @@ kdion.globalUpdate(function() {
 		unit[1] = 0;
 		vec3.normalize(unit, unit);
 		// then scale it to 6
-		vec3.scale(unit, unit, 6);
+		vec3.scale(unit, unit, 12);
 		// add so that foo is on the edge of the 6m radius, this makes the next
 		// operation go smoothly
 		vec3.add(foo, unit, foo);
@@ -99,7 +99,7 @@ kdion.globalUpdate(function() {
 	//}
 	kdion.camera.pointAt(kdion.e);
 	//kdion.camera.rotate([(Math.random() - 0.5) / 100, (Math.random() - 0.5) / 100 + 3, (Math.random() - 0.5) / 100]);
-	kdion.e.translate(-kdion.input["MOVE_X"] * kdion.delta * 6, 0.0, kdion.input["MOVE_Y"] * kdion.delta * 6);
+	kdion.e.translate(-kdion.input["MOVE_X"] * kdion.delta * 12, 0.0, kdion.input["MOVE_Y"] * kdion.delta * 12);
 	//kdion.log(kdion.camera);
 	//kdion.camera.translate(0.0, 0.01, kdion.input["MOVE_Y"] * 0.03);
 	

@@ -225,7 +225,7 @@ void GameLoop() {
   gravity->size = 0;
   // rotate to point downwards
   gravity->orientation = glm::rotate(
-    gravity->orientation, -glm::pi<float>() / 2,
+    gravity->orientation, glm::pi<float>() / 2,
     glm::vec3(1.0f, 0.0f, 0.0f));
   gravity->name = "Gravity";
   gravity->setParent(KObj_Node::worldObject);

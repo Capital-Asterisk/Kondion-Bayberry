@@ -16,21 +16,34 @@ glm::mat4 tmat4[2];
 glm::vec4 tvec4[2];
 glm::vec3 tvec3[2];
 
-void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b) {
+void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
+                    Physics::CollisionInfo& ci) {
 
   tmat4[0] = glm::inverse(b.parent->orientation * b.offset);
   // multiply by transform and store result in temp4
   tmat4[1] = tmat4[0] * (a.parent->orientation * a.offset);
   // use x as some variable
-  tvec3[0].x =
-      -(glm::abs(tmat4[1][0][2]) + glm::abs(tmat4[1][1][2])
-          + glm::abs(tmat4[1][2][2])) / 2 - tmat4[1][3][2];
+  tvec3[0].x = -(glm::abs(tmat4[1][0][2]) + glm::abs(tmat4[1][1][2])
+      + glm::abs(tmat4[1][2][2])) / 2 - tmat4[1][3][2];
 
-  printf("Eggs: %i %f\n", tvec3[0].x < 0, tvec3[0].x);
+  //printf("Eggs: %i %f\n", tvec3[0].x < 0, tvec3[0].x);
 
   if (tvec3[0].x < 0) {
-    // Temporary
-    a.parent->velocity.y = Kondion::Delta() * 9;
+    // Collision detected
+    //a.parent->velocity.y = Kondion::Delta() * 9;
+    ci.collided = true;
+    ci.normB.x = -b.offset[2][0];
+    ci.normB.y = -b.offset[2][1];
+    ci.normB.z = -b.offset[2][2];
+
+    printf("NormB: (%f, %f, %f)", ci.normB.x, ci.normB.y, ci.normB.z);
+
+    // TODO which surface of the cube was hit?
+
+    // Calculate displacement
+    // y = tvec3[0]
+    // x =
+
   }
 }
 
@@ -41,7 +54,7 @@ namespace Component {
 void CPN_Cube::testCollision(KComponent& comp, Physics::CollisionInfo& ci) {
   if (comp.getClass() == &CPN_InfinitePlane::myClass) {
     // colliding with infinite plane
-    Physics::CubeVsInfPlane(*this, dynamic_cast<CPN_InfinitePlane&>(comp));
+    Physics::CubeVsInfPlane(*this, dynamic_cast<CPN_InfinitePlane&>(comp), ci);
   }
 }
 
@@ -87,21 +100,37 @@ void PhysicsUpdate() {
         // TODO calculate checks based on velocity
         uint8_t checks = 0;
 
+        ent->acceleration.x = 0;
+        ent->acceleration.y = 0;
+        ent->acceleration.z = 0;
+
         for (uint16_t i = 0; i < KObj_Node::worldObject->forces.size(); i++) {
           KObj::OKO_Force* f =
               static_cast<KObj::OKO_Force*>(KObj_Node::all[KObj_Node::worldObject
                   ->forces[i]]);
-          ent->velocity.x -= f->orientation[2][0] * steptime * f->strength;
-          ent->velocity.y -= f->orientation[2][1] * steptime * f->strength;
-          ent->velocity.z -= f->orientation[2][2] * steptime * f->strength;
+          //ent->velocity.x -= f->orientation[2][0] * steptime * f->strength;
+          //ent->velocity.y -= f->orientation[2][1] * steptime * f->strength;
+          //ent->velocity.z -= f->orientation[2][2] * steptime * f->strength;
+          // TODO: different types of forces
+          ent->acceleration.x += f->orientation[2][0] * f->strength;
+          ent->acceleration.y += f->orientation[2][1] * f->strength;
+          ent->acceleration.z += f->orientation[2][2] * f->strength;
           //printf("vz: %f\n", velocity.z);
           //Debug::printMatrix(f->orientation);
         }
 
-        // TODO: include acceleration
-        ent->orientation[3][0] += ent->velocity.x * steptime;
-        ent->orientation[3][1] += ent->velocity.y * steptime;
-        ent->orientation[3][2] += ent->velocity.z * steptime;
+        // d = vt + 1/2 * a * t^2
+        // done: include acceleration
+        ent->orientation[3][0] += ent->velocity.x * steptime
+            + (ent->acceleration.x * (steptime * steptime)) / 2;
+        ent->orientation[3][1] += ent->velocity.y * steptime
+            + (ent->acceleration.y * (steptime * steptime)) / 2;
+        ent->orientation[3][2] += ent->velocity.z * steptime
+            + (ent->acceleration.z * (steptime * steptime)) / 2;
+
+        ent->velocity.x += ent->acceleration.x * steptime;
+        ent->velocity.y += ent->acceleration.y * steptime;
+        ent->velocity.z += ent->acceleration.z * steptime;
 
         Physics::CollisionInfo ci;
         KObj_Entity* terrain;

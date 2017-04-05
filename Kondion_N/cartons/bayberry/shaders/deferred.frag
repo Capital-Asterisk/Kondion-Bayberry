@@ -26,10 +26,14 @@ void main(){
 	//coord.x += 0.5;
 	//final = mix(texture2D(texture0, texCoord.st), vec4(0.0, 0.0, 0.0, 1.0), clamp(vec4(pow(texture2D(texture1, texCoord.st).r, 900)), 0.0, 1.0));
 	if (texture2D(texture1, texCoord.st).r == 1.0) {
+		// if depth is very deep, then it's sky'
 		final = skyColor;
 	} else {
 
 		final = texture2D(texture0, texCoord.st);// * texture2D(texture3, coord);
+		
+		// Not anti aliasing
+		//final = mix(final, texture2D(texture0, texCoord.st + vec2(1.0 / 800.0, 1.0 / 600.0)), 0.5);
 		//final = vec4(0, coord.x, 0.0, 1.0);
 	}
 
@@ -50,10 +54,13 @@ void main(){
 	//v *= abs(coord.x - 0.5) / 4;
 	//v *= abs(coord.y - 0.5);
 	//final -= vec4(v, v, v, 0.0);
+	
+	// red/blue gradient for some reason
+	final += vec4(texCoord.x, 0.0, texCoord.y, 1.0) / 6;
 
 	gl_FragData[0] = texture2D(texture0, coord);
 	gl_FragData[1] = texture2D(texture2, coord);
-	gl_FragData[2] = final + vec4(texCoord.x, 0.0, texCoord.y, 1.0) / 6;
+	gl_FragData[2] = final;
 	gl_FragData[3] = texture2D(texture3, coord);
 }
 
