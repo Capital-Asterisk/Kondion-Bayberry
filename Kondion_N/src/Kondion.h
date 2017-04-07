@@ -286,7 +286,12 @@ class CollisionInfo {
 
  public:
 
+  // if a collision happened
   bool collided;
+  // how far A has been embedded into B
+  float sink;
+  // Time of contact.
+  double collideTime;
 
   // Surface normals of collision
   glm::vec3 normA;

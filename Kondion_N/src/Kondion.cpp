@@ -7,6 +7,8 @@
 //====================== gbb vggttttggggggggggggg======================================================
 
 #include <chrono>
+// Temporary
+#include <unistd.h>
 
 #define GLEW_STATIC
 #include <GL/glew.h>
@@ -358,6 +360,8 @@ void GameLoop() {
     Window::Update();
 
     Resources::Update();
+
+    //usleep(200 * 1000);
 
   }
   JS::Destroy();

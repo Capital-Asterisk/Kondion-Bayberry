@@ -14,8 +14,9 @@ namespace Physics {
 // used for calculations
 glm::mat4 tmat4[2];
 glm::vec4 tvec4[2];
-glm::vec3 tvec3[2];
+glm::vec3 tvec3[3];
 
+// Collision between a cube and an infinite plane
 void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
                     Physics::CollisionInfo& ci) {
 
@@ -36,13 +37,35 @@ void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
     ci.normB.y = -b.offset[2][1];
     ci.normB.z = -b.offset[2][2];
 
-    printf("NormB: (%f, %f, %f)", ci.normB.x, ci.normB.y, ci.normB.z);
+    printf("NormB: (%f, %f, %f)\n", ci.normB.x, ci.normB.y, ci.normB.z);
 
     // TODO which surface of the cube was hit?
 
     // Calculate displacement
     // y = tvec3[0]
     // x =
+
+    // t = (-v +- sqrt(v^2 + 2ad)/a) calculates time
+    // derived from d = vt + 1/2at^2 using quadratic formula
+    // I don't really know if this works... seems so?
+
+    // all we need is the velocity of the cube relative to the plane
+    // use the same calculations, but with velocity instead
+    // TODO, maybe calculate only z
+    tvec3[1] = glm::mat3(tmat4[0]) * a.parent->velocity;
+    tvec3[2] = glm::mat3(tmat4[0]) * a.parent->acceleration;
+
+    // z is used for the equation... and yeah this is big... just look above.
+    ci.collideTime = (-tvec3[1].z
+        + glm::sqrt(
+            double(
+                tvec3[1].z * tvec3[1].z
+                    + 2 * tvec3[2].z * -tvec3[0].x)))
+        / tvec3[2].z;
+    printf("Collide Time: %f, (%f), e: %f a:%f \n", ci.collideTime, tvec3[1].z * tvec3[1].z
+           + 2 * tvec3[2].z * -tvec3[0].x, tvec3[2].z);
+
+    ci.sink = tvec3[0].x;
 
   }
 }
@@ -89,8 +112,11 @@ void CPN_InfinitePlane::testCollision(KComponent& comp,
  */
 
 void PhysicsUpdate() {
+
   double timeleft;
   double steptime = Delta();
+
+  // Loop through all objects for physics
   KObj_Entity* ent;
   for (size_t i = 0; i < KObj_Node::worldObject->children.size(); i++) {
     if (KObj_Node::worldObject->children[i]->getType() == 3) {
@@ -100,10 +126,13 @@ void PhysicsUpdate() {
         // TODO calculate checks based on velocity
         uint8_t checks = 0;
 
+        // Set acceleration to 0 so it doesn't add up on each other
+        // TODO: there's a shorter way to do this.
         ent->acceleration.x = 0;
         ent->acceleration.y = 0;
         ent->acceleration.z = 0;
 
+        // Add up all the surrounding forces to get acceleration
         for (uint16_t i = 0; i < KObj_Node::worldObject->forces.size(); i++) {
           KObj::OKO_Force* f =
               static_cast<KObj::OKO_Force*>(KObj_Node::all[KObj_Node::worldObject
@@ -128,9 +157,8 @@ void PhysicsUpdate() {
         ent->orientation[3][2] += ent->velocity.z * steptime
             + (ent->acceleration.z * (steptime * steptime)) / 2;
 
-        ent->velocity.x += ent->acceleration.x * steptime;
-        ent->velocity.y += ent->acceleration.y * steptime;
-        ent->velocity.z += ent->acceleration.z * steptime;
+        // TODO: all this should be in a separate loop
+        // except for the terrain part... which is the only one there... uwu...
 
         Physics::CollisionInfo ci;
         KObj_Entity* terrain;
@@ -145,9 +173,56 @@ void PhysicsUpdate() {
           for (uint8_t k = 0; k < ent->components.size(); k++) {
             for (uint8_t l = 0; l < terrain->components.size(); l++) {
               ent->components[k]->testCollision(*terrain->components[l], ci);
+              if (ci.collided) {
+
+                // Temp collision response
+
+                double reduction = ci.collideTime;
+
+                printf("Steptime: %f\n", steptime);
+
+                if (steptime > reduction) {
+
+                  ent->orientation[3][0] -= ent->velocity.x * steptime
+                      + (ent->acceleration.x * (steptime * steptime)) / 2;
+                  ent->orientation[3][1] -= ent->velocity.y * steptime
+                      + (ent->acceleration.y * (steptime * steptime)) / 2;
+                  ent->orientation[3][2] -= ent->velocity.z * steptime
+                      + (ent->acceleration.z * (steptime * steptime)) / 2;
+
+                  ent->orientation[3][0] += (ent->velocity.x * reduction
+                      + (ent->acceleration.x * (reduction * reduction)) / 2) / 2;
+                  ent->orientation[3][1] += (ent->velocity.y * reduction
+                      + (ent->acceleration.y * (reduction * reduction)) / 2) / 2;
+                  ent->orientation[3][2] += (ent->velocity.z * reduction
+                      + (ent->acceleration.z * (reduction * reduction)) / 2) / 2;
+
+                }
+                //ent->orientation[3][0] -= -ent->velocity.x * reduction
+                //    + (ent->acceleration.x * (reduction * reduction)) / 2;
+                //ent->orientation[3][1] -= -ent->velocity.y * reduction
+                //    + (ent->acceleration.y * (reduction * reduction)) / 2;
+                //ent->orientation[3][2] -= -ent->velocity.z * reduction
+                //    + (ent->acceleration.z * (reduction * reduction)) / 2;
+
+
+                //ent->orientation[3].x -= ci.normB.x * ci.sink;
+                //ent->orientation[3].y -= ci.normB.y * ci.sink;
+                //ent->orientation[3].z -= ci.normB.z * ci.sink;
+
+                //ent->velocity.x = ent->velocity.x / (1 + ci.normB.x) + ci.normB.x / 5;
+                //ent->velocity.y = ent->velocity.y / (1 + ci.normB.y) + ci.normB.y / 5;
+                //ent->velocity.z = ent->velocity.z / (1 + ci.normB.z) + ci.normB.z / 5;
+
+              }
             }
           }
         }
+
+
+        ent->velocity.x += ent->acceleration.x * steptime;
+        ent->velocity.y += ent->acceleration.y * steptime;
+        ent->velocity.z += ent->acceleration.z * steptime;
 
       }
 

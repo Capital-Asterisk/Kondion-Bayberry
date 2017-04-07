@@ -13,7 +13,7 @@ kdion.initialize(function() {
 	var ground = new KObj_Entity();
 	var flat = new KCompnent("infplane");
 	var tm = mat4.create();
-	mat4.rotateX(tm, tm, Math.PI / 2);
+	mat4.rotateX(tm, tm, Math.PI / 2 + Math.PI / 12 * 0);
 	flat.setMatrix(tm);
 	ground.addComponent(flat);
 	ground.translate(0.0, -9.0, 0.0);
