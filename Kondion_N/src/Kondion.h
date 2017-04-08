@@ -37,6 +37,8 @@ class KObj_Renderable;
 class KObj_Entity;
 class KObj_Instance;
 
+struct KCurve;
+
 namespace Physics {
 class CollisionInfo;
 }
@@ -47,6 +49,23 @@ class GKO_World;
 
 class KComponent;
 class KMaterial;
+
+// Curve struct
+
+struct KCurve {
+  uint8_t type;
+  uint16_t size;
+  float* points;
+  KCurve(uint8_t t, uint16_t s, float* p) {
+    type = t;
+    size = s;
+    points = p;
+  };
+
+  ~KCurve() {
+    delete points;
+  }
+};
 
 // Base kobj classes
 

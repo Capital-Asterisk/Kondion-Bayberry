@@ -29,7 +29,7 @@ void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
 
   //printf("Eggs: %i %f\n", tvec3[0].x < 0, tvec3[0].x);
 
-  if (tvec3[0].x < 0) {
+  if (tvec3[0].x <= 0) {
     // Collision detected
     //a.parent->velocity.y = Kondion::Delta() * 9;
     ci.collided = true;
@@ -113,6 +113,9 @@ void CPN_InfinitePlane::testCollision(KComponent& comp,
 
 void PhysicsUpdate() {
 
+  // TODO do something with this
+  uint8_t precision = 1;
+
   double timeleft;
   double steptime = Delta();
 
@@ -148,6 +151,8 @@ void PhysicsUpdate() {
           //Debug::printMatrix(f->orientation);
         }
 
+        //glm::mat4x4 prevOrientation = glm::mat4x4(ent->orientation);
+
         // d = vt + 1/2 * a * t^2
         // done: include acceleration
         ent->orientation[3][0] += ent->velocity.x * steptime
@@ -172,48 +177,41 @@ void PhysicsUpdate() {
                   ->terrain[j]]);
           for (uint8_t k = 0; k < ent->components.size(); k++) {
             for (uint8_t l = 0; l < terrain->components.size(); l++) {
+
+              // Go test the collision
               ent->components[k]->testCollision(*terrain->components[l], ci);
+
+              // Collision detected!
               if (ci.collided) {
 
-                // Temp collision response
+                printf("Steptime: %f EEE: %i\n", steptime, steptime >= ci.collideTime);
 
-                double reduction = ci.collideTime;
+                if (steptime >= ci.collideTime - 0.001) {
 
-                printf("Steptime: %f\n", steptime);
+                  //ent->orientation[3].x -= ci.normB.x * ci.sink;
+                  //ent->orientation[3].y -= ci.normB.y * ci.sink;
+                  //ent->orientation[3].z -= ci.normB.z * ci.sink;
 
-                if (steptime > reduction) {
+                  //ent->orientation = prevOrientation;
 
-                  ent->orientation[3][0] -= ent->velocity.x * steptime
-                      + (ent->acceleration.x * (steptime * steptime)) / 2;
-                  ent->orientation[3][1] -= ent->velocity.y * steptime
-                      + (ent->acceleration.y * (steptime * steptime)) / 2;
-                  ent->orientation[3][2] -= ent->velocity.z * steptime
-                      + (ent->acceleration.z * (steptime * steptime)) / 2;
+                  //ent->orientation[3][0] -= ent->velocity.x * steptime
+                  //    + (ent->acceleration.x * (steptime * steptime)) / 2;
+                  //ent->orientation[3][1] -= ent->velocity.y * steptime
+                  //    + (ent->acceleration.y * (steptime * steptime)) / 2;
+                  //ent->orientation[3][2] -= ent->velocity.z * steptime
+                  //    + (ent->acceleration.z * (steptime * steptime)) / 2;
 
-                  ent->orientation[3][0] += (ent->velocity.x * reduction
-                      + (ent->acceleration.x * (reduction * reduction)) / 2) / 2;
-                  ent->orientation[3][1] += (ent->velocity.y * reduction
-                      + (ent->acceleration.y * (reduction * reduction)) / 2) / 2;
-                  ent->orientation[3][2] += (ent->velocity.z * reduction
-                      + (ent->acceleration.z * (reduction * reduction)) / 2) / 2;
 
+                  if (precision > 2) {
+                    // TODO: the response I was trying to do previously but
+                    // gived up for now
+                  } else {
+                    ent->orientation[3].x -= ci.normB.x * ci.sink;
+                    ent->orientation[3].y -= ci.normB.y * ci.sink;
+                    ent->orientation[3].z -= ci.normB.z * ci.sink;
+
+                  }
                 }
-                //ent->orientation[3][0] -= -ent->velocity.x * reduction
-                //    + (ent->acceleration.x * (reduction * reduction)) / 2;
-                //ent->orientation[3][1] -= -ent->velocity.y * reduction
-                //    + (ent->acceleration.y * (reduction * reduction)) / 2;
-                //ent->orientation[3][2] -= -ent->velocity.z * reduction
-                //    + (ent->acceleration.z * (reduction * reduction)) / 2;
-
-
-                //ent->orientation[3].x -= ci.normB.x * ci.sink;
-                //ent->orientation[3].y -= ci.normB.y * ci.sink;
-                //ent->orientation[3].z -= ci.normB.z * ci.sink;
-
-                //ent->velocity.x = ent->velocity.x / (1 + ci.normB.x) + ci.normB.x / 5;
-                //ent->velocity.y = ent->velocity.y / (1 + ci.normB.y) + ci.normB.y / 5;
-                //ent->velocity.z = ent->velocity.z / (1 + ci.normB.z) + ci.normB.z / 5;
-
               }
             }
           }

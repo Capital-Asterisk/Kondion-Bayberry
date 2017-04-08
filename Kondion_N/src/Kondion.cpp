@@ -361,7 +361,7 @@ void GameLoop() {
 
     Resources::Update();
 
-    //usleep(200 * 1000);
+    //usleep(100 * 1000);
 
   }
   JS::Destroy();
