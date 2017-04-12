@@ -405,20 +405,31 @@ void Setup() {
   kobj_oriented->InstanceTemplate()->SetInternalFieldCount(1);
   kobj_oriented->Inherit(kobj_node);
   kobj_oriented->PrototypeTemplate()->Set(
-        String::NewFromUtf8(isolate, "getPosition"),
-        FunctionTemplate::New(isolate, Callback_OKO_GetOffsetPosition));
+      String::NewFromUtf8(isolate, "getPosition"),
+      FunctionTemplate::New(isolate, Callback_OKO_GetOffsetPosition));
   kobj_oriented->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "setPosition"),
       FunctionTemplate::New(isolate, Callback_OKO_SetOffsetPosition));
+
   kobj_oriented->PrototypeTemplate()->Set(
-        String::NewFromUtf8(isolate, "translate"),
-        FunctionTemplate::New(isolate, Callback_OKO_Translate));
+      String::NewFromUtf8(isolate, "translate"),
+      FunctionTemplate::New(isolate, Callback_OKO_Translate));
   kobj_oriented->PrototypeTemplate()->Set(
-        String::NewFromUtf8(isolate, "rotate"),
-        FunctionTemplate::New(isolate, Callback_OKO_Rotate));
+      String::NewFromUtf8(isolate, "rotate"),
+      FunctionTemplate::New(isolate, Callback_OKO_Rotate));
   kobj_oriented->PrototypeTemplate()->Set(
-          String::NewFromUtf8(isolate, "pointAt"),
-          FunctionTemplate::New(isolate, Callback_OKO_PointAt));
+      String::NewFromUtf8(isolate, "pointAt"),
+      FunctionTemplate::New(isolate, Callback_OKO_PointAt));
+
+  kobj_oriented->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "dirFd"),
+      FunctionTemplate::New(isolate, Callback_Kdion_Blank));
+  kobj_oriented->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "dirFd"),
+      FunctionTemplate::New(isolate, Callback_Kdion_Blank));
+  kobj_oriented->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "dirUp"),
+      FunctionTemplate::New(isolate, Callback_Kdion_Blank));
 
   Local<FunctionTemplate> kobj_entity = FunctionTemplate::New(
       isolate, Callback_KObj_Entity);
@@ -430,6 +441,12 @@ void Setup() {
   kobj_entity->PrototypeTemplate()->Set(
         String::NewFromUtf8(isolate, "physLevel"),
         FunctionTemplate::New(isolate, Callback_Entity_PhysLevel));
+  kobj_entity->PrototypeTemplate()->Set(
+          String::NewFromUtf8(isolate, "thrust"),
+          FunctionTemplate::New(isolate, Callback_Kdion_Blank));
+  kobj_entity->PrototypeTemplate()->Set(
+            String::NewFromUtf8(isolate, "thrustN"),
+            FunctionTemplate::New(isolate, Callback_Kdion_Blank));
 
   Local<FunctionTemplate> kobj_instance = FunctionTemplate::New(
       isolate, Callback_KObj_Entity);

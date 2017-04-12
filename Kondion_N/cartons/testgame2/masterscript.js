@@ -99,6 +99,9 @@ kdion.globalUpdate(function() {
 	//}
 	kdion.camera.pointAt(kdion.e);
 	//kdion.camera.rotate([(Math.random() - 0.5) / 100, (Math.random() - 0.5) / 100 + 3, (Math.random() - 0.5) / 100]);
+	
+	
+	
 	kdion.e.translate(-kdion.input["MOVE_X"] * kdion.delta * 12, 0.0, kdion.input["MOVE_Y"] * kdion.delta * 12);
 	//kdion.log(kdion.camera);
 	//kdion.camera.translate(0.0, 0.01, kdion.input["MOVE_Y"] * 0.03);

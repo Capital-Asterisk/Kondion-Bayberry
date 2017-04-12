@@ -202,11 +202,19 @@ class KObj_Instance : public KObj_Renderable {
 class KComponent {
  public:
   static const std::string myClass;
+
   bool collide;
   bool renderable;
+
   KObj_Entity* parent;  // this caused my first circular dependency
   void* jsObject;
+
   glm::mat4x4 offset;
+
+  // Physical properties
+
+
+
   virtual const std::string* getClass() {
     return &myClass;
   }
@@ -240,6 +248,15 @@ class GKO_World : public KObj_Node {
   std::vector<uint16_t> world;
   std::vector<uint16_t> terrain;
   std::vector<uint16_t> forces;
+
+  //std::vector<uint16_t> frictionA;
+  //std::vector<uint16_t> frictionB;
+  //std::vector<float> frictionC;
+
+  //std::vector<uint16_t> bounceA;
+  //std::vector<uint16_t> bounceB;
+  //std::vector<float> bounceC;
+
   const std::string* getClass() {
     return &myClass;
   }
