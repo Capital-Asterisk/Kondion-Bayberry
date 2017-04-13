@@ -66,8 +66,8 @@ kdion.globalUpdate(function() {
 	//kdion.log(kdion.input["MOUSE_X"]);
 	//kdion.log(new Date().getTime());
 	// Make some empty vectors (inefficient)
-	var foo = vec3.fromValues(0, 0, 0);
-	var bar = vec3.fromValues(0, 0, 0);
+	var foo = vec3.create();
+	var bar = vec3.create();
 	// Get the positions and put it in the vectors
 	kdion.e.getPosition(foo);
 	kdion.camera.getPosition(bar);
@@ -100,9 +100,27 @@ kdion.globalUpdate(function() {
 	kdion.camera.pointAt(kdion.e);
 	//kdion.camera.rotate([(Math.random() - 0.5) / 100, (Math.random() - 0.5) / 100 + 3, (Math.random() - 0.5) / 100]);
 	
+	// Cube movement
+	// reuse foo and bar
+	// get camera's left and forward direction
+	kdion.camera.dirRt(foo);
+	kdion.camera.dirFd(bar);
+	// clear the y component, this is for horizontal movement
+	foo[1] = 0;
+	bar[1] = 0;
+	// now normalize just in case
+	vec3.normalize(foo, foo);
+	vec3.normalize(bar, bar);
+	// Now multiply by input and speed
+	vec3.scale(foo, foo, -kdion.input["MOVE_X"] * 12);
+	vec3.scale(bar, bar, -kdion.input["MOVE_Y"] * 12);
 	
+	// add foo and bar, put result in foo
+	vec3.add(foo, foo, bar);
+	//kdion.log(foo[0] + " " + foo[1] + " " + foo[2]);
 	
-	kdion.e.translate(-kdion.input["MOVE_X"] * kdion.delta * 12, 0.0, kdion.input["MOVE_Y"] * kdion.delta * 12);
+	// Then translate, change this to something else soon
+	kdion.e.translate(foo[0] * kdion.delta, 0.0, foo[2] * kdion.delta);
 	//kdion.log(kdion.camera);
 	//kdion.camera.translate(0.0, 0.01, kdion.input["MOVE_Y"] * 0.03);
 	

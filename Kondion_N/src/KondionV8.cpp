@@ -423,13 +423,13 @@ void Setup() {
 
   kobj_oriented->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "dirFd"),
-      FunctionTemplate::New(isolate, Callback_Kdion_Blank));
+      FunctionTemplate::New(isolate, Callback_OKO_DirFd));
   kobj_oriented->PrototypeTemplate()->Set(
-      String::NewFromUtf8(isolate, "dirFd"),
-      FunctionTemplate::New(isolate, Callback_Kdion_Blank));
+      String::NewFromUtf8(isolate, "dirRt"),
+      FunctionTemplate::New(isolate, Callback_OKO_DirRt));
   kobj_oriented->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "dirUp"),
-      FunctionTemplate::New(isolate, Callback_Kdion_Blank));
+      FunctionTemplate::New(isolate, Callback_OKO_DirUp));
 
   Local<FunctionTemplate> kobj_entity = FunctionTemplate::New(
       isolate, Callback_KObj_Entity);
@@ -439,14 +439,14 @@ void Setup() {
       String::NewFromUtf8(isolate, "addComponent"),
       FunctionTemplate::New(isolate, Callback_Entity_AddComponent));
   kobj_entity->PrototypeTemplate()->Set(
-        String::NewFromUtf8(isolate, "physLevel"),
-        FunctionTemplate::New(isolate, Callback_Entity_PhysLevel));
+      String::NewFromUtf8(isolate, "physLevel"),
+      FunctionTemplate::New(isolate, Callback_Entity_PhysLevel));
   kobj_entity->PrototypeTemplate()->Set(
-          String::NewFromUtf8(isolate, "thrust"),
-          FunctionTemplate::New(isolate, Callback_Kdion_Blank));
+      String::NewFromUtf8(isolate, "thrust"),
+      FunctionTemplate::New(isolate, Callback_Kdion_Blank));
   kobj_entity->PrototypeTemplate()->Set(
-            String::NewFromUtf8(isolate, "thrustN"),
-            FunctionTemplate::New(isolate, Callback_Kdion_Blank));
+      String::NewFromUtf8(isolate, "thrustN"),
+      FunctionTemplate::New(isolate, Callback_Kdion_Blank));
 
   Local<FunctionTemplate> kobj_instance = FunctionTemplate::New(
       isolate, Callback_KObj_Entity);

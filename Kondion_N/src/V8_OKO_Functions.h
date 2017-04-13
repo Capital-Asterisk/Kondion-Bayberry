@@ -204,6 +204,48 @@ void Callback_OKO_Rotate(const FunctionCallbackInfo<v8::Value>& args) {
   pointer_this->orientation[3][2] = a->Get(2)->NumberValue();
 }
 
+void Callback_OKO_DirFd(
+    const FunctionCallbackInfo<v8::Value>& args) {
+  if (args.IsConstructCall() || args.Length() == 0
+      || !(args[0]->IsFloat32Array() || args[0]->IsArray()))
+    return;
+  KObj_Oriented* pointer_this =
+          static_cast<KObj_Oriented*>(Local<External>::Cast(
+              args.This()->GetInternalField(0))->Value());
+  Local<Array> a = Local<Array>::Cast(args[0]);
+  a->Set(0, Number::New(isolate, -pointer_this->orientation[2][0]));
+  a->Set(1, Number::New(isolate, -pointer_this->orientation[2][1]));
+  a->Set(2, Number::New(isolate, -pointer_this->orientation[2][2]));
+}
+
+void Callback_OKO_DirUp(
+    const FunctionCallbackInfo<v8::Value>& args) {
+  if (args.IsConstructCall() || args.Length() == 0
+      || !(args[0]->IsFloat32Array() || args[0]->IsArray()))
+    return;
+  KObj_Oriented* pointer_this =
+          static_cast<KObj_Oriented*>(Local<External>::Cast(
+              args.This()->GetInternalField(0))->Value());
+  Local<Array> a = Local<Array>::Cast(args[0]);
+  a->Set(0, Number::New(isolate, pointer_this->orientation[1][0]));
+  a->Set(1, Number::New(isolate, pointer_this->orientation[1][1]));
+  a->Set(2, Number::New(isolate, pointer_this->orientation[1][2]));
+}
+
+void Callback_OKO_DirRt(
+    const FunctionCallbackInfo<v8::Value>& args) {
+  if (args.IsConstructCall() || args.Length() == 0
+      || !(args[0]->IsFloat32Array() || args[0]->IsArray()))
+    return;
+  KObj_Oriented* pointer_this =
+          static_cast<KObj_Oriented*>(Local<External>::Cast(
+              args.This()->GetInternalField(0))->Value());
+  Local<Array> a = Local<Array>::Cast(args[0]);
+  a->Set(0, Number::New(isolate, pointer_this->orientation[0][0]));
+  a->Set(1, Number::New(isolate, pointer_this->orientation[0][1]));
+  a->Set(2, Number::New(isolate, pointer_this->orientation[0][2]));
+}
+
 }
 }
 
