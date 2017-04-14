@@ -177,7 +177,7 @@ void Callback_KObj_Entity(const FunctionCallbackInfo<Value>& args) {
     printf("NEW: Entity\n");
     KObj_Entity* o = new KObj_Entity();
     o->physics = 1;
-    o->components.push_back(new Component::CPN_Cube);
+    //o->components.push_back(new Component::CPN_Cube);
     o->jsObject = new Persistent<Object,
         CopyablePersistentTraits<Object>>(isolate, args.This());
     //Kondion::world.push_back(o);
@@ -185,43 +185,6 @@ void Callback_KObj_Entity(const FunctionCallbackInfo<Value>& args) {
     args.GetReturnValue().Set(args.This());
   }
 }
-
-void Callback_Entity_AddComponent(const FunctionCallbackInfo<Value>& args) {
-  if (args.IsConstructCall() || args.Length() == 0)
-    return;
-
-  Local<FunctionTemplate> f = Local<FunctionTemplate>::New(isolate,
-                                                           p_component);
-  //printf("Arg0 is component: %i\n", f->HasInstance(args[0]));
-
-  if (!f->HasInstance(args[0]))
-    return;
-  KObj_Entity* pointer_this = static_cast<KObj_Entity*>(Local<External>::Cast(
-      args.This()->GetInternalField(0))->Value());
-  KComponent* pointer_arg0 = static_cast<KComponent*>(Local<External>::Cast(
-      Local<Object>::Cast(args[0])->GetInternalField(0))->Value());
-
-  pointer_this->components.push_back(pointer_arg0);
-}
-
-void Callback_Entity_PhysLevel(const FunctionCallbackInfo<Value>& args) {
-  if (args.IsConstructCall() || args.Length() == 0)
-    return;
-
-  KObj_Entity* pointer_this = static_cast<KObj_Entity*>(Local<External>::Cast(
-      args.This()->GetInternalField(0))->Value());
-  pointer_this->physics = uint8_t(args[0]->NumberValue());
-  //KObj_Node::worldObject
-  if (pointer_this->getParent() != NULL) {
-    if (KObj_Node::all[pointer_this->topObject]->getClass()
-        == &KObj::GKO_World::myClass) {
-      static_cast<KObj::GKO_World*>(KObj_Node::all[pointer_this->topObject])
-          ->terrain.push_back(pointer_this->allIndex);
-    }
-  }
-
-}
-
 
 void Callback_Kdion_Blank(const FunctionCallbackInfo<Value>& args) {
   //HandleScope handle_scope(isolate);

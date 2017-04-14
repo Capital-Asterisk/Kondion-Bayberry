@@ -37,7 +37,7 @@ void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
     ci.normB.y = -b.offset[2][1];
     ci.normB.z = -b.offset[2][2];
 
-    printf("NormB: (%f, %f, %f)\n", ci.normB.x, ci.normB.y, ci.normB.z);
+    //printf("NormB: (%f, %f, %f)\n", ci.normB.x, ci.normB.y, ci.normB.z);
 
     // TODO which surface of the cube was hit?
 
@@ -62,8 +62,8 @@ void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
                 tvec3[1].z * tvec3[1].z
                     + 2 * tvec3[2].z * -tvec3[0].x)))
         / tvec3[2].z;
-    printf("Collide Time: %f, (%f), e: %f a:%f \n", ci.collideTime, tvec3[1].z * tvec3[1].z
-           + 2 * tvec3[2].z * -tvec3[0].x, tvec3[2].z);
+    //printf("Collide Time: %f, (%f), e: %f a:%f \n", ci.collideTime, tvec3[1].z * tvec3[1].z
+    //       + 2 * tvec3[2].z * -tvec3[0].x, tvec3[2].z);
 
     ci.sink = tvec3[0].x;
 
@@ -131,9 +131,6 @@ void PhysicsUpdate() {
 
         // Set acceleration to 0 so it doesn't add up on each other
         // TODO: there's a shorter way to do this.
-        ent->acceleration.x = 0;
-        ent->acceleration.y = 0;
-        ent->acceleration.z = 0;
 
         // Add up all the surrounding forces to get acceleration
         for (uint16_t i = 0; i < KObj_Node::worldObject->forces.size(); i++) {
@@ -184,9 +181,9 @@ void PhysicsUpdate() {
               // Collision detected!
               if (ci.collided) {
 
-                printf("Steptime: %f EEE: %i\n", steptime, steptime >= ci.collideTime);
+                //printf("Steptime: %f EEE: %i\n", steptime, steptime >= ci.collideTime);
 
-                if (steptime >= ci.collideTime - 0.001) {
+                if (true || steptime >= ci.collideTime - 0.001) {
 
                   //ent->orientation[3].x -= ci.normB.x * ci.sink;
                   //ent->orientation[3].y -= ci.normB.y * ci.sink;
@@ -221,6 +218,10 @@ void PhysicsUpdate() {
         ent->velocity.x += ent->acceleration.x * steptime;
         ent->velocity.y += ent->acceleration.y * steptime;
         ent->velocity.z += ent->acceleration.z * steptime;
+
+        ent->acceleration.x = 0;
+        ent->acceleration.y = 0;
+        ent->acceleration.z = 0;
 
       }
 

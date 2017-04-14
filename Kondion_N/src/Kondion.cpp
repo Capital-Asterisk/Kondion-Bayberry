@@ -160,7 +160,8 @@ void KObj_Oriented::parentTransform() {
 }
 
 void KObj_Entity::updateA() {
-  //rotVelocity = glm::quat(glm::vec3(0.0, 0.01, 0.0));
+  if (this->physics != 0)
+    rotVelocity = glm::quat(glm::vec3(0.0, 0.0, 0.01));
   // TODO, add previous velocity, then use the acceleration equation from physics
   orientation = orientation * glm::toMat4(rotVelocity);
   if (physics != 0) {

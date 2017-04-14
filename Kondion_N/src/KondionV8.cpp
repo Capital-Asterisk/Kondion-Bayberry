@@ -17,6 +17,7 @@
 #include "Kondion.h"
 #include "V8_Functions.h"
 #include "V8_OKO_Functions.h"
+#include "V8_Ent_Functions.h"
 
 using namespace v8;
 
@@ -447,6 +448,10 @@ void Setup() {
   kobj_entity->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "thrustN"),
       FunctionTemplate::New(isolate, Callback_Kdion_Blank));
+  kobj_entity->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "accel"),
+      FunctionTemplate::New(isolate, Callback_Entity_Accelerate));
+
 
   Local<FunctionTemplate> kobj_instance = FunctionTemplate::New(
       isolate, Callback_KObj_Entity);
