@@ -236,7 +236,7 @@ void Update() {
   if (KTexture::loadMe.size() != 0) {
     printf("Textures to load: %i\n", KTexture::loadMe.size());
     for (uint16_t i = KTexture::loadMe.size() - 1; i != 0; i --) {
-      KTexture::textures[KTexture::loadMe[i]]->Load();
+      KTexture::textures[KTexture::loadMe[i]]->Load(true);
     }
     KTexture::loadMe.clear();
   }
@@ -378,7 +378,7 @@ KTexture::KTexture(std::string name, std::string path, uint16_t trait) {
   textures.push_back(this);
 }
 
-void KTexture::Load() {
+void KTexture::Load(bool a) {
 
   printf("Loading texture: %s, source: %s\n", identifier.c_str(), source.c_str());
 

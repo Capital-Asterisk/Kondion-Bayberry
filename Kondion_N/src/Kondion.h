@@ -231,12 +231,14 @@ class KComponent {
 };
 
 class KMaterial {
-  //
-  //
-  //
+
+
   std::string source;
-  GLuint vert;
-  GLuint frag;
+  //GLuint vert;
+  //GLuint frag;
+
+  void Utilize();
+  void Load(bool a);
 };
 
 namespace KObj {
@@ -543,7 +545,7 @@ class KTexture {
   //KTexture(std::string name, std::string path, GLint miFilter, GLint maFilter,
   //         GLint awrapS, GLint awrapT);
   KTexture(std::string name, std::string path, uint16_t trait);
-  void Load();
+  void Load(bool a);
   void Bind();
 };
 

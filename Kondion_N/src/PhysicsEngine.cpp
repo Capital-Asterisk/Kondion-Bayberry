@@ -175,6 +175,9 @@ void PhysicsUpdate() {
           for (uint8_t k = 0; k < ent->components.size(); k++) {
             for (uint8_t l = 0; l < terrain->components.size(); l++) {
 
+              // Clear ci first
+              ci.collided = false;
+
               // Go test the collision
               ent->components[k]->testCollision(*terrain->components[l], ci);
 
@@ -182,6 +185,7 @@ void PhysicsUpdate() {
               if (ci.collided) {
 
                 //printf("Steptime: %f EEE: %i\n", steptime, steptime >= ci.collideTime);
+                //printf("Component: %i Collided, sink: %f\n", k, ci.sink);
 
                 if (true || steptime >= ci.collideTime - 0.001) {
 

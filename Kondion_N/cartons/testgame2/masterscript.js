@@ -12,12 +12,13 @@ kdion.initialize(function() {
 	
 	var ground = new KObj_Entity();
 	var flat = new KCompnent("infplane");
-	var cube = new KCompnent("cube");
+	var cubeA = new KCompnent("cube");
+	var cubeB = new KCompnent("cube");
+	var cubeC = new KCompnent("cube");
 	var tm = mat4.create();
-	mat4.rotateX(tm, tm, Math.PI / 2 + Math.PI / 12 * 0);
+	mat4.rotateX(tm, tm, Math.PI / 2 + Math.PI / 12);
 	flat.setMatrix(tm);
-	mat4.fromScaling(tm, [4, 4, 4]);
-	cube.setMatrix(tm);
+	//mat4.fromScaling(tm, [4, 4, 4]);
 	ground.addComponent(flat);
 	ground.translate(0.0, -9.0, 0.0);
 	ground.setName("Ground");
@@ -34,17 +35,21 @@ kdion.initialize(function() {
 	e.translate(0.0, 1.0, 0.0);
 	e.setName("Cube_Base");
 	e.setParent(kdion.World);
-	e.addComponent(cube);
+	e.addComponent(cubeA);
 	kdion.e = e;
 	
-	var left = new KObj_Entity();
-	left.translate(-1.0, 1.0, 0.0);
-	left.setName("Cube_Left");
-	left.setParent(e);
+	//var left = new KObj_Entity();
+	//left.translate(-1.0, 1.0, 0.0);
+	//left.setName("Cube_Left");
+	//left.setParent(e);
+	mat4.fromTranslation(tm, [-1.0, 1.0, 0.0]);
+	cubeB.setMatrix(tm);
+	e.addComponent(cubeB);
 	
 	var top = new KObj_Entity();
 	top.translate(1.0, 2.0, 0.0);
 	top.setName("Cube_Top");
+	top.addComponent(cubeC);
 	top.setParent(e);
 	
 	kdion.load({textures: ["tiles_diff", "tiles_norm"]});

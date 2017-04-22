@@ -60,6 +60,9 @@ void Callback_Entity_AddComponent(const FunctionCallbackInfo<Value>& args) {
   KComponent* pointer_arg0 = static_cast<KComponent*>(Local<External>::Cast(
       Local<Object>::Cast(args[0])->GetInternalField(0))->Value());
 
+  //KComponent* dupe = new KComponent;
+  //dupe = *pointer_arg0;
+
   pointer_this->components.push_back(pointer_arg0);
 }
 

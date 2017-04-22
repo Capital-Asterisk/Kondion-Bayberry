@@ -11,7 +11,7 @@
 
 #include <sstream>
 
-#include "Kondion.h"
+#include "../Kondion.h"
 
 namespace Kondion {
 
