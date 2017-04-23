@@ -549,16 +549,17 @@ class KMaterial {
 
   virtual void Load(bool a) = 0;
   virtual void Utilize() = 0;
-  void New(const std::string& src);
+
+  KMaterial* New(const std::string& src);
 
  protected:
-  KMaterial();
-  //KMaterial(const std::string& src);
+  KMaterial() {
+  }
   virtual ~KMaterial() {
-    ;
   }
 };
 
+// TODO, make this virtual and make a GL_KTexture to take out OpenGL code
 class KTexture {
  public:
 
@@ -573,12 +574,7 @@ class KTexture {
   //GLint minFilter, magFilter, textureId, wrapS, wrapT;
   GLuint textureId;
 
-  //KTexture(std::string name, GLint id, uint16_t width, uint16_t height,
-  //         GLint miFilter, GLint maFilter, GLint awrapS, GLint awrapT,
-  //         bool mipped);
   KTexture(std::string name, GLint id, uint16_t width, uint16_t height);
-  //KTexture(std::string name, std::string path, GLint miFilter, GLint maFilter,
-  //         GLint awrapS, GLint awrapT);
   KTexture(std::string name, std::string path, uint16_t trait);
   void Load(bool a);
   void Bind();
@@ -613,8 +609,6 @@ void Setup();
 void Update();
 Raw* Get(const std::string& url);
 
-extern std::vector<KTexture *> textures;
-
 }
 
 namespace JS {
@@ -627,6 +621,8 @@ void GlobalUpdate();
 void Setup();
 void Start();
 void UpdateInput();
+
+std::string* ParseShader(std::string* in);
 
 namespace ON {
 size_t Parse(const std::string& s);

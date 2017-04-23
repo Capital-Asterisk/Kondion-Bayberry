@@ -22,8 +22,11 @@ void GL_Material::Utilize() {
 
 }
 
-void KMaterial::New(const std::string& src) {
-
+KMaterial* KMaterial::New(const std::string& src) {
+  GL_Material* mat = new GL_Material;
+  mat->source = src;
+  mat->internal = (src == "i");
+  return mat;
 }
 
 }

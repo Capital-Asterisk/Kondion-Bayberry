@@ -610,5 +610,35 @@ void UpdateInput() {
 
 }
 
+std::string* ParseShader(std::string* in) {
+  // again, fancy V8 things
+  Isolate::Scope isolate_scope(isolate);
+  HandleScope handle_scope(isolate);
+  Local<Context> context = Local<Context>::New(isolate, p_context);
+  Context::Scope context_scope(context);
+
+  MaybeLocal<Value> parserA = context->Global()->Get(context, String::NewFromUtf8(isolate, "kdion"))
+        .ToLocalChecked()->ToObject()->Get(context, String::NewFromUtf8(isolate, "materialParser"));
+
+  if (parserA.IsEmpty()) {
+    printf("[JS/TWM] Material parser function not found.");
+    return NULL;
+  }
+
+  Local<Value> parserB = parserA.ToLocalChecked();
+  if (!parserB->IsFunction()) {
+     printf("[JS/TWM] Invalid material parser, must be a function.");
+     return NULL;
+  }
+
+  Local<Value> res;
+  // TODO: use external string resource if not lazy
+  Local<Value> args[1] = { String::NewFromUtf8(isolate, in->c_str()) };
+  res = Local<Function>::Cast(parserB)->Call(context, context->Global(), 1, args)
+        .ToLocalChecked();
+
+  return NULL;
+}
+
 }
 }
