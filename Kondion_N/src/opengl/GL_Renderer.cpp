@@ -12,10 +12,12 @@
 #include <sstream>
 
 #include "../Kondion.h"
+#include "GL_Kondion.h"
 
 namespace Kondion {
 
 //std::vector<Resources::KTexture *> Resources::KTexture::textures;
+std::vector<Renderer::RenderPass*> Renderer::RenderPass::passes;
 
 namespace Renderer {
 
@@ -341,7 +343,7 @@ GLint neat(GLuint* tex, uint16_t width, uint16_t height, GLint internal,
   return *tex;
 }
 
-void RenderPass::consider(KObj_Renderable* a) {
+void GLRenderPass::consider(KObj_Renderable* a) {
   printf("a: %s\n", a->name.c_str());
   // unable to multiply the two drawLayers and compare to zero. two positive unsigned ints can multiply to zero.
   if ((drawLayer != 0) && (a->drawLayer != 0)
@@ -357,7 +359,7 @@ void RenderPass::consider(KObj_Renderable* a) {
   //  items.add((KObj_Renderable) f);
 }
 
-void RenderPass::generate() {
+void GLRenderPass::generate() {
   // ids: fboId, brightnessTexture, depth.., diffuse, norms, final
   ids = new GLuint[6];
   printf("RenderPass GENERATE\n");
@@ -392,7 +394,7 @@ void RenderPass::generate() {
 
 }
 
-void RenderPass::render() {
+void GLRenderPass::render() {
   //printf("hey %i %i\n", ready, framebuffered);
   if (!ready) {
     if (!framebuffered) {
@@ -506,20 +508,30 @@ void RenderPass::render() {
   }
 }
 
-void RenderPass::scan() {
+void GLRenderPass::force(Kondion::KObj_Renderable* d) {
 
 }
 
-RenderPass::RenderPass(uint8_t typ, uint32_t layer, uint16_t w, uint16_t h,
-                       bool autoscn) {
-  type = typ;
-  camera = NULL;
-  ids = {};
-  drawLayer = layer;
-  width = (w == 0) ? Window::GetWidth(0) : w;
-  height = (h == 0) ? Window::GetHeight(0) : h;
-  autoscan = autoscn;
-  passes.push_back(this);
+
+void GLRenderPass::scan() {
+
+}
+
+//GLRenderPass::GLRenderPass() {
+
+//}
+
+void RenderPass::New(uint8_t type, uint32_t drawLayer, uint16_t width, uint16_t height,
+                       bool autoscan) {
+  GLRenderPass* rp = new GLRenderPass;
+  rp->type = type;
+  rp->camera = NULL;
+  rp->ids = {};
+  rp->drawLayer = drawLayer;
+  rp->width = (width == 0) ? Window::GetWidth(0) : width;
+  rp->height = (height == 0) ? Window::GetHeight(0) : height;
+  rp->autoscan = autoscan;
+  passes.push_back(rp);
 }
 
 }

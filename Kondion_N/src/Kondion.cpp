@@ -53,8 +53,6 @@ const std::string KComponent::myClass = "how did this get here?";
 const std::string Component::CPN_Cube::myClass = "cube";
 const std::string Component::CPN_InfinitePlane::myClass = "infplane";
 
-std::vector<Renderer::RenderPass*> Renderer::RenderPass::passes;
-
 KObj_Node::KObj_Node() {
   jsObject = NULL;
   parent = NULL;
@@ -213,7 +211,7 @@ void Launch() {
 
 void GameLoop() {
 
-  new Renderer::RenderPass(Renderer::RenderPass::DEFAULT, 1, 0, 0, true);
+  Renderer::RenderPass::New(Renderer::RenderPass::DEFAULT, 1, 0, 0, true);
 
   JS::Start();
 
@@ -379,6 +377,8 @@ int main(int argc, const char* argv[]) {
   uint32_t c = a * b;
   printf("Unsigned 2147483648 * 2 = %i\n", c);
   // aparrently 2 non-zero numbers can multiply to zero
+
+  //new Kondion::Resources::KMaterial();
 
   {
     // Get the directory

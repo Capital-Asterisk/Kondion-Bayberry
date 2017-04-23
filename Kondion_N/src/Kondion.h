@@ -37,7 +37,14 @@ class KObj_Renderable;
 class KObj_Entity;
 class KObj_Instance;
 
+class KComponent;
+
 struct KCurve;
+
+namespace Resources {
+class KMaterial;
+class KTextures;
+}
 
 namespace Physics {
 class CollisionInfo;
@@ -46,9 +53,6 @@ class CollisionInfo;
 namespace KObj {
 class GKO_World;
 }
-
-class KComponent;
-class KMaterial;
 
 // Curve struct
 
@@ -60,7 +64,8 @@ struct KCurve {
     type = t;
     size = s;
     points = p;
-  };
+  }
+  ;
 
   ~KCurve() {
     delete points;
@@ -166,8 +171,8 @@ class KObj_Entity : public KObj_Renderable {
   uint8_t physics;
 
   // physics stuff
-  glm::vec3 acceleration; // total calculated acceleration
-  uint16_t radius; // radius of influence (farthest component)
+  glm::vec3 acceleration;  // total calculated acceleration
+  uint16_t radius;  // radius of influence (farthest component)
   double accel;
 
   const std::string* getClass() {
@@ -213,8 +218,6 @@ class KComponent {
 
   // Physical properties
 
-
-
   virtual const std::string* getClass() {
     return &myClass;
   }
@@ -228,17 +231,6 @@ class KComponent {
 
   }
  protected:
-};
-
-class KMaterial {
-
-
-  std::string source;
-  //GLuint vert;
-  //GLuint frag;
-
-  void Utilize();
-  void Load(bool a);
 };
 
 namespace KObj {
@@ -385,6 +377,8 @@ class RenderPass {
   static const unsigned char DEFAULT = 0, FORWARD = 1, DIFFUSE = 2, DEPTH = 3,
       NORMALS = 4, LIGHT = 5, HDR = 6, GUI = 20;
   static std::vector<RenderPass*> passes;
+  static void New(uint8_t type, uint32_t drawLayer, uint16_t width,
+                  uint16_t height, bool autoscan);
 
   bool autoscan;
   bool ready = false;
@@ -396,18 +390,35 @@ class RenderPass {
   uint16_t width, height;
   uint8_t type;
 
-  void consider(KObj_Renderable* a);
-  void force(KObj_Renderable* a);
-  void generate();
-  void render();
-  void scan();
-  GLuint id(uint8_t a) {
-    return ids[a];
+  virtual void consider(KObj_Renderable* a) {
   }
-  RenderPass(uint8_t typ, uint32_t layer, uint16_t w, uint16_t h, bool autoscn);
+
+  virtual void force(KObj_Renderable* a) {
+  }
+
+  virtual void generate() {
+  }
+
+  virtual void render() {
+  }
+
+  virtual void scan() {
+  }
+
+  virtual GLuint id(uint8_t a) {
+    return 0;
+  }
 
  protected:
-  GLuint* ids;
+  //GLuint* ids;
+  RenderPass() {
+
+  }
+  ;
+
+  virtual ~RenderPass() {
+
+  }
 
 };
 
@@ -476,7 +487,7 @@ struct VirtualJoystick {
 
   static std::vector<VirtualJoystick*> vsticks;
 
-  std::vector<uint16_t> controls; // there should be a better way of doing this
+  std::vector<uint16_t> controls;  // there should be a better way of doing this
   std::vector<uint8_t> direction;
   std::vector<float> magnitude;
 
@@ -524,6 +535,30 @@ void transform3f(const glm::mat4& a, const glm::vec3& b);
 
 namespace Resources {
 
+class KMaterial {
+ public:
+
+  static std::vector<KMaterial *> materials;
+  static std::vector<uint16_t> loadMe;
+
+  bool internal;
+  bool loaded;
+  std::string source;
+  //GLuint vert;
+  //GLuint frag;
+
+  virtual void Load(bool a) = 0;
+  virtual void Utilize() = 0;
+  void New(const std::string& src);
+
+ protected:
+  KMaterial();
+  //KMaterial(const std::string& src);
+  virtual ~KMaterial() {
+    ;
+  }
+};
+
 class KTexture {
  public:
 
@@ -533,7 +568,7 @@ class KTexture {
   std::string source, identifier;
   uint16_t traits;
   uint16_t width, height;
-  bool isInternal, isLoaded;//, mipmapped;
+  bool isInternal, isLoaded;  //, mipmapped;
   //unsigned short imageWidth, imageHeight;
   //GLint minFilter, magFilter, textureId, wrapS, wrapT;
   GLuint textureId;
@@ -557,7 +592,7 @@ class Raw {
   uint8_t carton;
   Raw(const std::string& file) {
     fb = new std::filebuf;
-    carton = 1; // CARTON_FOLDER
+    carton = 1;  // CARTON_FOLDER
     filepath = file;
     fb->open(file.c_str(), std::ios::in);
     stream = new std::istream(fb);
