@@ -35,6 +35,7 @@ namespace Resources {
 const unsigned char CARTON_KCA = 0, CARTON_FOLDER = 1, CARTON_ZIP = 2;
 
 std::vector<KTexture *> KTexture::textures;
+std::vector<KMaterial *> KMaterial::materials;
 std::vector<uint16_t> KTexture::loadMe;
 
 struct Carton {
@@ -246,6 +247,7 @@ Raw* Get(const std::string& url) {
 
   // url is "carton:directory/directory/filename"
   // it shouldn't be nammed url.
+  printf("[RES]: Loading Resource: %s\n", url.c_str());
 
   // find the first occourance of ':'
   int found = url.find(':');
@@ -253,12 +255,17 @@ Raw* Get(const std::string& url) {
   std::string id = url.substr(0, found);
   // same thing, but in reverse, "directory/directory/filename"
   std::string current = url.substr(found + 1, url.size() - 1);
+  // For the error on the end, set to true if the carton is found
+  bool cartonFound = false;
 
   //printf("%s \n", current.c_str());
 
   // loop through the cartons and find a matching id
   for (unsigned int i = 0; i < Carton::cartons.size(); i++) {
     if (Carton::cartons[i]->id == id) {
+
+      cartonFound = true;
+
       if (Carton::cartons[i]->type == CARTON_FOLDER) {
 
         // open the directory of the carton, list files
@@ -329,6 +336,8 @@ Raw* Get(const std::string& url) {
 
   }
 
+  printf("[RES]: Unable to open resource: %s\n", url.c_str());
+  printf("[RES]: %s\n", cartonFound ? "Unable to locate file" : "Missing carton, or invalid resource Id.");
   return NULL;
 }
 

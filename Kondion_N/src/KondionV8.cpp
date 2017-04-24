@@ -621,13 +621,13 @@ std::string* ParseShader(std::string* in) {
         .ToLocalChecked()->ToObject()->Get(context, String::NewFromUtf8(isolate, "materialParser"));
 
   if (parserA.IsEmpty()) {
-    printf("[JS/TWM] Material parser function not found.");
+    printf("[JS/TWM]: Material parser function not found.\n");
     return NULL;
   }
 
   Local<Value> parserB = parserA.ToLocalChecked();
   if (!parserB->IsFunction()) {
-     printf("[JS/TWM] Invalid material parser, must be a function.");
+     printf("[JS/TWM]: Invalid material parser, must be a function.\n");
      return NULL;
   }
 

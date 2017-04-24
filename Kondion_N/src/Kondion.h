@@ -540,6 +540,7 @@ class KMaterial {
 
   static std::vector<KMaterial *> materials;
   static std::vector<uint16_t> loadMe;
+  static KMaterial* New(const std::string& src);
 
   bool internal;
   bool loaded;
@@ -549,8 +550,6 @@ class KMaterial {
 
   virtual void Load(bool a) = 0;
   virtual void Utilize() = 0;
-
-  KMaterial* New(const std::string& src);
 
  protected:
   KMaterial() {
