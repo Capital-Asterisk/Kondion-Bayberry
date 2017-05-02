@@ -265,7 +265,7 @@ void GameLoop() {
 
   glfwSetTime(15.0);
 
-  Resources::KMaterial::New("kdefault:masterscript");
+  Resources::KMaterial::New("kdefault:testmaterial");
   Resources::KMaterial::materials[0]->Load(true);
 
   double startTime = glfwGetTime();
