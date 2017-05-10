@@ -287,15 +287,22 @@ void Eval(const char* s) {
   Local<Context> context = Local<Context>::New(isolate, p_context);
   Context::Scope context_scope(context);
   //std::cout << s << "\n";
+  v8::TryCatch trycatch(isolate);
+  v8::ScriptOrigin origin(String::NewFromUtf8(isolate, "Unknown"));
   Local<String> source = String::NewFromUtf8(isolate, s, NewStringType::kNormal)
       .ToLocalChecked();
-  MaybeLocal<Script> script = Script::Compile(context, source);
+  MaybeLocal<Script> script = Script::Compile(context, source, &origin);
+
   if (script.IsEmpty()) {
-    printf("something went wrong\n");
+    v8::String::Utf8Value exception(trycatch.Exception());
+    v8::Local<v8::Message> message = trycatch.Message();
+    fprintf(stderr, "[JS]: something went compilingly wrong!\n");
+    fprintf(stderr, "[JS]: %s\n", *exception);
+    fprintf(stderr, "[JS]: Line %i\n",  message->GetLineNumber(context).FromJust());
   } else {
     MaybeLocal<Value> mayberesult = script.ToLocalChecked()->Run(context);
     if (mayberesult.IsEmpty()) {
-      printf("Error!\n");
+      perror("Error!\n");
     }  //else
        //Local<Value> result = mayberesult.ToLocalChecked();
   }

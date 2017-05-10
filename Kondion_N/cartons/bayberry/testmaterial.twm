@@ -4,8 +4,7 @@ TWMhvbay
 #vbay for bayberry, vcat for catalpa
 {
 name:"Test shader"
-author: "neal"
-eggs: "e"
+author: "neal",eggs: "e"
 }
 
 u0: float "eggs"
