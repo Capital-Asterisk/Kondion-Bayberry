@@ -12,14 +12,27 @@ kdion.initialize(function() {
 	
 	var ground = new KObj_Entity();
 	var flat = new KCompnent("infplane");
+	var wall = new KCompnent("infplane");
+	var celi = new KCompnent("infplane");
 	var cubeA = new KCompnent("cube");
 	var cubeB = new KCompnent("cube");
 	var cubeC = new KCompnent("cube");
+	
 	var tm = mat4.create();
-	mat4.rotateX(tm, tm, Math.PI / 2 + Math.PI / 12);
+	mat4.rotateX(tm, tm, Math.PI / 2);
 	flat.setMatrix(tm);
+	mat4.identity(tm);
+	mat4.rotateY(tm, tm, Math.PI / 4 * 3);
+	wall.setMatrix(tm);
+	mat4.identity(tm);
+	mat4.rotateX(tm, tm, -Math.PI / 2);
+	mat4.translate(tm, tm, [0, 0, 8]);
+	celi.setMatrix(tm);
+	//wall.setMatrix();
 	//mat4.fromScaling(tm, [4, 4, 4]);
 	ground.addComponent(flat);
+	ground.addComponent(wall);
+	ground.addComponent(celi);
 	ground.translate(0.0, -9.0, 0.0);
 	ground.setName("Ground");
 	ground.setParent(kdion.World);

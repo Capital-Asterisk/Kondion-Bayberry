@@ -2,14 +2,54 @@ kdion.log("Kondion Bayberry default JS carton");
 kdion.log("Loading glmatrix...");
 kdion.require("kdefault:glmatrix/gl-matrix-min");
 
+//console = {
+//  log: kondion.log
+//};
+
+String.prototype.between = function(index, start, cregex) {
+  var i = start , j = 0, k = 0;
+  while (i < this.length) {
+    i ++;
+    if (cregex.test(this[i])) {
+      if (k == index) {
+        return {indexA: i, indexB: j, slice: this.slice(j, i)};
+      } else {
+        k ++;
+        j = i + 1;
+      }
+    }
+  }
+  return undefined;
+};
+
 String.prototype.midCut = function(a, b) {
   // silly how JS has 3 functions to remove the edges of a string, but none
   // that could remove the middle.
   return this.slice(0, a) + this.substr(b);
-}
+};
+
+Array.prototype.twoDimRegex = function(regex, limit) {
+  var ret = [];
+  for (var i = 0; i < this.length; i ++) {
+    if (this[i].constructor == Array) {
+      var l = (!limit) ? this[i].length : Math.min(limit, this[i].length);
+      for (var j = 0; j < l; j ++) {
+        if (regex.test("" + this[i][j])) {
+          ret.push(i);
+          ret.push(j);
+        }
+      }
+    }
+  }
+  return ret;
+};
 
 kdion.materialParser = function(code) {
   //kdion.log("EEEEEEEE" + code);
+
+  // TODO: redo this entire thing to be more like actual javascript
+  //     : add new string functions to help with parsing
+  // this code is really bad
 
   var whitespace = /\s/;
 
@@ -19,22 +59,25 @@ kdion.materialParser = function(code) {
   var mode = 0;
   var name = "";
   var stack = "";
+  
   var meta = {};
+  var uniforms = [];
+  // uniforms are
   
   // get headers and shit
   if (code.startsWith("TWMh")) {
     // oh yeah man
     if (!code.startsWith("TWMhvbay")) {
-      kdion.log("Unsupported TWM version");
-      return "";
+      //kdion.log("Unsupported TWM version");
+      return "e: Unsupported version";
     }
   } else {
     // TODO: check for TWM binary
     //kdion.err("");
-    kdion.log("Not a TWMh file");
-    return "";
+    //kdion.log("Not a TWMh file");
+    return "e: Not a TWNh, or TWM binary not yet supported";
   }
-  
+    
   // Maybe shorten everything down to 1 loop
   
   // Remove all comments
@@ -97,7 +140,8 @@ kdion.materialParser = function(code) {
           meta[name.trim()] = JSON.parse(stack);
           kdion.log("META: " + name.trim() + ":" + stack);
         } catch(e) {
-          kdion.log("Error in parsing material metadata [" + stack + "]");
+          //kdion.log("Error in parsing material metadata [" + stack + "]");
+          return "e: Error in parsing material metadata [" + stack + "]";
         }
         name = "";
         stack = "";
@@ -116,52 +160,63 @@ kdion.materialParser = function(code) {
   
   // clip out the headers and metadata
   code = code.substr(i);
+  while (whitespace.test(code[0]))
+    code = code.substr(1);
+  
   kdion.log(code);
   
   // the following would be strings, commas, then data
   
-  /*
-  while (i < code.length || stop) {
+  // Get uniforms
   
-    if (code[i] == "#") {
-      // Comment, keep going until 
-      //kdion.log(code[i]);
-      while (code[i + 1] != "\n") {
-        //kdion.log(code[i]);
-        i ++;
-      }
-    } else if (whitespace.test(code[i])) {
-      // if whitespace
-      switch (mode) {
-
-        case 0:
-          // header
-          kdion.log(stack);
-          if (stack.startsWith("TWMh")) {
-            // It's a TWMh!
-          } else {
-            kdion.log("Input file is not a TWMh");
-            return "";
-          }
-          mode = 1;
-          stack = "";
-          break;
-
-        case 1:
-          //kdion.log(stack);
-          stack = "";
-          break;
+  i = 0; // current uniform, [0, 1, 2 ...]
+  j = 0; // character index of uniform
+  //stop = false;
+  while ((j = code.indexOf("u" + i + ": ")) != -1) {
+    kdion.log("U" + i + ": " + code.between(1, j, whitespace).slice
+              + " " + code.between(2, j, whitespace).slice)
+    uniforms[i] = [code.between(1, j, whitespace).slice, code.between(2, j, whitespace).slice];
+    i ++;
+  }
+  
+  var smallsize = 0;  
+  // now actual node parsing
+  // for every node, #x#:
+  while ((j = code.search(/\d*x\d*:/)) != -1) {
+    smallsize = code.indexOf(":", j);
+    code = code.substr(smallsize + 2);
+    var nodes = [];
+    var k = 0;
+    // For every row, divided by '| -'
+    while ((k = code.search(/\|\s*?-/)) != -1) {
+      //kdion.log(k);
+      // set stack to the current row
+      stack = code.substring(0, k);
+      // remove the row from code
+      code = code.substr(code.indexOf("-", k) + 1);
+      // split the row by the '|' character into individual nodes. put array in
+      // nodes.
+      var l = nodes.push(stack.trim().split("|")) - 1;
+      //kdion.log(nodes[l]);
+      for (i = 0; i < nodes[l].length; i ++) {
+        //kdion.log(nodes[l][i] = nodes[l][i].trim());
+        nodes[l][i] = nodes[l][i].trim();
       }
       
-      // skip more whitespace, if blank spaces are more than 2 characters
-      while (whitespace.test(code[i + 1]))
-        i ++;
-
-    } else {
-      stack += code[i];
     }
-    i++;
+    // Step 1: Find the out node
+    
+    var r = nodes.twoDimRegex(/out/);
+    //for (i = 0; i < r.length / 2; i ++) {
+    //  kdion.log("EGGS: " + r[i * 2] + " " + r[i * 2 + 1])
+    //}
+    if (r.length != 2) {
+      //kdion.log("E");
+      return "e: multiple output nodes"
+    }
+    
+    
+    
+    //kdion.log(code);
   }
-  */
-
-}
+};
