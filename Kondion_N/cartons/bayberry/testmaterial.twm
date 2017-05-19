@@ -14,10 +14,22 @@ u2: tex tex0
 #rows/width x column/height
 5x5: 
 #This shader is actually really bad
-normal[n0] | [n0]fresnel[f1]     | [f1,b1,u0]mult[e2] | [c2,c1,e2]mult[c3] | [c3]out | -
-coords[c0] | [s0,b0]add[b1]      | [u2,t1,0.5]mix[c2] | -
-bright[b0] | [t0,100,255]hsv[t1] | -
-spculr[s0] | [u2,]texture[c1]     | -
-mstime[t0] | -
+[]normal[n0] | [n0]fresnel[f1]     | [f1,b1,u0]mult[e2] | [c2,c1,e2]mult[c3] | [c3]out[] | -
+[]coords[c0] | [s0,b0]add[b1]      | [u2,t1,0.5]mix[c2] | -
+[]bright[b0] | [t0,100,255]hsv[t1] | -
+[]spculr[s0] | [u2,c0]texture[c1]    | -
+[]mstime[t0] | -
 
-
+#mult(
+#  mix(
+#    u2
+#    ,hsv(mstime(),100,255)
+#    ,0.5
+#  )
+#  ,texture(u2,coords())
+#  ,mult(
+#    fresnel(normal())
+#    ,add(spculr(),bright()),
+#    u0
+#  )
+#)

@@ -1,3 +1,5 @@
+kdion.error = kdion.log;
+
 kdion.log("Kondion Bayberry default JS carton");
 kdion.log("Loading glmatrix...");
 kdion.require("kdefault:glmatrix/gl-matrix-min");
@@ -9,7 +11,6 @@ kdion.require("kdefault:glmatrix/gl-matrix-min");
 String.prototype.between = function(index, start, cregex) {
   var i = start , j = 0, k = 0;
   while (i < this.length) {
-    i ++;
     if (cregex.test(this[i])) {
       if (k == index) {
         return {indexA: i, indexB: j, slice: this.slice(j, i)};
@@ -18,6 +19,7 @@ String.prototype.between = function(index, start, cregex) {
         j = i + 1;
       }
     }
+    i ++;
   }
   return undefined;
 };
@@ -215,7 +217,50 @@ kdion.materialParser = function(code) {
       return "e: multiple output nodes"
     }
     
+    //var findOutputRegex = new RegExp("\\].*\\[.*eggs.*\\]$");
     
+    var thisisarecursivefunction = function(y, x) {
+      
+      //var node = nodes[y][x];
+      //kdion.log("node: " + node);
+      
+      var funcName = nodes[y][x].split(/\[|\]/);
+      //var values = nodes[y][x].between(1, 0, /\[|\]/).slice.split(",");
+      var ret = funcName[1];
+      var values = ret.split(",");
+      //kdion.log("values:" + funcName[1] + " " + funcName[2]);
+      funcName = funcName[2];
+      
+
+      //kdion.log("Function name: " + nodes[y][x].between(2, 0, /\[|\]/).slice);
+      // replace(/\[.*\]/g,"") regex to get function name is unknown
+      // use non regex instead.
+      //funcName = ()
+      
+      for (var l = 0; l < values.length; l ++) {
+        if (values[l] != "") {
+          var next = nodes.twoDimRegex(
+              new RegExp("\\].*\\[.*" + values[l] + ".*\\]$"));
+          // /[,\[].*\]$/
+          if (next.length != 2) {
+            if (next.length == 0)
+              kdion.error("Unknown input: [" + values[l] + "]; for now, no system is in place to prevent these errors.")
+            else
+              kdion.error("Multiple inputs for [" + values[l] + "]; for now, no system is in place to prevent these errors.")
+          } else {
+            //kdion.log("next: " + nodes[next[0]][next[1]]);
+            ret = ret.replace(values[l], thisisarecursivefunction(next[0], next[1]));
+            //return nodes[y][x].replace(values[l], thisisarecursivefunction(next[0], next[1]));
+            //
+            
+          }
+        }
+      }
+      
+      return funcName + "(" + ret + ")";
+    }
+    
+    kdion.log(thisisarecursivefunction(r[0], r[1]));
     
     //kdion.log(code);
   }
