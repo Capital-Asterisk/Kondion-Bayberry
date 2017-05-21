@@ -238,15 +238,16 @@ kdion.materialParser = function(code) {
       //funcName = ()
       
       for (var l = 0; l < values.length; l ++) {
-        if (values[l] != "") {
+        if (values[l] != "" && /[a-z]/.test(values[l][0])) {
           var next = nodes.twoDimRegex(
               new RegExp("\\].*\\[.*" + values[l] + ".*\\]$"));
           // /[,\[].*\]$/
           if (next.length != 2) {
-            if (next.length == 0)
+            if (next.length == 0) {
               kdion.error("Unknown input: [" + values[l] + "]; for now, no system is in place to prevent these errors.")
-            else
+            } else {
               kdion.error("Multiple inputs for [" + values[l] + "]; for now, no system is in place to prevent these errors.")
+            }
           } else {
             //kdion.log("next: " + nodes[next[0]][next[1]]);
             ret = ret.replace(values[l], thisisarecursivefunction(next[0], next[1]));

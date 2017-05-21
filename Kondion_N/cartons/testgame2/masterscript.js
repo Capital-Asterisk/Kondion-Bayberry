@@ -9,7 +9,7 @@ kdion.initialize(function() {
   
   kdion.log("Hello world");
   //kdion.Bird();
-  
+  3
   var ground = new KObj_Entity();
   var flat = new KCompnent("infplane");
   var wall = new KCompnent("infplane");
