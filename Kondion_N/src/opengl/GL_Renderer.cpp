@@ -330,16 +330,17 @@ void RenderQuad(float width, float height) {
 }
 
 GLint neat(GLuint* tex, uint16_t width, uint16_t height, GLint internal,
-           int format, GLenum thisiscppthistime) {
+           GLenum format, GLenum thisiscppthistime) {
   glGenTextures(1, tex);
   glBindTexture(GL_TEXTURE_2D, *tex);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  //glTexImage2D(GL_TEXTURE_2D, 0, internal, width, height, 0, format,
+  //             thisiscppthistime, NULL);
   glTexImage2D(GL_TEXTURE_2D, 0, internal, width, height, 0, format,
-               thisiscppthistime, NULL);
-
+                 thisiscppthistime, NULL);
   return *tex;
 }
 
@@ -347,7 +348,7 @@ void GLRenderPass::consider(KObj_Renderable* a) {
   printf("a: %s\n", a->name.c_str());
   // unable to multiply the two drawLayers and compare to zero. two positive unsigned ints can multiply to zero.
   if ((drawLayer != 0) && (a->drawLayer != 0)
-      && (drawLayer & a->drawLayer == drawLayer)) {
+      && ((drawLayer & a->drawLayer) == drawLayer)) {
     items.push_back(a);
 
   }
@@ -360,12 +361,95 @@ void GLRenderPass::consider(KObj_Renderable* a) {
 }
 
 void GLRenderPass::generate() {
-  // ids: fboId, brightnessTexture, depth.., diffuse, norms, final
-  ids = new GLuint[6];
-  printf("RenderPass GENERATE\n");
-  glGenFramebuffersEXT(1, ids);
-  glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, *ids);
+  // K21 render system requirements:
+  // 0 Framebuffer Id
+  // 1 Depth
+  // 2 Material
+  // 3 Coords
+  // 4 Normal
+  // 5 Mapped Normals
+  // 6 Brightness
+  // 7 Specular
+  // 8 Blend mode
+  // 9 Jelly
+  // 10 Final
 
+
+  // Geometry texture inputs
+  // none
+  // Geometry render targets (with depth)
+  // 0 Material
+  // 1 Coords
+  // 2 Normals
+
+  // Light texture inputs
+  // M
+
+  //GLint RGB =
+
+  ids = new GLuint[12];
+  printf("RenderPass GENERATE\n");
+  glGenFramebuffers(1, ids);
+  glBindFramebuffer(GL_FRAMEBUFFER, *ids);
+
+  //printf("Framebuffer status: %u\n", glCheckFramebufferStatus(GL_FRAMEBUFFER));
+  //printf("complete: %u\n", GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT);
+
+  // Depth`
+  neat(ids + 1, width, height, GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT,
+       GL_FLOAT);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
+                         ids[1], 0);
+
+  // Materials (R)
+  neat(ids + 2, width, height, GL_RED, GL_RED, GL_UNSIGNED_BYTE);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D,
+                         ids[2], 0);
+
+  // Coords (RG)
+  neat(ids + 3, width, height, GL_RG, GL_RG, GL_UNSIGNED_BYTE);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D,
+                         ids[3], 0);
+
+  // Normals (RGB)
+  neat(ids + 4, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D,
+                         ids[4], 0);
+
+  // Mapped Normals (RGB)
+  neat(ids + 5, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D,
+                         ids[5], 0);
+
+  // Brightness (RGB)
+  neat(ids + 6, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, GL_TEXTURE_2D,
+                         ids[6], 0);
+
+  // Speculars (RGB)
+  neat(ids + 7, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT7, GL_TEXTURE_2D,
+                         ids[7], 0);
+
+  // Blend mode (R)
+  neat(ids + 8, width, height, GL_RED, GL_RED, GL_UNSIGNED_BYTE);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT8, GL_TEXTURE_2D,
+                         ids[8], 0);
+
+  // Jelly (RGBA)
+  neat(ids + 9, width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT9, GL_TEXTURE_2D,
+                         ids[9], 0);
+
+  // Final (RGBA)
+  neat(ids + 10, width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT10, GL_TEXTURE_2D,
+                         ids[10], 0);
+
+  printf("Framebuffer complete: %u\n",
+         glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+
+  /*
   neat(ids + 1, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);  // Brightness
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
   GL_COLOR_ATTACHMENT3_EXT,
@@ -375,11 +459,11 @@ void GLRenderPass::generate() {
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
   GL_DEPTH_ATTACHMENT_EXT,
                             GL_TEXTURE_2D, ids[2], 0);
-  neat(ids + 3, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);  // Diffuse texture
+  neat(ids + 3, width, height, GL_RGB, GL_RED, GL_BYTE);  // Diffuse texture
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
   GL_COLOR_ATTACHMENT0_EXT,
                             GL_TEXTURE_2D, ids[3], 0);
-  neat(ids + 4, width, height, GL_RGB, GL_RGB, GL_FLOAT);  // Normal texture
+  neat(ids + 4, width, height, GL_RGB, GL_RGB, GL_BYTE);  // Normal texture
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
   GL_COLOR_ATTACHMENT1_EXT,
                             GL_TEXTURE_2D, ids[4], 0);
@@ -391,22 +475,20 @@ void GLRenderPass::generate() {
   glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
   GL_COLOR_ATTACHMENT2_EXT,
                             GL_TEXTURE_2D, ids[5], 0);
+  */
 
 }
 
 void GLRenderPass::render() {
   //printf("hey %i %i\n", ready, framebuffered);
   if (!ready) {
-    if (!framebuffered) {
-      generate();
-      framebuffered = true;
-    }
-    //glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT,
-    //    GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, drbId);
-    ready = glCheckFramebufferStatusEXT(
-        GL_FRAMEBUFFER_EXT) == GL_FRAMEBUFFER_COMPLETE_EXT;
+    generate();
+    //framebuffered = true;
+    ready = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER)
+            == GL_FRAMEBUFFER_COMPLETE;
+  }
 
-  } else {
+  if (ready) {
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
     //printf("then\n");
 
