@@ -39,7 +39,7 @@ class GLRenderPass : public RenderPass {
   void render();
   void scan();
   GLuint id(uint8_t a) {
-    return ids[a];
+    return ids[4];
   }
   //GLRenderPass();
   GLuint* ids;
@@ -52,6 +52,7 @@ namespace Resources {
 
 class GL_Material : public KMaterial {
  public:
+  GLuint programId;
   void Load(bool a);
   void Utilize();
   //void New(const std::string& src);

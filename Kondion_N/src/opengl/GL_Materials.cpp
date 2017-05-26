@@ -35,6 +35,8 @@ void GL_Material::Load(bool a) {
     std::string* s = new std::string(ostring->str());
     JS::ParseShader(s);
 
+
+
   } else {
     // Unload image
 

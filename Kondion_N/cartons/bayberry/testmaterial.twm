@@ -9,16 +9,18 @@ author: "neal",eggs: "e"
 
 u0: float eggs
 u1: int count
-u2: tex tex0
+u2: texture tex0
+u3: texture nmap
 
 #rows/width x column/height
-5x5: 
+123x456: 
 #This shader is actually really bad
 []normal[n0] | [n0]fresnel[f1]     | [f1,b1,u0]mult[e2] | [c2,c1,e2]mult[c3] | [c3]out[] | -
 []coords[c0] | [s0,b0]add[b1]      | [u2,t1,0.5]mix[c2] | -
 []bright[b0] | [t0,100,255]hsv[t1] | -
-[]spculr[s0] | [u2,c0]texture[c1]    | -
-[]mstime[t0] | -
+[]spculr[s0] | [u2,c0]texture[c1]  | -
+[]mstime[t0] | [u3,c0]texture[x0] | [x0,c0,n0]normap[n1] | [n1]norout[] | -
+[]zdepth[d0] | -
 
 #mult(
 #  mix(

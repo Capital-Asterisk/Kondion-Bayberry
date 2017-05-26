@@ -63,8 +63,11 @@ kdion.materialParser = function(code) {
   var stack = "";
   
   var meta = {};
-  var uniforms = [];
-  // uniforms are
+  var ret = {
+    version: "bayberry",
+    language: "GLSL 120",
+    result: "#version 120"
+  };
   
   // get headers and shit
   if (code.startsWith("TWMh")) {
@@ -171,17 +174,22 @@ kdion.materialParser = function(code) {
   
   // Get uniforms
   
+  ret.uniforms = [];
   i = 0; // current uniform, [0, 1, 2 ...]
   j = 0; // character index of uniform
   //stop = false;
   while ((j = code.indexOf("u" + i + ": ")) != -1) {
-    kdion.log("U" + i + ": " + code.between(1, j, whitespace).slice
-              + " " + code.between(2, j, whitespace).slice)
-    uniforms[i] = [code.between(1, j, whitespace).slice, code.between(2, j, whitespace).slice];
+    //kdion.log("U" + i + ": " + code.between(1, j, whitespace).slice
+    //          + " " + code.between(2, j, whitespace).slice)
+    //ret.uniforms[i] = "uniform " + eggs[code.between(1, j, whitespace).slice]
+    //+ " " + code.between(2, j, whitespace).slice + ";";
+    ret.uniforms[i] = [code.between(1, j, whitespace).slice,
+                       code.between(2, j, whitespace).slice];
+    kdion.log(ret.uniforms[i]);
     i ++;
   }
   
-  var smallsize = 0;  
+  var smallsize = 0;
   // now actual node parsing
   // for every node, #x#:
   while ((j = code.search(/\d*x\d*:/)) != -1) {
@@ -207,17 +215,6 @@ kdion.materialParser = function(code) {
       
     }
     // Step 1: Find the out node
-    
-    var r = nodes.twoDimRegex(/out/);
-    //for (i = 0; i < r.length / 2; i ++) {
-    //  kdion.log("EGGS: " + r[i * 2] + " " + r[i * 2 + 1])
-    //}
-    if (r.length != 2) {
-      //kdion.log("E");
-      return "e: multiple output nodes"
-    }
-    
-    //var findOutputRegex = new RegExp("\\].*\\[.*eggs.*\\]$");
     
     var thisisarecursivefunction = function(y, x) {
       
@@ -261,8 +258,66 @@ kdion.materialParser = function(code) {
       return funcName + "(" + ret + ")";
     }
     
-    kdion.log(thisisarecursivefunction(r[0], r[1]));
+    // keep at version 120, because there is still that small chance i would add
+    // OpenGL 2.1 compatibility
+    // Textures bound:
+    // 0 Depth
+    // 1 Materials
+    // 2 Coords
+    // 3 Normals
+    // 4 Mapped normals
+    // 5 Brightness
+    // 6 Specular
+    // 7....Uniform textures-
+    
+    var eggs = {float: "float", double: "double", int: "int", uint: "uint",
+                texture: "sampler2D"}
+    
+    stack = "";
+    for (i = 0; i < ret.uniforms.length; i ++) {
+      stack += "uniforms " + eggs[ret.uniforms[i][0]] + " u" + i + ";\n";
+    }
+    
+    ret.result = "#version 120"
+      + "\nuniform int id;"
+      + "\nuniform bool normalmode;"
+      + "\n"
+      + stack
+      + "\nvarying vec3 normal;"
+      + "\nvarying vec4 texCoord;"
+      + "\nvarying vec4 viewPos;"
+      + "\nvarying vec4 worldPos;"
+      + "\nvarying mat4 cuteMatrix;"
+      + "\n"
+      + "\n"
+      + "\n"
+      + "\n"
+      + "\n"
+      + "\n"
+      + "\n"
+      + "\n"
+      ;
+      
+    kdion.log(ret.result);
+   
+    var r;
+    r = nodes.twoDimRegex(/\]out\[/);
+    if (r.length != 2) {
+      kdion.log("E: MON");
+      return "e: multiple output nodes"
+    } else {
+      kdion.log(thisisarecursivefunction(r[0], r[1]));
+    }
+    
+    r = nodes.twoDimRegex(/\]norout\[/);
+    if (r.length != 2) {
+      kdion.log("E");
+      return "e: multiple normal output nodes"
+    } else {
+      kdion.log(thisisarecursivefunction(r[0], r[1]));
+    }
     
     //kdion.log(code);
+    return ret;
   }
 };

@@ -39,11 +39,13 @@ void Composite() {
   Two(0);
   glUseProgram(0);
   glBindTexture(GL_TEXTURE_2D, RenderPass::passes[0]->id(5));
-  // 3: diffuse, 4: normals 5: final
+  //glBindTexture(GL_TEXTURE_2D, Resources::KTexture::textures[0]->textureId);
+
   //printf("h:\ %i\n", RenderPass::passes[0]->id(2));
   //glBindTexture(GL_TEXTURE_2D, Resources::textures[0]->textureId);
   glTranslatef(800 / 2, 600 / 2, 0.0f);
   //glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
+  glScalef(-1.0f, -1.0f, 1.0f);
   RenderQuad(800, 600);
 }
 
@@ -56,9 +58,10 @@ void Consider(KObj_Renderable* a) {
 
 void Setup() {
 
+  // TODO Do this properly without copy-paste stuff
+
   glEnable(GL_TEXTURE_2D);
   glShadeModel(GL_SMOOTH);
-  glClearColor(0.0f, 0.0f, 0.0f, 0.5f);  // Black Background
   glClearDepth(1.0f);  // Depth Buffer Setup
   glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
   glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
@@ -262,7 +265,7 @@ void Two(uint8_t window) {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
-  glOrtho(0, Window::GetWidth(window), Window::GetHeight(window), 0, 6.0f,
+  glOrtho(0.0f, Window::GetWidth(window), Window::GetHeight(window), 0.0f, 6.0f,
           -6.0f);
   glMatrixMode(GL_MODELVIEW);
   //glScalef(1.0f, -1.0f, 1.0f);
@@ -305,7 +308,7 @@ void RenderCube(float scale) {
 
 void RenderQuad(float width, float height) {
   glPushMatrix();
-  glScalef(width, -height, 1);
+  glScalef(width, -height, -1.0f);
 
   glBindBuffer(GL_ARRAY_BUFFER, bacon);
   glVertexPointer(3, GL_FLOAT, 24, 0);  // First object
@@ -493,13 +496,12 @@ void GLRenderPass::render() {
     //printf("then\n");
 
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, ids[0]);
-    GLenum ducky[] = {
-    GL_COLOR_ATTACHMENT0_EXT, GL_COLOR_ATTACHMENT1_EXT,
-    GL_COLOR_ATTACHMENT2_EXT, GL_COLOR_ATTACHMENT3_EXT };
-    glDrawBuffers(4, ducky);
 
-    //glClearColor(Kondion.getWorld().skyColor.x, Kondion.getWorld().skyColor.y,
-    //            Kondion.getWorld().skyColor.z, Kondion.getWorld().skyColor.w);
+    // Materials, coords, normals
+    GLenum ducky[] = {
+    GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
+    glDrawBuffers(3, ducky);
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if (cameraOverride && camera != NULL)
@@ -507,34 +509,11 @@ void GLRenderPass::render() {
     else
       Three(currentCamera, width, height);
 
-    bool deep = false;  //depthMask != null;
-    if (deep) {
-      //glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
-      //    GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D,
-      //    ((GKO_DeferredPass) depthMask).depId, 0);
-    }
-
-    //glPushMatrix();
-    //new KMat_Monotexture().bind(type);
-    //KLoader.textures.get("neat").bind();
-    //glTranslatef(-getCamera().actTransform.m30, -getCamera().actTransform.m31 + 10, -getCamera().actTransform.m32);
-    //Kondion.km.draw();
-    //glPopMatrix();
-
+    // Render all items, TODO: render only opaque if transparency supported
     for (size_t i = 0; i < items.size(); i++) {
       glPushMatrix();
       items[i]->render();
       glPopMatrix();
-      //if (!items.get(i).killMe) {
-      //  if (!items.get(i).hidden) {
-      //    items.get(i).render(type, this);
-      //  }
-      //
-      //} else {
-      //  System.out.println("Remove: " + i);
-      //  items.remove(i);
-      //  i --;
-      //}
     }
 
     glViewport(0, 0, width, height);
@@ -569,7 +548,7 @@ void GLRenderPass::render() {
     //glUniform4f(skyUni, Kondion.getWorld().skyColor.x, Kondion.getWorld().skyColor.y,
     //    Kondion.getWorld().skyColor.z, Kondion.getWorld().skyColor.w);
     //glUniform1f(fogUni, 1f);
-    RenderQuad(width, height);
+    //RenderQuad(width, height);
     glTranslatef(-width / 2, -height / 2, 0);
     //KShader.unbind();
     glUseProgram(0);
