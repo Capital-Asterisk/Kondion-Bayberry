@@ -166,12 +166,23 @@ void Setup() {
                      glGetUniformLocation(temp_prog_deferred, "texture2"), 2);
   glProgramUniform1i(temp_prog_deferred,
                      glGetUniformLocation(temp_prog_deferred, "texture3"), 3);
+  glProgramUniform1i(temp_prog_deferred,
+                     glGetUniformLocation(temp_prog_deferred, "texture4"), 4);
+  glProgramUniform1i(temp_prog_deferred,
+                     glGetUniformLocation(temp_prog_deferred, "texture5"), 5);
 
   //delete [] interlevedDataA;
 
-  GLfloat interlevedDataB[] =
-      { -0.5, -0.5, 0.0, 0.0, 0.0, 1.0, 0.5, -0.5, 0.0, 0.0, 0.0, 1.0, 0.5, 0.5,
-          0.0, 0.0, 0.0, 1.0, -0.5, 0.5, 0.0, 0.0, 0.0, 1.0, };
+  // Plane Vertex and Normals
+  GLfloat interlevedDataB[] = {
+      -0.5, -0.5, 0.0,
+      0.0, 0.0, 1.0,
+      0.5, -0.5, 0.0,
+      0.0, 0.0, 1.0,
+      0.5, 0.5, 0.0,
+      0.0, 0.0, 1.0,
+      -0.5, 0.5, 0.0,
+      0.0, 0.0, 1.0};
 
   glGenBuffers(1, &bacon);
   glBindBuffer(GL_ARRAY_BUFFER, bacon);
@@ -179,8 +190,7 @@ void Setup() {
   GL_STATIC_DRAW);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  //delete [] interlevedDataB;
-
+  // Plane Coords
   GLfloat interlevedDataC[] = { 1, 1, 0, 1, 0, 0, 1, 0 };
 
   glGenBuffers(1, &grill);
@@ -527,28 +537,44 @@ void GLRenderPass::render() {
     glDepthMask(false);
     glDisable(GL_DEPTH_TEST);
 
-    glActiveTexture(GL_TEXTURE0);  // Diffuse
+    // 0 Depth
+    // 1 Materials
+    // 2 Coords
+    // 3 Normals
+    // 4 Mapped normals
+    // 5 Brightness
+    // 6 Specular
+
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, ids[3]);
-    glActiveTexture(GL_TEXTURE1);  // Depth
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, ids[2]);
-    glActiveTexture(GL_TEXTURE2);  // Normals
-    glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, ids[4]);
-    glActiveTexture(GL_TEXTURE3);  // Brightness
-    glEnable(GL_TEXTURE_2D);
+
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, ids[1]);
-    //GLDrawing.setCoords(new float[] {1, 1, 0, 1, 0, 0, 1, 0});
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, ids[2]);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, ids[3]);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, ids[4]);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, ids[5]);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, ids[6]);
+
+    GLenum e = GL_COLOR_ATTACHMENT5;
+    glDrawBuffers(1, &e);
+    glUseProgram(temp_prog_deferred);
+
     glTranslatef(width / 2.0f, height / 2.0f, -1.0f);
     //for (KObj_Renderable light : lights) {
     //  ((RKO_Light) light).apply(width, height);
     //}
-    glUseProgram(temp_prog_deferred);
+    //glScalef(1.0f, 0.5f, 1.0f);
+    RenderQuad(-width, -height);
+
     //glUniform4f(skyUni, Kondion.getWorld().skyColor.x, Kondion.getWorld().skyColor.y,
     //    Kondion.getWorld().skyColor.z, Kondion.getWorld().skyColor.w);
     //glUniform1f(fogUni, 1f);
-    //RenderQuad(width, height);
+
     glTranslatef(-width / 2, -height / 2, 0);
     //KShader.unbind();
     glUseProgram(0);

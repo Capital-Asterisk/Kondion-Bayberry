@@ -63,7 +63,7 @@ kdion.materialParser = function(code) {
   var stack = "";
   
   var meta = {};
-  var ret = {
+  var final = {
     version: "bayberry",
     language: "GLSL 120",
     result: "#version 120"
@@ -174,7 +174,7 @@ kdion.materialParser = function(code) {
   
   // Get uniforms
   
-  ret.uniforms = [];
+  final.uniforms = [];
   i = 0; // current uniform, [0, 1, 2 ...]
   j = 0; // character index of uniform
   //stop = false;
@@ -183,9 +183,9 @@ kdion.materialParser = function(code) {
     //          + " " + code.between(2, j, whitespace).slice)
     //ret.uniforms[i] = "uniform " + eggs[code.between(1, j, whitespace).slice]
     //+ " " + code.between(2, j, whitespace).slice + ";";
-    ret.uniforms[i] = [code.between(1, j, whitespace).slice,
+    final.uniforms[i] = [code.between(1, j, whitespace).slice,
                        code.between(2, j, whitespace).slice];
-    kdion.log(ret.uniforms[i]);
+    kdion.log(final.uniforms[i]);
     i ++;
   }
   
@@ -215,6 +215,13 @@ kdion.materialParser = function(code) {
       
     }
     // Step 1: Find the out node
+    
+    var sfuncs = {
+      "mult": function(args) {return "(" + args.join("*") + ")";},
+      "texture": function(args) {return "texture2D(" + args[0] + "," + args[1] + ")";},
+      "coords": function(args) {return "texture2D(coords, texCoord.st).rg";},
+      "screen": function(args) {return "texCoord.st";}
+    }
     
     var thisisarecursivefunction = function(y, x) {
       
@@ -247,7 +254,7 @@ kdion.materialParser = function(code) {
             }
           } else {
             //kdion.log("next: " + nodes[next[0]][next[1]]);
-            ret = ret.replace(values[l], thisisarecursivefunction(next[0], next[1]));
+            values[l] = thisisarecursivefunction(next[0], next[1]);
             //return nodes[y][x].replace(values[l], thisisarecursivefunction(next[0], next[1]));
             //
             
@@ -255,7 +262,20 @@ kdion.materialParser = function(code) {
         }
       }
       
-      return funcName + "(" + ret + ")";
+      if (sfuncs[funcName]) {
+        kdion.log("SOMETHING!");
+        return sfuncs[funcName](values);
+      }
+      
+      return funcName + "(" + values.join(",") + ")";
+    }
+    
+    var eggs = {float: "float", double: "double", int: "int", uint: "uint",
+                texture: "sampler2D"}
+    
+    stack = "";
+    for (i = 0; i < final.uniforms.length; i ++) {
+      stack += "uniforms " + eggs[final.uniforms[i][0]] + " u" + i + ";\n";
     }
     
     // keep at version 120, because there is still that small chance i would add
@@ -270,35 +290,39 @@ kdion.materialParser = function(code) {
     // 6 Specular
     // 7....Uniform textures-
     
-    var eggs = {float: "float", double: "double", int: "int", uint: "uint",
-                texture: "sampler2D"}
-    
-    stack = "";
-    for (i = 0; i < ret.uniforms.length; i ++) {
-      stack += "uniforms " + eggs[ret.uniforms[i][0]] + " u" + i + ";\n";
-    }
-    
-    ret.result = "#version 120"
+    final.result = "#version 120"
       + "\nuniform int id;"
       + "\nuniform bool normalmode;"
-      + "\n"
+
+      + "\nuniform sampler2D depth;"
+      + "\nuniform sampler2D materials;"
+      + "\nuniform sampler2D coords;"
+      + "\nuniform sampler2D normals;"
+      + "\nuniform sampler2D mapmals;"
+      + "\nuniform sampler2D bright;"
+      + "\nuniform sampler2D specs;"
+      
       + stack
+
       + "\nvarying vec3 normal;"
       + "\nvarying vec4 texCoord;"
       + "\nvarying vec4 viewPos;"
       + "\nvarying vec4 worldPos;"
       + "\nvarying mat4 cuteMatrix;"
-      + "\n"
-      + "\n"
-      + "\n"
-      + "\n"
-      + "\n"
-      + "\n"
-      + "\n"
+
+      + "\nvoid main() {"
+      + "\nif (normalmode) {"
+      + "\n//normalvars"
+      + "\n//normal"
+      + "\n} else {"
+      + "\n//mainvars"
+      + "\n//main"
+      + "\n}"
+      + "\n}"
       + "\n"
       ;
       
-    kdion.log(ret.result);
+    kdion.log(final.result);
    
     var r;
     r = nodes.twoDimRegex(/\]out\[/);
@@ -318,6 +342,6 @@ kdion.materialParser = function(code) {
     }
     
     //kdion.log(code);
-    return ret;
+    return final;
   }
 };
