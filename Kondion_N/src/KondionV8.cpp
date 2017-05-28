@@ -638,11 +638,28 @@ std::string* ParseShader(std::string* in) {
      return NULL;
   }
 
-  Local<Value> res;
+  Local<Value> value;
   // TODO: use external string resource if not lazy
   Local<Value> args[1] = { String::NewFromUtf8(isolate, in->c_str()) };
-  res = Local<Function>::Cast(parserB)->Call(context, context->Global(), 1, args)
+  value = Local<Function>::Cast(parserB)->Call(context, context->Global(), 1, args)
         .ToLocalChecked();
+
+  if (value->IsString()) {
+    // Error!
+    return new std::string(*String::Utf8Value(value));
+  }
+
+  if (value->IsObject()) {
+    Local<Value> final = value->ToObject()->Get(
+        String::NewFromUtf8(isolate, "result"));
+    if (final->IsString()) {
+      // Tada!
+      return new std::string(*String::Utf8Value(final));
+    }
+  }
+
+
+  //printf("Returned: %s\n", *String::Utf8Value(res));
 
   return NULL;
 }

@@ -549,11 +549,12 @@ class KMaterial {
   //GLuint frag;
 
   virtual void Load(bool a) = 0;
-  virtual void Utilize() = 0;
+  virtual void Utilize(Renderer::RenderPass* pass) = 0;
 
  protected:
   KMaterial() {
   }
+  
   virtual ~KMaterial() {
   }
 };

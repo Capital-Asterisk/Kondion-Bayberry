@@ -143,7 +143,7 @@ kdion.materialParser = function(code) {
         try {
           // add the entry to the metadeta object
           meta[name.trim()] = JSON.parse(stack);
-          kdion.log("META: " + name.trim() + ":" + stack);
+          //kdion.log("META: " + name.trim() + ":" + stack);
         } catch(e) {
           //kdion.log("Error in parsing material metadata [" + stack + "]");
           return "e: Error in parsing material metadata [" + stack + "]";
@@ -168,7 +168,7 @@ kdion.materialParser = function(code) {
   while (whitespace.test(code[0]))
     code = code.substr(1);
   
-  kdion.log(code);
+  //kdion.log(code);
   
   // the following would be strings, commas, then data
   
@@ -185,7 +185,7 @@ kdion.materialParser = function(code) {
     //+ " " + code.between(2, j, whitespace).slice + ";";
     final.uniforms[i] = [code.between(1, j, whitespace).slice,
                        code.between(2, j, whitespace).slice];
-    kdion.log(final.uniforms[i]);
+    //kdion.log(final.uniforms[i]);
     i ++;
   }
   
@@ -263,7 +263,7 @@ kdion.materialParser = function(code) {
       }
       
       if (sfuncs[funcName]) {
-        kdion.log("SOMETHING!");
+        //kdion.log("SOMETHING!");
         return sfuncs[funcName](values);
       }
       
@@ -275,7 +275,7 @@ kdion.materialParser = function(code) {
     
     stack = "";
     for (i = 0; i < final.uniforms.length; i ++) {
-      stack += "uniforms " + eggs[final.uniforms[i][0]] + " u" + i + ";\n";
+      stack += "uniform " + eggs[final.uniforms[i][0]] + " u" + i + ";\n";
     }
     
     // keep at version 120, because there is still that small chance i would add
@@ -301,7 +301,7 @@ kdion.materialParser = function(code) {
       + "\nuniform sampler2D mapmals;"
       + "\nuniform sampler2D bright;"
       + "\nuniform sampler2D specs;"
-      
+      + "\n"
       + stack
 
       + "\nvarying vec3 normal;"
@@ -309,7 +309,7 @@ kdion.materialParser = function(code) {
       + "\nvarying vec4 viewPos;"
       + "\nvarying vec4 worldPos;"
       + "\nvarying mat4 cuteMatrix;"
-
+      + "\n"
       + "\nvoid main() {"
       + "\nif (normalmode) {"
       + "\n//normalvars"
@@ -318,11 +318,12 @@ kdion.materialParser = function(code) {
       + "\n//mainvars"
       + "\n//main"
       + "\n}"
+      + "\ngl_FragData[0] = vec4(0.0, 0.0, 0.0, 1.0);"
       + "\n}"
       + "\n"
       ;
       
-    kdion.log(final.result);
+    //kdion.log(final.result);
    
     var r;
     r = nodes.twoDimRegex(/\]out\[/);
@@ -330,7 +331,7 @@ kdion.materialParser = function(code) {
       kdion.log("E: MON");
       return "e: multiple output nodes"
     } else {
-      kdion.log(thisisarecursivefunction(r[0], r[1]));
+      //kdion.log(thisisarecursivefunction(r[0], r[1]));
     }
     
     r = nodes.twoDimRegex(/\]norout\[/);
@@ -338,7 +339,7 @@ kdion.materialParser = function(code) {
       kdion.log("E");
       return "e: multiple normal output nodes"
     } else {
-      kdion.log(thisisarecursivefunction(r[0], r[1]));
+      //kdion.log(thisisarecursivefunction(r[0], r[1]));
     }
     
     //kdion.log(code);

@@ -30,6 +30,9 @@ namespace Kondion {
 
 namespace Renderer {
 
+GLuint CompileShader(GLenum type, const std::string& code,
+                     const std::string& errorname);
+
 class GLRenderPass : public RenderPass {
  public:
 
@@ -53,8 +56,9 @@ namespace Resources {
 class GL_Material : public KMaterial {
  public:
   GLuint programId;
+  GLuint fragId;
   void Load(bool a);
-  void Utilize();
+  void Utilize(Renderer::RenderPass* pass);
   //void New(const std::string& src);
 };
 

@@ -11,7 +11,7 @@
 #include "GL_Kondion.h"
 
 #include <sstream>
-
+ 
 namespace Kondion {
 
 namespace Resources {
@@ -26,6 +26,7 @@ void GL_Material::Load(bool a) {
     Raw* r = Resources::Get(source);
     if (r == NULL) {
       printf("[TWM]: Error in loading resource\n");
+      delete r;
       return;
     }
 
@@ -33,19 +34,37 @@ void GL_Material::Load(bool a) {
     std::ostringstream* ostring = new std::ostringstream;
     *ostring << r->stream->rdbuf();
     std::string* s = new std::string(ostring->str());
-    JS::ParseShader(s);
+    std::string* frag = JS::ParseShader(s);
 
+    if (frag[0] != "E") {
 
+      printf("##################\nParser result:\n%s\n##################\n",
+             frag->c_str());
+
+      Renderer::CompileShader(GL_FRAGMENT_SHADER, *frag,
+                                            "Temporary Monotexture shader (VERT)");
+    } else {
+      printf("Error with loading shader: %s\n", frag->c_str());
+
+    }
+
+    delete r;
+    delete ostring;
+    delete s;
 
   } else {
-    // Unload image
+    // Unload shader
 
 
   }
 }
 
-void GL_Material::Utilize() {
-
+void GL_Material::Utilize(Renderer::RenderPass* pass) {
+  Renderer::GLRenderPass* p = static_cast<Renderer::GLRenderPass*>(pass);
+  if (p->type == 0) {
+    
+    
+  }
 }
 
 KMaterial* KMaterial::New(const std::string& src) {
