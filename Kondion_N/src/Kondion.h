@@ -85,6 +85,8 @@ class KObj_Node {
   static KObj::GKO_World* worldObject;
   // what is this for?
   static const std::string myClass;
+  // Time since scene started, affected by timescale;
+  double sceneTime;
   // Name to identify with
   std::string name;
   // All the children
@@ -366,7 +368,8 @@ std::string Dir();
 void GameLoop();
 void Launch();
 void PhysicsUpdate();
-double Time();
+double TimeScene();
+uint64_t TimeMs();
 
 namespace Renderer {
 extern KObj::OKO_Camera_* currentCamera;
@@ -544,6 +547,8 @@ class KMaterial {
 
   bool internal;
   bool loaded;
+  uint16_t id;
+  uint16_t uniformCount;
   std::string source;
   //GLuint vert;
   //GLuint frag;
@@ -622,7 +627,7 @@ void Setup();
 void Start();
 void UpdateInput();
 
-std::string* ParseShader(std::string* in);
+std::string* ParseShader(std::string* in, Resources::KMaterial& mat);
 
 namespace ON {
 size_t Parse(const std::string& s);

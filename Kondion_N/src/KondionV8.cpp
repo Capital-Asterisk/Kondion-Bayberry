@@ -617,7 +617,7 @@ void UpdateInput() {
 
 }
 
-std::string* ParseShader(std::string* in) {
+std::string* ParseShader(std::string* in, Resources::KMaterial& mat) {
   // again, fancy V8 things
   Isolate::Scope isolate_scope(isolate);
   HandleScope handle_scope(isolate);
@@ -652,6 +652,8 @@ std::string* ParseShader(std::string* in) {
   if (value->IsObject()) {
     Local<Value> final = value->ToObject()->Get(
         String::NewFromUtf8(isolate, "result"));
+    mat.uniformCount = value->ToObject()->Get(
+        String::NewFromUtf8(isolate, "uniformCount"))->Int32Value();
     if (final->IsString()) {
       // Tada!
       return new std::string(*String::Utf8Value(final));

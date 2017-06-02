@@ -33,6 +33,7 @@ namespace Kondion {
 namespace {
 char* dir;
 uint64_t timeNow;
+uint64_t startTime;
 int64_t timeCurrent;
 double delta;
 }
@@ -209,6 +210,10 @@ void Launch() {
 
 }
 
+uint64_t TimeMs() {
+  return timeCurrent - startTime;
+}
+
 void GameLoop() {
 
   Renderer::RenderPass::New(Renderer::RenderPass::DEFAULT, 1, 0, 0, true);
@@ -268,8 +273,7 @@ void GameLoop() {
   Resources::KMaterial::New("kdefault:testmaterial");
   Resources::KMaterial::materials[0]->Load(true);
 
-  double startTime = glfwGetTime();
-  double lastTime = startTime;
+  double lastTime = glfwGetTime();
   double currentTime = 0;
 
   //float yaw = 0.0f;
@@ -284,6 +288,8 @@ void GameLoop() {
     delta = currentTime - lastTime;
     lastTime = currentTime;
 
+    KObj_Node::worldObject->sceneTime += delta;
+
     if (currentTime > 16.0) {
       glfwSetTime(currentTime - 16.0);
       lastTime -= 16.0;
@@ -291,7 +297,7 @@ void GameLoop() {
       Debug::printWorld();
     }
 
-    //printf("Time: %f\n", currentTime);
+    printf("Time: %f\n", KObj_Node::worldObject->sceneTime);
 
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -382,6 +388,7 @@ int main(int argc, const char* argv[]) {
   // aparrently 2 non-zero numbers can multiply to zero
 
   //new Kondion::Resources::KMaterial();
+  Kondion::startTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 
   {
     // Get the directory

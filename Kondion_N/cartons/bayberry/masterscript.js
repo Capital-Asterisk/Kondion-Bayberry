@@ -188,6 +188,7 @@ kdion.materialParser = function(code) {
     //kdion.log(final.uniforms[i]);
     i ++;
   }
+  final.uniformCount = final.uniforms.length;
   
   var smallsize = 0;
   // now actual node parsing
@@ -220,7 +221,11 @@ kdion.materialParser = function(code) {
       "mult": function(args) {return "(" + args.join("*") + ")";},
       "texture": function(args) {return "texture2D(" + args[0] + "," + args[1] + ")";},
       "coords": function(args) {return "texture2D(coords, texCoord.st).rg";},
-      "screen": function(args) {return "texCoord.st";}
+      "screen": function(args) {return "texCoord.st";},
+      "normal": function(args) {return "texture2D(normals, texCoord.st).rgb"},
+      "normap": function(args) {return "(" + args[2] + ")";}, // TODO
+      "out": function(args) {return "vec4(" + args[0] + ", 0.0)";},
+      "norout": function(args) {return "vec4(" + args[0] + ", 0.0)";}
     }
     
     var thisisarecursivefunction = function(y, x) {
@@ -292,6 +297,7 @@ kdion.materialParser = function(code) {
     
     final.result = "#version 120"
       + "\nuniform int id;"
+      + "\nuniform uint time;"
       + "\nuniform bool normalmode;"
 
       + "\nuniform sampler2D depth;"
@@ -311,12 +317,13 @@ kdion.materialParser = function(code) {
       + "\nvarying mat4 cuteMatrix;"
       + "\n"
       + "\nvoid main() {"
+      + "\nif (floor(texture2D(materials, texCoord.st).r * 255) != id) discard;"
       + "\nif (normalmode) {"
       + "\n//normalvars"
-      + "\n//normal"
+      + "\n//normalout;"
       + "\n} else {"
       + "\n//mainvars"
-      + "\n//main"
+      + "\n//mainout;"
       + "\n}"
       + "\ngl_FragData[0] = vec4(0.0, 0.0, 0.0, 1.0);"
       + "\n}"
@@ -332,6 +339,7 @@ kdion.materialParser = function(code) {
       return "e: multiple output nodes"
     } else {
       //kdion.log(thisisarecursivefunction(r[0], r[1]));
+      final.result = final.result.replace("//mainout", "gl_FragData[0]=" + thisisarecursivefunction(r[0], r[1]));
     }
     
     r = nodes.twoDimRegex(/\]norout\[/);
@@ -340,6 +348,7 @@ kdion.materialParser = function(code) {
       return "e: multiple normal output nodes"
     } else {
       //kdion.log(thisisarecursivefunction(r[0], r[1]));
+      final.result = final.result.replace("//normalout", "gl_FragData[0]=" + thisisarecursivefunction(r[0], r[1]));
     }
     
     //kdion.log(code);

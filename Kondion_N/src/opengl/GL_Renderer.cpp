@@ -135,6 +135,8 @@ void Setup() {
   GLuint defer_frag = CompileShader(GL_FRAGMENT_SHADER, baostring.str(),
                                     "Temporary Deferred shader (FRAG)");
 
+  Resources::GL_Material::vertId = monotex_vert;
+
   temp_prog_monotex = glCreateProgram();
   glAttachShader(temp_prog_monotex, monotex_vert);
   glAttachShader(temp_prog_monotex, monotex_frag);
@@ -224,7 +226,9 @@ GLuint CompileShader(GLenum type, const std::string& code,
   glGetShaderInfoLog(a, b, &b, &d[0]);
   printf("shader log: %s\n", &d[0]);
   if (c == 0) {
-    printf("Error in compiling shader: %s\n", errorname.c_str());
+    printf("Error in compiling shader %u: %s\n", a, errorname.c_str());
+    glDeleteShader(a);
+    return -1;
   }
   return a;
 }

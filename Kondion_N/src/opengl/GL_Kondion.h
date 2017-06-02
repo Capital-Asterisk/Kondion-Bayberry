@@ -35,7 +35,7 @@ GLuint CompileShader(GLenum type, const std::string& code,
 
 class GLRenderPass : public RenderPass {
  public:
-
+  bool normalmode;
   void consider(KObj_Renderable* a);
   void force(KObj_Renderable* a);
   void generate();
@@ -55,8 +55,10 @@ namespace Resources {
 
 class GL_Material : public KMaterial {
  public:
+  static GLuint vertId;
   GLuint programId;
   GLuint fragId;
+  GLint* uniformsLocations;
   void Load(bool a);
   void Utilize(Renderer::RenderPass* pass);
   //void New(const std::string& src);
