@@ -281,7 +281,8 @@ void GameLoop() {
   while (Window::Active()) {
 
     // egg timing
-    timeCurrent = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    timeCurrent = std::chrono::duration_cast < std::chrono::milliseconds
+        > (std::chrono::system_clock::now().time_since_epoch()).count();
 
     // delta timing
     currentTime = glfwGetTime();
@@ -297,7 +298,7 @@ void GameLoop() {
       Debug::printWorld();
     }
 
-    printf("Time: %f\n", KObj_Node::worldObject->sceneTime);
+    //printf("Time: (%u)(%f)\n", TimeMs() / 1000, KObj_Node::worldObject->sceneTime);
 
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -388,7 +389,8 @@ int main(int argc, const char* argv[]) {
   // aparrently 2 non-zero numbers can multiply to zero
 
   //new Kondion::Resources::KMaterial();
-  Kondion::startTime = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+  Kondion::startTime = std::chrono::duration_cast < std::chrono::milliseconds
+      > (std::chrono::system_clock::now().time_since_epoch()).count();
 
   {
     // Get the directory

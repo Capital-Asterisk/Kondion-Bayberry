@@ -145,14 +145,14 @@ void Setup() {
   printf("uniform typeee: %i\n",
          glGetUniformLocation(temp_prog_monotex, "color"));
 
+  glProgramUniform1i(temp_prog_monotex,
+                     glGetUniformLocation(temp_prog_monotex, "texture0"), 0);
+
   temp_prog_deferred = glCreateProgram();
   glAttachShader(temp_prog_deferred, monotex_vert);
   glAttachShader(temp_prog_deferred, defer_frag);
   glLinkProgram(temp_prog_deferred);
   glUseProgram(temp_prog_deferred);
-
-  glProgramUniform1i(temp_prog_monotex,
-                     glGetUniformLocation(temp_prog_monotex, "texture0"), 0);
 
   glProgramUniform4f(temp_prog_deferred,
                      glGetUniformLocation(temp_prog_deferred, "skyColor"), 1.0f,
@@ -160,18 +160,13 @@ void Setup() {
   glProgramUniform1f(temp_prog_deferred,
                      glGetUniformLocation(temp_prog_deferred, "fog"), 0.02f);
 
-  glProgramUniform1i(temp_prog_deferred,
-                     glGetUniformLocation(temp_prog_deferred, "texture0"), 0);
-  glProgramUniform1i(temp_prog_deferred,
-                     glGetUniformLocation(temp_prog_deferred, "texture1"), 1);
-  glProgramUniform1i(temp_prog_deferred,
-                     glGetUniformLocation(temp_prog_deferred, "texture2"), 2);
-  glProgramUniform1i(temp_prog_deferred,
-                     glGetUniformLocation(temp_prog_deferred, "texture3"), 3);
-  glProgramUniform1i(temp_prog_deferred,
-                     glGetUniformLocation(temp_prog_deferred, "texture4"), 4);
-  glProgramUniform1i(temp_prog_deferred,
-                     glGetUniformLocation(temp_prog_deferred, "texture5"), 5);
+  glUniform1i(glGetUniformLocation(temp_prog_deferred, "texture0"), 0);
+  glUniform1i(glGetUniformLocation(temp_prog_deferred, "texture1"), 1);
+  glUniform1i(glGetUniformLocation(temp_prog_deferred, "texture2"), 2);
+  glUniform1i(glGetUniformLocation(temp_prog_deferred, "texture3"), 3);
+  glUniform1i(glGetUniformLocation(temp_prog_deferred, "texture4"), 4);
+  glUniform1i(glGetUniformLocation(temp_prog_deferred, "texture5"), 5);
+
 
   //delete [] interlevedDataA;
 
@@ -261,13 +256,9 @@ void Three(KObj::OKO_Camera_* c, uint16_t width, uint16_t height) {
   //glGetUniformiv(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "type"), &30);
   glUseProgram(temp_prog_monotex);
   //printf("uniform type: %i\n", glGetUniformLocation(temp_prog_monotex, "color"));
-  glProgramUniform1i(temp_prog_monotex,
-                     glGetUniformLocation(temp_prog_monotex, "type"), 30);
-  glProgramUniform4f(temp_prog_monotex,
-                     glGetUniformLocation(temp_prog_monotex, "color"), 1.0f,
+  glUniform1i(glGetUniformLocation(temp_prog_monotex, "type"), 30);
+  glUniform4f(glGetUniformLocation(temp_prog_monotex, "color"), 1.0f,
                      1.0f, 1.0f, 1.0f);
-  glProgramUniform1f(temp_prog_deferred,
-                     glGetUniformLocation(temp_prog_deferred, "fog"), temp_fog);
 }
 
 void Two(uint8_t window) {
@@ -550,30 +541,39 @@ void GLRenderPass::render() {
     // 6 Specular
 
     glEnable(GL_TEXTURE_2D);
-
     glActiveTexture(GL_TEXTURE0);
+    glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, ids[1]);
     glActiveTexture(GL_TEXTURE1);
+    glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, ids[2]);
     glActiveTexture(GL_TEXTURE2);
+    glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, ids[3]);
     glActiveTexture(GL_TEXTURE3);
+    glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, ids[4]);
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, ids[5]);
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, ids[6]);
+    glActiveTexture(GL_TEXTURE4);
+    glEnable(GL_TEXTURE_2D);
+    //glBindTexture(GL_TEXTURE_2D, ids[5]);
+    glActiveTexture(GL_TEXTURE5);
+    glEnable(GL_TEXTURE_2D);
+    //glBindTexture(GL_TEXTURE_2D, ids[6]);
 
     GLenum e = GL_COLOR_ATTACHMENT5;
     glDrawBuffers(1, &e);
-    glUseProgram(temp_prog_deferred);
+    //glUseProgram(temp_prog_deferred);
+    //glUniform1f(glGetUniformLocation(temp_prog_deferred, "fog"), temp_fog);
 
     glTranslatef(width / 2.0f, height / 2.0f, -1.0f);
-    //for (KObj_Renderable light : lights) {
-    //  ((RKO_Light) light).apply(width, height);
-    //}
-    //glScalef(1.0f, 0.5f, 1.0f);
-    RenderQuad(-width, -height);
+
+    normalmode = true;
+    for (uint16_t i = 0; i < Resources::GL_Material::materials.size(); i ++) {
+      static_cast<Resources::GL_Material*>(Resources::GL_Material::materials[i])
+          ->Utilize(this);
+      //printf("R%u\n", i);
+      RenderQuad(-width, -height);
+    }
 
     //glUniform4f(skyUni, Kondion.getWorld().skyColor.x, Kondion.getWorld().skyColor.y,
     //    Kondion.getWorld().skyColor.z, Kondion.getWorld().skyColor.w);

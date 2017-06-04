@@ -218,14 +218,24 @@ kdion.materialParser = function(code) {
     // Step 1: Find the out node
     
     var sfuncs = {
-      "mult": function(args) {return "(" + args.join("*") + ")";},
-      "texture": function(args) {return "texture2D(" + args[0] + "," + args[1] + ")";},
+      "add": function(args) {return "(" + args.join("+") + ")";},
+      "sub": function(args) {return "(" + args.join("-") + ")";},
+      "mul": function(args) {return "(" + args.join("*") + ")";},
+      "div": function(args) {return "(" + args.join("/") + ")";},
+      
       "coords": function(args) {return "texture2D(coords, texCoord.st).rg";},
+      "mstime": function(args) {return "mstime";},
+      "normal": function(args) {return "(texture2D(normals, texCoord.st).rgb * 2.0 - 1.0)"},
+      "spculr": function(args) {return "texture2D(specs, texCoord.st).rgb";},
+      "bright": function(args) {return "texture2D(bright, texCoord.st).rgb";},
       "screen": function(args) {return "texCoord.st";},
-      "normal": function(args) {return "texture2D(normals, texCoord.st).rgb"},
+      
+      "texture": function(args) {return "texture2D(" + args[0] + "," + args[1] + ").rgb";},
       "normap": function(args) {return "(" + args[2] + ")";}, // TODO
-      "out": function(args) {return "vec4(" + args[0] + ", 0.0)";},
-      "norout": function(args) {return "vec4(" + args[0] + ", 0.0)";}
+      "fresnel": function(args) {return "(0.5)";}, // TODO
+      
+      "out": function(args) {return "vec4(" + args[0] + ", 1.0)";},
+      "norout": function(args) {return "vec4(" + args[0] + ", 1.0)";}
     }
     
     var thisisarecursivefunction = function(y, x) {
@@ -297,7 +307,8 @@ kdion.materialParser = function(code) {
     
     final.result = "#version 120"
       + "\nuniform int id;"
-      + "\nuniform uint time;"
+      + "\nuniform int mstime;"
+      + "\nuniform float scntime;"
       + "\nuniform bool normalmode;"
 
       + "\nuniform sampler2D depth;"
@@ -316,8 +327,16 @@ kdion.materialParser = function(code) {
       + "\nvarying vec4 worldPos;"
       + "\nvarying mat4 cuteMatrix;"
       + "\n"
+      + "\nvec3 hsv(vec3 c) { // https://stackoverflow.com/questions/15095909"
+      + "\nvec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);"
+      + "\nvec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);"
+      + "\nreturn c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);"
+      + "\n}"
+      
+      + "\nvec3 hsv(float a, float b, float c) {return hsv(vec3(a, b, c));}"
+      
       + "\nvoid main() {"
-      + "\nif (floor(texture2D(materials, texCoord.st).r * 255) != id) discard;"
+      + "\n//if (floor(texture2D(materials, texCoord.st).r * 255) != id) discard;"
       + "\nif (normalmode) {"
       + "\n//normalvars"
       + "\n//normalout;"
@@ -325,7 +344,7 @@ kdion.materialParser = function(code) {
       + "\n//mainvars"
       + "\n//mainout;"
       + "\n}"
-      + "\ngl_FragData[0] = vec4(0.0, 0.0, 0.0, 1.0);"
+      + "\n"
       + "\n}"
       + "\n"
       ;

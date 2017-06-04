@@ -54,23 +54,25 @@ void GL_Material::Load(bool a) {
         printf("Location: %i\n", glGetUniformLocation(programId, "normalmode"));
         printf("Uniform count: %u\n", uniformCount);
 
-        uniformsLocations = new GLint[10 + uniformCount];
+        uniformsLocations = new GLint[11 + uniformCount];
 
         uniformsLocations[0] = glGetUniformLocation(programId, "id");
-        uniformsLocations[1] = glGetUniformLocation(programId, "time");
-        uniformsLocations[2] = glGetUniformLocation(programId, "normalmode");
-        uniformsLocations[3] = glGetUniformLocation(programId, "depth");
-        uniformsLocations[4] = glGetUniformLocation(programId, "materials");
-        uniformsLocations[5] = glGetUniformLocation(programId, "coords");
-        uniformsLocations[6] = glGetUniformLocation(programId, "normals");
-        uniformsLocations[7] = glGetUniformLocation(programId, "mapmals");
-        uniformsLocations[8] = glGetUniformLocation(programId, "bright");
-        uniformsLocations[9] = glGetUniformLocation(programId, "specs");
+        uniformsLocations[1] = glGetUniformLocation(programId, "mstime");
+        uniformsLocations[2] = glGetUniformLocation(programId, "scntime");
+        uniformsLocations[3] = glGetUniformLocation(programId, "normalmode");
+
+        uniformsLocations[4] = glGetUniformLocation(programId, "depth");
+        uniformsLocations[5] = glGetUniformLocation(programId, "materials");
+        uniformsLocations[6] = glGetUniformLocation(programId, "coords");
+        uniformsLocations[7] = glGetUniformLocation(programId, "normals");
+        uniformsLocations[8] = glGetUniformLocation(programId, "mapmals");
+        uniformsLocations[9] = glGetUniformLocation(programId, "bright");
+        uniformsLocations[10] = glGetUniformLocation(programId, "specs");
 
         for (uint8_t i = 0; i < 6; i ++)
-          glUniform1i(uniformsLocations[3 + i], i);
+          glUniform1i(uniformsLocations[4 + i], i);
 
-
+        glUniform1i(uniformsLocations[7], 3);
 
       } else {
 
@@ -98,8 +100,9 @@ void GL_Material::Utilize(Renderer::RenderPass* pass) {
   if (p->type == 0) {
     glUseProgram(programId);
     glUniform1i(uniformsLocations[0], id);
-    //glProgramUniform1i(programId, uniformsLocations[1], Kondion::);
-    glUniform1ui(uniformsLocations[2], p->normalmode);
+    glUniform1i(uniformsLocations[1], Kondion::TimeMs());
+    glUniform1f(uniformsLocations[2], KObj_Node::worldObject->sceneTime);
+    glUniform1i(uniformsLocations[3], p->normalmode);
 
 
   }

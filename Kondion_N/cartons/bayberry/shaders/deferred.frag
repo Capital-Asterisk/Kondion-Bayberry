@@ -58,6 +58,8 @@ void main(){
 	// red/blue gradient for some reason
 	final += vec4(texCoord.x, 0.0, texCoord.y, 1.0) / 6;
 
+  final += texture2D(texture3, texCoord.st);
+
 	gl_FragData[0] = final;
 	//gl_FragData[1] = texture2D(texture2, coord);
 	//gl_FragData[2] = final;
