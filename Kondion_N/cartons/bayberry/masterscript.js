@@ -175,6 +175,7 @@ kdion.materialParser = function(code) {
   // Get uniforms
   
   final.uniforms = [];
+  final.utexture = [];
   i = 0; // current uniform, [0, 1, 2 ...]
   j = 0; // character index of uniform
   //stop = false;
@@ -185,10 +186,14 @@ kdion.materialParser = function(code) {
     //+ " " + code.between(2, j, whitespace).slice + ";";
     final.uniforms[i] = [code.between(1, j, whitespace).slice,
                        code.between(2, j, whitespace).slice];
+    if (final.uniforms[i][0] == "texture") {
+      final.utexture.push(i);
+    }
     //kdion.log(final.uniforms[i]);
     i ++;
   }
   final.uniformCount = final.uniforms.length;
+  kdion.log("texture uniforms: " + final.utexture.join(","));
   
   var smallsize = 0;
   // now actual node parsing
@@ -225,6 +230,7 @@ kdion.materialParser = function(code) {
       
       "coords": function(args) {return "texture2D(coords, texCoord.st).rg";},
       "mstime": function(args) {return "mstime";},
+      "sntime": function(args) {return "scntime";},
       "normal": function(args) {return "(texture2D(normals, texCoord.st).rgb * 2.0 - 1.0)"},
       "spculr": function(args) {return "texture2D(specs, texCoord.st).rgb";},
       "bright": function(args) {return "texture2D(bright, texCoord.st).rgb";},
@@ -234,8 +240,8 @@ kdion.materialParser = function(code) {
       "normap": function(args) {return "(" + args[2] + ")";}, // TODO
       "fresnel": function(args) {return "(0.5)";}, // TODO
       
-      "out": function(args) {return "vec4(" + args[0] + ", 1.0)";},
-      "norout": function(args) {return "vec4(" + args[0] + ", 1.0)";}
+      "out": function(args) {return "vec4(" + args.join(",") + ")";},
+      "norout": function(args) {return "vec4(" + args[0] + " * 0.5 + 0.5, 1.0)";}
     }
     
     var thisisarecursivefunction = function(y, x) {
@@ -285,7 +291,7 @@ kdion.materialParser = function(code) {
       return funcName + "(" + values.join(",") + ")";
     }
     
-    var eggs = {float: "float", double: "double", int: "int", uint: "uint",
+    var eggs = {float: "float", double: "float", int: "int", uint: "uint",
                 texture: "sampler2D"}
     
     stack = "";
