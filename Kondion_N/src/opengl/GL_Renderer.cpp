@@ -504,8 +504,8 @@ void GLRenderPass::render() {
 
     // Materials, coords, normals
     GLenum ducky[] = {
-    GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
-    glDrawBuffers(3, ducky);
+    GL_NONE, GL_NONE, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
+    glDrawBuffers(5, ducky);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -560,8 +560,9 @@ void GLRenderPass::render() {
     glEnable(GL_TEXTURE_2D);
     //glBindTexture(GL_TEXTURE_2D, ids[6]);
 
-    GLenum e = GL_COLOR_ATTACHMENT5;
-    glDrawBuffers(1, &e);
+    GLenum goose = GL_COLOR_ATTACHMENT5;
+    //glDrawBuffers(0, NULL);
+    glDrawBuffers(1, &goose);
     //glUseProgram(temp_prog_deferred);
     //glUniform1f(glGetUniformLocation(temp_prog_deferred, "fog"), temp_fog);
 
@@ -574,6 +575,23 @@ void GLRenderPass::render() {
       //printf("R%u\n", i);
       RenderQuad(-width, -height);
     }
+
+    //GLenum* quack = ducky + 7;
+    GLenum quack[] = {GL_COLOR_ATTACHMENT9, GL_COLOR_ATTACHMENT8};
+
+    //glDrawBuffers(0, NULL);
+    glDrawBuffers(2, quack);
+    //glDrawBuffers(2, ducky + 7); // i don't know why this doesn't work
+
+    normalmode = false;
+    for (uint16_t i = 0; i < Resources::GL_Material::materials.size(); i++) {
+      static_cast<Resources::GL_Material*>(Resources::GL_Material::materials[i])
+          ->Utilize(this);
+      //printf("R%u\n", i);
+
+      RenderQuad(-width, -height);
+    }
+
 
     //glUniform4f(skyUni, Kondion.getWorld().skyColor.x, Kondion.getWorld().skyColor.y,
     //    Kondion.getWorld().skyColor.z, Kondion.getWorld().skyColor.w);
@@ -590,6 +608,7 @@ void GLRenderPass::render() {
     glBindTexture(GL_TEXTURE_2D, 0);
     glActiveTexture(GL_TEXTURE3);
     glBindTexture(GL_TEXTURE_2D, 0);
+
     glActiveTexture(GL_TEXTURE0);
 
     glDepthMask(true);

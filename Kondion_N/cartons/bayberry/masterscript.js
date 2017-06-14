@@ -348,6 +348,7 @@ kdion.materialParser = function(code) {
       + "\n//normalout;"
       + "\n} else {"
       + "\n//mainvars"
+      + "\ngl_FragData[0]=vec4(0.0, 0.0, 1.0, 1.0);"
       + "\n//mainout;"
       + "\n}"
       + "\n"
@@ -364,7 +365,7 @@ kdion.materialParser = function(code) {
       return "e: multiple output nodes"
     } else {
       //kdion.log(thisisarecursivefunction(r[0], r[1]));
-      final.result = final.result.replace("//mainout", "gl_FragData[0]=" + thisisarecursivefunction(r[0], r[1]));
+      final.result = final.result.replace("//mainout", "gl_FragData[1]=" + thisisarecursivefunction(r[0], r[1]));
     }
     
     r = nodes.twoDimRegex(/\]norout\[/);
