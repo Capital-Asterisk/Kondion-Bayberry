@@ -19,8 +19,7 @@ float rand(vec2 co){
 void main(){
 	vec4 final = vec4(0.0, 0.0, 0.0, 1.0);
 
-	gl_FragData[0] = vec4(1.0, 1.0, 1.0, 1.0);
-	gl_FragData[1] = vec4(texCoord.xy, 0.0, 1.0);
-	gl_FragData[2] = vec4((normalize(mat3(gl_ModelViewMatrix) * normal) + 1.0) / 2, 1.0);
+	gl_FragData[0] = vec4(texCoord.xy, 1.0, 1.0);
+	gl_FragData[1] = vec4((normalize(mat3(gl_ModelViewMatrix) * normal) + 1.0) / 2, 1.0);
 }
 

@@ -386,9 +386,8 @@ void GLRenderPass::generate() {
   // Geometry texture inputs
   // none
   // Geometry render targets (with depth)
-  // 0 Material
-  // 1 Coords
-  // 2 Normals
+  // 0 Coords Material
+  // 1 Normals
 
   // Light texture inputs
   // M
@@ -409,50 +408,45 @@ void GLRenderPass::generate() {
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
                          ids[1], 0);
 
-  // Materials (R)
-  neat(ids + 2, width, height, GL_RED, GL_RED, GL_UNSIGNED_BYTE);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D,
+  // Coords (RG), Materials (B)
+  neat(ids + 2, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          ids[2], 0);
 
-  // Coords (RG)
-  neat(ids + 3, width, height, GL_RG, GL_RG, GL_UNSIGNED_BYTE);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D,
+  // Normals (RGB)
+  neat(ids + 3, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D,
                          ids[3], 0);
 
-  // Normals (RGB)
+  // Mapped Normals (RGB)
   neat(ids + 4, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D,
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D,
                          ids[4], 0);
 
-  // Mapped Normals (RGB)
+  // Brightness (RGB)
   neat(ids + 5, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D,
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D,
                          ids[5], 0);
 
-  // Brightness (RGB)
+  // Speculars (RGB)
   neat(ids + 6, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, GL_TEXTURE_2D,
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT4, GL_TEXTURE_2D,
                          ids[6], 0);
 
-  // Speculars (RGB)
-  neat(ids + 7, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT7, GL_TEXTURE_2D,
+  // Blend mode (R)
+  neat(ids + 7, width, height, GL_RED, GL_RED, GL_UNSIGNED_BYTE);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT5, GL_TEXTURE_2D,
                          ids[7], 0);
 
-  // Blend mode (R)
-  neat(ids + 8, width, height, GL_RED, GL_RED, GL_UNSIGNED_BYTE);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT8, GL_TEXTURE_2D,
+  // Jelly (RGBA)
+  neat(ids + 8, width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT6, GL_TEXTURE_2D,
                          ids[8], 0);
 
-  // Jelly (RGBA)
-  neat(ids + 9, width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT9, GL_TEXTURE_2D,
-                         ids[9], 0);
-
   // Final (RGBA)
-  neat(ids + 10, width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT10, GL_TEXTURE_2D,
-                         ids[10], 0);
+  neat(ids + 9, width, height, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT7, GL_TEXTURE_2D,
+                         ids[9], 0);
 
   printf("Framebuffer complete: %u\n",
          glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
@@ -503,8 +497,10 @@ void GLRenderPass::render() {
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, ids[0]);
 
     // Materials, coords, normals
-    GLenum ducky[] = {GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
-    glDrawBuffers(3, ducky);
+    GLenum ducky[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1,
+        GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4,
+        GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6, GL_COLOR_ATTACHMENT7 };
+    glDrawBuffers(2, ducky);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -532,26 +528,25 @@ void GLRenderPass::render() {
     glDisable(GL_DEPTH_TEST);
 
     // 0 Depth
-    // 1 Materials
-    // 2 Coords
-    // 3 Normals
-    // 4 Mapped normals
-    // 5 Brightness
-    // 6 Specular
+    // 1 Coords & materials
+    // 2 Normals
+    // 3 Mapped normals
+    // 4 Brightness
+    // 5 Specular
 
     glEnable(GL_TEXTURE_2D);
     glActiveTexture(GL_TEXTURE0);
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, ids[1]);
+    glBindTexture(GL_TEXTURE_2D, ids[1]); // depth
     glActiveTexture(GL_TEXTURE1);
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, ids[2]);
+    glBindTexture(GL_TEXTURE_2D, ids[2]); // coormats
     glActiveTexture(GL_TEXTURE2);
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, ids[3]);
+    glBindTexture(GL_TEXTURE_2D, ids[3]); // normals
     glActiveTexture(GL_TEXTURE3);
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, ids[4]);
+    //glBindTexture(GL_TEXTURE_2D, ids[4]);
     glActiveTexture(GL_TEXTURE4);
     glEnable(GL_TEXTURE_2D);
     //glBindTexture(GL_TEXTURE_2D, ids[5]);
@@ -559,9 +554,9 @@ void GLRenderPass::render() {
     glEnable(GL_TEXTURE_2D);
     //glBindTexture(GL_TEXTURE_2D, ids[6]);
 
-    GLenum goose[] = { GL_COLOR_ATTACHMENT5 };
+    //GLenum goose[] = { GL_COLOR_ATTACHMENT2 };
     //glDrawBuffers(0, NULL);
-    glDrawBuffers(1, goose);
+    glDrawBuffers(1, ducky + 2);
     //glUseProgram(temp_prog_deferred);
     //glUniform1f(glGetUniformLocation(temp_prog_deferred, "fog"), temp_fog);
 
@@ -576,16 +571,16 @@ void GLRenderPass::render() {
     }
 
     //GLenum* quack = ducky + 7;
-    GLenum quack[] = { GL_COLOR_ATTACHMENT6, GL_COLOR_ATTACHMENT7, GL_COLOR_ATTACHMENT8 };
+    //GLenum quack[] = { GL_COLOR_ATTACHMENT6, GL_COLOR_ATTACHMENT7, GL_COLOR_ATTACHMENT8 };
 
     //glDrawBuffers(0, NULL);
-    glDrawBuffers(3, quack);
-    //glDrawBuffers(2, ducky + 7); // i don't know why this doesn't work
+    //glDrawBuffers(3, quack);
+    glDrawBuffers(2, ducky + 5); // i don't know why this doesn't work
 
-    int eat = 0;
-    glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &eat);
+    //int eat = 0;
+    //glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &eat);
 
-    printf("max: %i\n", eat);
+    //printf("max: %i\n", eat);
 
     normalmode = false;
     for (uint16_t i = 0; i < Resources::GL_Material::materials.size(); i++) {
@@ -593,7 +588,7 @@ void GLRenderPass::render() {
           ->Utilize(this);
       //printf("R%u\n", i);
 
-      //RenderQuad(-width, -height);
+      RenderQuad(-width, -height);
     }
 
 

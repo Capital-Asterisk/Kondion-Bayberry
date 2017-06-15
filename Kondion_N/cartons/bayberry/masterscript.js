@@ -228,7 +228,7 @@ kdion.materialParser = function(code) {
       "mul": function(args) {return "(" + args.join("*") + ")";},
       "div": function(args) {return "(" + args.join("/") + ")";},
       
-      "coords": function(args) {return "texture2D(coords, texCoord.st).rg";},
+      "coords": function(args) {return "texture2D(coormats, texCoord.st).rg";},
       "mstime": function(args) {return "mstime";},
       "sntime": function(args) {return "scntime";},
       "normal": function(args) {return "(texture2D(normals, texCoord.st).rgb * 2.0 - 1.0)"},
@@ -319,7 +319,7 @@ kdion.materialParser = function(code) {
 
       + "\nuniform sampler2D depth;"
       + "\nuniform sampler2D materials;"
-      + "\nuniform sampler2D coords;"
+      + "\nuniform sampler2D coormats;"
       + "\nuniform sampler2D normals;"
       + "\nuniform sampler2D mapmals;"
       + "\nuniform sampler2D bright;"

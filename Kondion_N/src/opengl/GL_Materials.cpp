@@ -62,14 +62,15 @@ void GL_Material::Load(bool a) {
         uniformsLocations[3] = glGetUniformLocation(programId, "normalmode");
 
         uniformsLocations[4] = glGetUniformLocation(programId, "depth");
-        uniformsLocations[5] = glGetUniformLocation(programId, "materials");
-        uniformsLocations[6] = glGetUniformLocation(programId, "coords");
-        uniformsLocations[7] = glGetUniformLocation(programId, "normals");
-        uniformsLocations[8] = glGetUniformLocation(programId, "mapmals");
-        uniformsLocations[9] = glGetUniformLocation(programId, "bright");
-        uniformsLocations[10] = glGetUniformLocation(programId, "specs");
+        //uniformsLocations[5] = glGetUniformLocation(programId, "materials");
+        //uniformsLocations[6] = glGetUniformLocation(programId, "coords");
+          uniformsLocations[5] = glGetUniformLocation(programId, "coormats");
+        uniformsLocations[6] = glGetUniformLocation(programId, "normals");
+        uniformsLocations[7] = glGetUniformLocation(programId, "mapmals");
+        uniformsLocations[8] = glGetUniformLocation(programId, "bright");
+        uniformsLocations[9] = glGetUniformLocation(programId, "specs");
 
-        for (uint8_t i = 0; i < 6; i ++)
+        for (uint8_t i = 0; i < 5; i ++)
           glUniform1i(uniformsLocations[4 + i], i);
 
         glUniform1i(uniformsLocations[7], 3);
