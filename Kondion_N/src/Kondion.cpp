@@ -370,6 +370,11 @@ void GameLoop() {
 
     Resources::Update();
 
+    GLenum err;
+    while((err = glGetError()) != GL_NO_ERROR) {
+      printf("An OpenGL error happened: %#08x\n", err);
+    }
+
     //usleep(100 * 1000);
 
   }

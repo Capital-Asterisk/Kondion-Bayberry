@@ -503,9 +503,8 @@ void GLRenderPass::render() {
     glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, ids[0]);
 
     // Materials, coords, normals
-    GLenum ducky[] = {
-    GL_NONE, GL_NONE, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
-    glDrawBuffers(5, ducky);
+    GLenum ducky[] = {GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4};
+    glDrawBuffers(3, ducky);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -560,9 +559,9 @@ void GLRenderPass::render() {
     glEnable(GL_TEXTURE_2D);
     //glBindTexture(GL_TEXTURE_2D, ids[6]);
 
-    GLenum goose = GL_COLOR_ATTACHMENT5;
+    GLenum goose[] = { GL_COLOR_ATTACHMENT5 };
     //glDrawBuffers(0, NULL);
-    glDrawBuffers(1, &goose);
+    glDrawBuffers(1, goose);
     //glUseProgram(temp_prog_deferred);
     //glUniform1f(glGetUniformLocation(temp_prog_deferred, "fog"), temp_fog);
 
@@ -577,11 +576,16 @@ void GLRenderPass::render() {
     }
 
     //GLenum* quack = ducky + 7;
-    GLenum quack[] = {GL_COLOR_ATTACHMENT9, GL_COLOR_ATTACHMENT8};
+    GLenum quack[] = { GL_COLOR_ATTACHMENT6, GL_COLOR_ATTACHMENT7, GL_COLOR_ATTACHMENT8 };
 
     //glDrawBuffers(0, NULL);
-    glDrawBuffers(2, quack);
+    glDrawBuffers(3, quack);
     //glDrawBuffers(2, ducky + 7); // i don't know why this doesn't work
+
+    int eat = 0;
+    glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &eat);
+
+    printf("max: %i\n", eat);
 
     normalmode = false;
     for (uint16_t i = 0; i < Resources::GL_Material::materials.size(); i++) {
@@ -589,7 +593,7 @@ void GLRenderPass::render() {
           ->Utilize(this);
       //printf("R%u\n", i);
 
-      RenderQuad(-width, -height);
+      //RenderQuad(-width, -height);
     }
 
 
