@@ -175,7 +175,7 @@ kdion.materialParser = function(code) {
   // Get uniforms
   
   final.uniforms = [];
-  final.utexture = [];
+  final.utexture = []; // Index of uniforms that are textures
   i = 0; // current uniform, [0, 1, 2 ...]
   j = 0; // character index of uniform
   //stop = false;

@@ -56,6 +56,7 @@ namespace Resources {
 class GL_Material : public KMaterial {
  public:
   static GLuint vertId;
+  bool* locals;
   GLuint programId;
   GLuint fragId;
   GLint* uniformsLocations;
