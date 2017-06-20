@@ -450,35 +450,6 @@ void GLRenderPass::generate() {
 
   printf("Framebuffer complete: %u\n",
          glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
-
-  /*
-  neat(ids + 1, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);  // Brightness
-  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
-  GL_COLOR_ATTACHMENT3_EXT,
-                            GL_TEXTURE_2D, ids[1], 0);
-  neat(ids + 2, width, height, GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT,
-       GL_FLOAT);  // Depth texture
-  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
-  GL_DEPTH_ATTACHMENT_EXT,
-                            GL_TEXTURE_2D, ids[2], 0);
-  neat(ids + 3, width, height, GL_RGB, GL_RED, GL_BYTE);  // Diffuse texture
-  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
-  GL_COLOR_ATTACHMENT0_EXT,
-                            GL_TEXTURE_2D, ids[3], 0);
-  neat(ids + 4, width, height, GL_RGB, GL_RGB, GL_BYTE);  // Normal texture
-  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
-  GL_COLOR_ATTACHMENT1_EXT,
-                            GL_TEXTURE_2D, ids[4], 0);
-  neat(ids + 5, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);  // Result
-  //if (!pixelate) {
-  //  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  //  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-  //}
-  glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT,
-  GL_COLOR_ATTACHMENT2_EXT,
-                            GL_TEXTURE_2D, ids[5], 0);
-  */
-
 }
 
 void GLRenderPass::render() {
@@ -509,11 +480,12 @@ void GLRenderPass::render() {
     else
       Three(currentCamera, width, height);
 
-    // Render all items, TODO: render only opaque if transparency supported
     for (size_t i = 0; i < items.size(); i++) {
-      glPushMatrix();
-      items[i]->render();
-      glPopMatrix();
+      if (!items[i]->complex) {
+        glPushMatrix();
+        items[i]->render();
+        glPopMatrix();
+      }
     }
 
     glViewport(0, 0, width, height);
@@ -526,13 +498,6 @@ void GLRenderPass::render() {
 
     glDepthMask(false);
     glDisable(GL_DEPTH_TEST);
-
-    // 0 Depth
-    // 1 Coords & materials
-    // 2 Normals
-    // 3 Mapped normals
-    // 4 Brightness
-    // 5 Specular
 
     glEnable(GL_TEXTURE_2D);
     glActiveTexture(GL_TEXTURE0);
@@ -554,34 +519,17 @@ void GLRenderPass::render() {
     glEnable(GL_TEXTURE_2D);
     //glBindTexture(GL_TEXTURE_2D, ids[6]);
 
-    //GLenum goose[] = { GL_COLOR_ATTACHMENT2 };
-    //glDrawBuffers(0, NULL);
     glDrawBuffers(1, ducky + 2);
-    //glUseProgram(temp_prog_deferred);
-    //glUniform1f(glGetUniformLocation(temp_prog_deferred, "fog"), temp_fog);
-
     glTranslatef(width / 2.0f, height / 2.0f, -1.0f);
 
     normalmode = true;
     for (uint16_t i = 0; i < Resources::GL_Material::materials.size(); i ++) {
       static_cast<Resources::GL_Material*>(Resources::GL_Material::materials[i])
           ->Utilize(this);
-      //printf("R%u\n", i);
       RenderQuad(-width, -height);
     }
 
-    //GLenum* quack = ducky + 7;
-    //GLenum quack[] = { GL_COLOR_ATTACHMENT6, GL_COLOR_ATTACHMENT7, GL_COLOR_ATTACHMENT8 };
-
-    //glDrawBuffers(0, NULL);
-    //glDrawBuffers(3, quack);
-    glDrawBuffers(2, ducky + 5); // i don't know why this doesn't work
-
-    //int eat = 0;
-    //glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &eat);
-
-    //printf("max: %i\n", eat);
-
+    glDrawBuffers(2, ducky + 5);
     normalmode = false;
     for (uint16_t i = 0; i < Resources::GL_Material::materials.size(); i++) {
       static_cast<Resources::GL_Material*>(Resources::GL_Material::materials[i])
@@ -591,6 +539,16 @@ void GLRenderPass::render() {
       RenderQuad(-width, -height);
     }
 
+    // Jelly render is done
+
+    for (size_t i = 0; i < items.size(); i++) {
+      if (items[i]->complex) {
+        glPushMatrix();
+        // TODO: set uniforms, order back to front
+        items[i]->render();
+        glPopMatrix();
+      }
+    }
 
     //glUniform4f(skyUni, Kondion.getWorld().skyColor.x, Kondion.getWorld().skyColor.y,
     //    Kondion.getWorld().skyColor.z, Kondion.getWorld().skyColor.w);

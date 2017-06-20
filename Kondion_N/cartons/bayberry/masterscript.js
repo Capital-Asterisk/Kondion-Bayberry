@@ -77,7 +77,7 @@ kdion.materialParser = function(code) {
       return "e: Unsupported version";
     }
   } else {
-    // TODO: check for TWM binary
+    // TODO: check for TWM binary, make it eventually
     //kdion.err("");
     //kdion.log("Not a TWMh file");
     return "e: Not a TWNh, or TWM binary not yet supported";
@@ -99,11 +99,7 @@ kdion.materialParser = function(code) {
     }
     i ++;
   }
-  
-  //code = code.replace("\n", "")
-  // Now all comments are removed, parse time
-  //kdion.log(code);
-  
+
   // Metadata
   i = 8;
   j = -1; // location of first bracket
@@ -161,8 +157,6 @@ kdion.materialParser = function(code) {
     i ++;
   }
   
-  //kdion.log(meta);
-  
   // clip out the headers and metadata
   code = code.substr(i);
   while (whitespace.test(code[0]))
@@ -178,12 +172,8 @@ kdion.materialParser = function(code) {
   final.utexture = []; // Index of uniforms that are textures
   i = 0; // current uniform, [0, 1, 2 ...]
   j = 0; // character index of uniform
-  //stop = false;
+
   while ((j = code.indexOf("u" + i + ": ")) != -1) {
-    //kdion.log("U" + i + ": " + code.between(1, j, whitespace).slice
-    //          + " " + code.between(2, j, whitespace).slice)
-    //ret.uniforms[i] = "uniform " + eggs[code.between(1, j, whitespace).slice]
-    //+ " " + code.between(2, j, whitespace).slice + ";";
     final.uniforms[i] = [code.between(1, j, whitespace).slice,
                        code.between(2, j, whitespace).slice];
     if (final.uniforms[i][0] == "texture") {
@@ -228,6 +218,10 @@ kdion.materialParser = function(code) {
       "mul": function(args) {return "(" + args.join("*") + ")";},
       "div": function(args) {return "(" + args.join("/") + ")";},
       
+      "decomp": function(args, n) {
+        return args[0] + "." + ["x", "y", "z", "w"][n];
+      },
+      
       "coords": function(args) {return "texture2D(coormats, texCoord.st).rg";},
       "mstime": function(args) {return "mstime";},
       "sntime": function(args) {return "scntime";},
@@ -244,28 +238,19 @@ kdion.materialParser = function(code) {
       "norout": function(args) {return "vec4(" + args[0] + " * 0.5 + 0.5, 1.0)";}
     }
     
-    var thisisarecursivefunction = function(y, x) {
-      
-      //var node = nodes[y][x];
-      //kdion.log("node: " + node);
+    // This function starts with the output node, then recursively looks back
+    // at it's inputs.
+    var thisisarecursivefunction = function(y, x, outputIndex) {
       
       var funcName = nodes[y][x].split(/\[|\]/);
-      //var values = nodes[y][x].between(1, 0, /\[|\]/).slice.split(",");
       var ret = funcName[1];
       var values = ret.split(",");
-      //kdion.log("values:" + funcName[1] + " " + funcName[2]);
       funcName = funcName[2];
-      
-
-      //kdion.log("Function name: " + nodes[y][x].between(2, 0, /\[|\]/).slice);
-      // replace(/\[.*\]/g,"") regex to get function name is unknown
-      // use non regex instead.
-      //funcName = ()
       
       for (var l = 0; l < values.length; l ++) {
         if (values[l] != "" && /[a-z]/.test(values[l][0])) {
           var next = nodes.twoDimRegex(
-              new RegExp("\\].*\\[.*" + values[l] + ".*\\]$"));
+              new RegExp("\\].*\\W" + values[l] + "\\W.*$"));
           // /[,\[].*\]$/
           if (next.length != 2) {
             if (next.length == 0) {
@@ -275,7 +260,7 @@ kdion.materialParser = function(code) {
             }
           } else {
             //kdion.log("next: " + nodes[next[0]][next[1]]);
-            values[l] = thisisarecursivefunction(next[0], next[1]);
+            values[l] = thisisarecursivefunction(next[0], next[1], l);
             //return nodes[y][x].replace(values[l], thisisarecursivefunction(next[0], next[1]));
             //
             
@@ -285,7 +270,7 @@ kdion.materialParser = function(code) {
       
       if (sfuncs[funcName]) {
         //kdion.log("SOMETHING!");
-        return sfuncs[funcName](values);
+        return sfuncs[funcName](values, outputIndex);
       }
       
       return funcName + "(" + values.join(",") + ")";
@@ -359,22 +344,25 @@ kdion.materialParser = function(code) {
     //kdion.log(final.result);
    
     var r;
+    
+    // Get final code for out
     r = nodes.twoDimRegex(/\]out\[/);
     if (r.length != 2) {
       kdion.log("E: MON");
       return "e: multiple output nodes"
     } else {
       //kdion.log(thisisarecursivefunction(r[0], r[1]));
-      final.result = final.result.replace("//mainout", "gl_FragData[1]=" + thisisarecursivefunction(r[0], r[1]));
+      final.result = final.result.replace("//mainout", "gl_FragData[1]=" + thisisarecursivefunction(r[0], r[1], 0));
     }
     
+    // Same, but with normals out
     r = nodes.twoDimRegex(/\]norout\[/);
     if (r.length != 2) {
       kdion.log("E");
       return "e: multiple normal output nodes"
     } else {
       //kdion.log(thisisarecursivefunction(r[0], r[1]));
-      final.result = final.result.replace("//normalout", "gl_FragData[0]=" + thisisarecursivefunction(r[0], r[1]));
+      final.result = final.result.replace("//normalout", "gl_FragData[0]=" + thisisarecursivefunction(r[0], r[1], 0));
     }
     
     //kdion.log(code);

@@ -149,6 +149,7 @@ class KObj_Oriented : public KObj_Node {
 class KObj_Renderable : public KObj_Oriented {
  public:
   static const std::string myClass;
+  bool complex = false;
   //virtual int getType();
   const std::string* getClass() {
     return &myClass;

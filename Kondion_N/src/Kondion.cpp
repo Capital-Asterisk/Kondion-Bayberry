@@ -347,7 +347,7 @@ void GameLoop() {
 
     if (Input::Get(Input::ControlIndex("DEBUGC"))->x) {
       // Temp jump
-      static_cast<KObj_Entity*>(KObj_Node::all[3])->velocity.y = 2;
+      static_cast<KObj_Entity*>(KObj_Node::all[3])->velocity.y += 0.9;
     }
 
     // do collisions here
