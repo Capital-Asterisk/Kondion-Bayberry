@@ -134,8 +134,8 @@ kdion.globalUpdate(function() {
   vec3.normalize(foo, foo);
   vec3.normalize(bar, bar);
   // Now multiply by input and speed
-  vec3.scale(foo, foo, -kdion.input["MOVE_X"] * 12);
-  vec3.scale(bar, bar, -kdion.input["MOVE_Y"] * 12);
+  vec3.scale(foo, foo, -kdion.input["MOVE_X"] * 30);
+  vec3.scale(bar, bar, -kdion.input["MOVE_Y"] * 30);
   
   // add foo and bar, put result in foo
   vec3.add(foo, foo, bar);

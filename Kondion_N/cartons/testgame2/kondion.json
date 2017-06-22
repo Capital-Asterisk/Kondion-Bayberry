@@ -26,6 +26,7 @@
 		"monkeyR": ["random", "monkey0", "monkey1"]
 	},
 	"Materials": {
-		
+		"ground": ["materials/ground"],
+		"test": ["materials/testcube"]
 	}
 }

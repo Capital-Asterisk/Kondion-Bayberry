@@ -4,6 +4,30 @@ kdion.log("Kondion Bayberry default JS carton");
 kdion.log("Loading glmatrix...");
 kdion.require("kdefault:glmatrix/gl-matrix-min");
 
+kdion.loadQueue = [];
+
+kdion.queueLoad = function(loadme, level) {
+  // Loadme: {textures: [...], materials: [...], }
+  // Level: which layer of loaded items this will go on to
+  //  - 0 can be default stuff, 1 can be ui stuff, 2 can be game, etc...
+  //  - Everything in a level can be (un)loaded at the same time
+  if (level) {
+    if (loadQueue[level]) {
+      
+    }
+  }
+  if (loadme.textures) {
+    
+  }
+}
+
+kdion.unLoad = function(object) {
+  if (typeof object == "number") {
+    // Clear everything in this level
+  }
+}
+
+
 //console = {
 //  log: kondion.log
 //};
@@ -260,7 +284,9 @@ kdion.materialParser = function(code) {
             }
           } else {
             //kdion.log("next: " + nodes[next[0]][next[1]]);
-            values[l] = thisisarecursivefunction(next[0], next[1], l);
+            // TODO, bad code
+            var index = nodes[next[0]][next[1]].split(/\[|\]/)[3].split(",").indexOf(values[l]);
+            values[l] = thisisarecursivefunction(next[0], next[1], index);
             //return nodes[y][x].replace(values[l], thisisarecursivefunction(next[0], next[1]));
             //
             

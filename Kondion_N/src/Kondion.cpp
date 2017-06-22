@@ -270,7 +270,7 @@ void GameLoop() {
 
   glfwSetTime(15.0);
 
-  Resources::KMaterial::New("kdefault:testmaterial");
+  Resources::KMaterial::New("kdefault:shaders/defmat");
   Resources::KMaterial::materials[0]->Load(true);
 
   double lastTime = glfwGetTime();
@@ -387,10 +387,10 @@ void GameLoop() {
 int main(int argc, const char* argv[]) {
 
   // this is an experiment
-  uint32_t a = 2147483648;
-  uint32_t b = 2;
-  uint32_t c = a * b;
-  printf("Unsigned 2147483648 * 2 = %i\n", c);
+  //uint32_t a = 2147483648;
+  //uint32_t b = 2;
+  //uint32_t c = a * b;
+  //printf("Unsigned 2147483648 * 2 = %i\n", c);
   // aparrently 2 non-zero numbers can multiply to zero
 
   //new Kondion::Resources::KMaterial();
