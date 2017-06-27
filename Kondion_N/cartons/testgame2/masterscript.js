@@ -65,14 +65,12 @@ kdion.initialize(function() {
   top.addComponent(cubeC);
   top.setParent(e);
   
-  kdion.load({textures: ["tiles_diff", "tiles_norm"]});
-  kdion.load({textures: 5});
+  kdion.queueLoad({textures: ["tiles_diff", "tiles_norm"]}, 2);
   kdion.camera = camera;
   
   //kdion.log(mat4.identity);
   //var tm = mat4.fromValues(1);
   //mat4.identity(tm);
-  kdion.log("EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE");
   //kdion.log("[" + tm.join(", ") + "]");
   //mat4.translate(tm, tm, [11, 22, 33]);
   //mat4.rotateX(tm, tm, Math.PI / 2);
@@ -81,6 +79,8 @@ kdion.initialize(function() {
   //  + tm[4] + ", " + tm[5] + ", " + tm[6] + ", " + tm[7] + "]\n["
   //  + tm[8] + ", " + tm[9] + ", " + tm[10] + ", " + tm[11] + "]\n["
   //  + tm[12] + ", " + tm[13] + ", " + tm[14] + ", " + tm[15] + "]\n");
+  
+  kdion.doLoad(2);
 });
 
 kdion.globalUpdate(function() {

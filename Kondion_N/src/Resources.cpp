@@ -36,7 +36,8 @@ const unsigned char CARTON_KCA = 0, CARTON_FOLDER = 1, CARTON_ZIP = 2;
 
 std::vector<KTexture *> KTexture::textures;
 std::vector<KMaterial *> KMaterial::materials;
-std::vector<uint16_t> KTexture::loadMe;
+std::vector<uint16_t> KMaterial::indices;
+//std::vector<uint16_t> KTexture::loadMe;
 
 struct Carton {
 
@@ -167,11 +168,16 @@ void AddCarton(const std::string& path) {
 }
 
 void Load(const std::string& name, uint8_t type) {
-  for (uint16_t i = 0; i < KTexture::textures.size(); i ++) {
-    if (KTexture::textures[i]->identifier == name) {
-      KTexture::loadMe.push_back(i);
-      printf("Texture is now queued for load: %s\n", name.c_str());
-      return;
+  if (type == 1) {
+    // Loading texture
+    for (uint16_t i = 0; i < KTexture::textures.size(); i ++) {
+      if (KTexture::textures[i]->identifier == name) {
+        //KTexture::loadMe.push_back(i);
+        //printf("Texture is now queued for load: %s\n", name.c_str());
+        printf("Loading texture: %s\n", name.c_str());
+        KTexture::textures[i]->Load(true);
+        return;
+      }
     }
   }
 }
@@ -234,13 +240,13 @@ void Setup() {
 }
 
 void Update() {
-  if (KTexture::loadMe.size() != 0) {
-    printf("Textures to load: %i\n", KTexture::loadMe.size());
-    for (uint16_t i = KTexture::loadMe.size() - 1; i != 0; i --) {
-      KTexture::textures[KTexture::loadMe[i]]->Load(true);
-    }
-    KTexture::loadMe.clear();
-  }
+  //if (KTexture::loadMe.size() != 0) {
+  //  printf("Textures to load: %i\n", KTexture::loadMe.size());
+  //  for (uint16_t i = KTexture::loadMe.size() - 1; i != 0; i --) {
+  //    KTexture::textures[KTexture::loadMe[i]]->Load(true);
+  //  }
+  //  KTexture::loadMe.clear();
+  //}
 }
 
 Raw* Get(const std::string& url) {

@@ -1,32 +1,10 @@
 kdion.error = kdion.log;
 
-kdion.log("Kondion Bayberry default JS carton");
-kdion.log("Loading glmatrix...");
+kdion.log("Loading Kondion Bayberry default JS carton");
+kdion.log("-> glmatrix...");
 kdion.require("kdefault:glmatrix/gl-matrix-min");
 
 kdion.loadQueue = [];
-
-kdion.queueLoad = function(loadme, level) {
-  // Loadme: {textures: [...], materials: [...], }
-  // Level: which layer of loaded items this will go on to
-  //  - 0 can be default stuff, 1 can be ui stuff, 2 can be game, etc...
-  //  - Everything in a level can be (un)loaded at the same time
-  if (level) {
-    if (loadQueue[level]) {
-      
-    }
-  }
-  if (loadme.textures) {
-    
-  }
-}
-
-kdion.unLoad = function(object) {
-  if (typeof object == "number") {
-    // Clear everything in this level
-  }
-}
-
 
 //console = {
 //  log: kondion.log
@@ -70,6 +48,7 @@ Array.prototype.twoDimRegex = function(regex, limit) {
   return ret;
 };
 
+// Called on by native code
 kdion.materialParser = function(code) {
   //kdion.log("EEEEEEEE" + code);
 
@@ -395,3 +374,42 @@ kdion.materialParser = function(code) {
     return final;
   }
 };
+
+// *** Resource Loading
+
+kdion.queueLoad = function(loadme, level) {
+  // Loadme: {textures: [...], materials: [...], }
+  // Level: which layer of loaded items this will go on to
+  //  - 0 can be default stuff, 1 can be ui stuff, 2 can be game, etc...
+  //  - Everything in a level can be (un)loaded at the same time
+  if (kdion.loadQueue[level]) {
+    // There's already a resource list object in there, merge.
+    Object.keys(loadme).forEach(function(key) {
+      kdion.loadQueue[level][key] = loadme[key];
+    });
+  } else {
+    kdion.loadQueue[level] = loadme;
+  }
+
+}
+
+kdion.doLoad = function(object) {
+  if (typeof object == "number") {
+    // Load everything in this level
+    kdion.doLoad(kdion.loadQueue[object]);
+  } else {
+    // Load everything in this object
+    kdion.load(object);
+  }
+}
+
+kdion.unLoad = function(object) {
+  if (typeof object == "number") {
+    // Clear everything in this level
+    kdion.unLoad(kdion.loadQueue[object]);
+  } else {
+    //
+  }
+}
+
+kdion.log("-> Done!");

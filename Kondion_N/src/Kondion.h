@@ -543,14 +543,16 @@ class KMaterial {
  public:
 
   static std::vector<KMaterial *> materials;
-  static std::vector<uint16_t> loadMe;
-  static KMaterial* New(const std::string& src);
+  static std::vector<uint16_t> indices;
+  //static std::vector<uint16_t> loadMe;
+  
+  static KMaterial* New(const std::string& name, const std::string& src);
 
   bool internal;
   bool loaded;
   uint16_t id;
   uint16_t uniformCount;
-  std::string source;
+  std::string source, identifier;
   //GLuint vert;
   //GLuint frag;
 
@@ -570,7 +572,7 @@ class KTexture {
  public:
 
   static std::vector<KTexture *> textures;
-  static std::vector<uint16_t> loadMe;
+  //static std::vector<uint16_t> loadMe;
 
   std::string source, identifier;
   uint16_t traits;

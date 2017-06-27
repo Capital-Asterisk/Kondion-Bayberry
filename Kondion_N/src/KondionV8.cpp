@@ -392,6 +392,12 @@ void Setup() {
   kcomponent->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "setMatrix"),
       FunctionTemplate::New(isolate, Callback_Component_SetMatrix));
+      
+  // KMaterial
+  
+  Local<FunctionTemplate> kmaterial = FunctionTemplate::New(
+      isolate, Callback_Material);
+  kmaterial->InstanceTemplate()->SetInternalFieldCount(1);
 
 
   // KObj constructors
@@ -488,6 +494,8 @@ void Setup() {
   global->Set(String::NewFromUtf8(isolate, "kdion"), kdion);
 
   global->Set(String::NewFromUtf8(isolate, "KCompnent"), kcomponent);
+  global->Set(String::NewFromUtf8(isolate, "KMaterial"), kmaterial);
+  
   global->Set(String::NewFromUtf8(isolate, "KObj_Node"), kobj_node);
   global->Set(String::NewFromUtf8(isolate, "KObj_Oriented"), kobj_oriented);
   global->Set(String::NewFromUtf8(isolate, "KObj_Entity"), kobj_entity);

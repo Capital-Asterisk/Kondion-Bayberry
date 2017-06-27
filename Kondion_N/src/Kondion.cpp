@@ -270,7 +270,7 @@ void GameLoop() {
 
   glfwSetTime(15.0);
 
-  Resources::KMaterial::New("kdefault:shaders/defmat");
+  Resources::KMaterial::New("defmat", "kdefault:shaders/defmat");
   Resources::KMaterial::materials[0]->Load(true);
 
   double lastTime = glfwGetTime();

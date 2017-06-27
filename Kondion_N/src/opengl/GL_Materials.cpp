@@ -109,8 +109,9 @@ void GL_Material::Utilize(Renderer::RenderPass* pass) {
   }
 }
 
-KMaterial* KMaterial::New(const std::string& src) {
+KMaterial* KMaterial::New(const std::string& name, const std::string& src) {
   GL_Material* mat = new GL_Material;
+  mat->identifier = name;
   mat->source = src;
   mat->internal = (src == "i");
   materials.push_back(mat);

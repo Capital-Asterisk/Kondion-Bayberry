@@ -38,6 +38,7 @@ Persistent<Array, CopyablePersistentTraits<Array>> p_gupdate;
 Persistent<Object, CopyablePersistentTraits<Object>> p_input;
 
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_component;
+Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_material;
 
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_kobj_node;
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_oko_camera;
@@ -106,6 +107,22 @@ void Callback_Component(const FunctionCallbackInfo<Value>& args) {
     //default:
     //  o = new Component::CPN_Cube;
     //  break;
+    args.This()->SetInternalField(0, External::New(isolate, o));
+    args.GetReturnValue().Set(args.This());
+  }
+}
+
+void Callback_Material(const FunctionCallbackInfo<Value>& args) {
+  //if (args.Length() < 1) return;
+  HandleScope handle_scope(isolate);
+
+  if (args.IsConstructCall()) {
+    std::string arg = std::string(*String::Utf8Value(args[0]));
+    printf("NEW: kcomponent: %s\n", arg.c_str());
+    // TODO, don't push back
+    Resources::KMaterial::indices.push_back(0);
+    uint16_t* o = &(Resources::KMaterial::indices[0]);
+    
     args.This()->SetInternalField(0, External::New(isolate, o));
     args.GetReturnValue().Set(args.This());
   }
@@ -360,7 +377,7 @@ void Callback_Kdion_Load(const FunctionCallbackInfo<Value>& args) {
     Local<Value> b = a->Get(String::NewFromUtf8(isolate, "textures"));
     if (b->IsArray()) {
       Local<Array> c = Local<Array>::Cast(b);
-      printf("JS: start texture queue\n");
+      //printf("JS: start texture queue\n");
       for (uint16_t i = 0; i < c->Length(); i++) {
         std::string s(*String::Utf8Value(c->Get(i)));
         Resources::Load(s, 1);
