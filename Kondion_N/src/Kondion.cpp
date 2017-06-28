@@ -270,7 +270,7 @@ void GameLoop() {
 
   glfwSetTime(15.0);
 
-  Resources::KMaterial::materials[0]->Load(true);
+  Resources::KShader::shaders[0]->Load(true);
 
   double lastTime = glfwGetTime();
   double currentTime = 0;

@@ -43,7 +43,7 @@ void GL_Material::Load(bool a) {
 
       fragId = Renderer::CompileShader(GL_FRAGMENT_SHADER, *frag, "[TWM] " + source);
 
-      if (fragId != -1) {
+      if (fragId != uint16_t(-1)) {
 
         programId = glCreateProgram();
         glAttachShader(programId, vertId);
@@ -111,14 +111,14 @@ void GL_Material::Utilize(Renderer::RenderPass* pass) {
   }
 }
 
-KMaterial* KMaterial::New(const std::string& name, const std::string& src) {
-  printf("New KMaterial\n");
+KShader* KShader::New(const std::string& name, const std::string& src) {
+  printf("New KShader\n");
   GL_Material* mat = new GL_Material;
   mat->loaded = false;
   mat->identifier = name;
   mat->source = src;
   mat->internal = (src == "i");
-  materials.push_back(mat);
+  shaders.push_back(mat);
   return mat;
 }
 

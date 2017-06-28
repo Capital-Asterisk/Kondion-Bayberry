@@ -53,7 +53,7 @@ class GLRenderPass : public RenderPass {
 
 namespace Resources {
 
-class GL_Material : public KMaterial {
+class GL_Material : public KShader {
  public:
   static GLuint vertId;
   bool* locals;

@@ -35,8 +35,8 @@ namespace Resources {
 const unsigned char CARTON_KCA = 0, CARTON_FOLDER = 1, CARTON_ZIP = 2;
 
 std::vector<KTexture *> KTexture::textures;
-std::vector<KMaterial *> KMaterial::materials;
-std::vector<uint16_t> KMaterial::indices;
+std::vector<KShader *> KShader::shaders;
+std::vector<uint16_t> KShader::indices;
 //std::vector<uint16_t> KTexture::loadMe;
 
 struct Carton {
@@ -139,7 +139,7 @@ void AddCarton(const std::string& path) {
       // Register materials like textures
       for (uint16_t i = 0; i < entry.size(); i ++) {
         JS::ON::GetStringArray(materials, entry[i], elements);
-        Resources::KMaterial::New(entry[i], c->id + ":" + elements[0]);
+        Resources::KShader::New(entry[i], c->id + ":" + elements[0]);
         
         //for (uint8_t j = 0; j < elements.size(); j ++) {
         //  printf("Param %s\n", elements[j].c_str());
@@ -235,7 +235,7 @@ void Setup() {
 
 
   KTexture::textures[0] = new KTexture("k_test", textureId, 32, 32);
-  Resources::KMaterial::New("defmat", "kdefault:shaders/defmat");
+  Resources::KShader::New("defmat", "kdefault:shaders/defmat");
 
   //Raw* f = Get("kotega_2:masterscript");
 

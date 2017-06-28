@@ -523,11 +523,11 @@ void GLRenderPass::render() {
     glTranslatef(width / 2.0f, height / 2.0f, -1.0f);
     
     normalmode = true;
-    for (uint16_t i = 0; i < Resources::GL_Material::materials.size(); i ++) {
+    for (uint16_t i = 0; i < Resources::GL_Material::shaders.size(); i ++) {
     
-      printf("IsLoaded; %i\n", Resources::GL_Material::materials[i]->loaded);
-      if (Resources::GL_Material::materials[i]->loaded) {
-        static_cast<Resources::GL_Material*>(Resources::GL_Material::materials[i])
+      //printf("IsLoaded; %i\n", Resources::GL_Material::materials[i]->loaded);
+      if (Resources::GL_Material::shaders[i]->loaded) {
+        static_cast<Resources::GL_Material*>(Resources::GL_Material::shaders[i])
             ->Utilize(this);
         RenderQuad(-width, -height);
       }
@@ -535,9 +535,9 @@ void GLRenderPass::render() {
 
     glDrawBuffers(2, ducky + 5);
     normalmode = false;
-    for (uint16_t i = 0; i < Resources::GL_Material::materials.size(); i++) {
-      if (Resources::GL_Material::materials[i]->loaded) {
-        static_cast<Resources::GL_Material*>(Resources::GL_Material::materials[i])
+    for (uint16_t i = 0; i < Resources::GL_Material::shaders.size(); i++) {
+      if (Resources::GL_Material::shaders[i]->loaded) {
+        static_cast<Resources::GL_Material*>(Resources::GL_Material::shaders[i])
             ->Utilize(this);
         //printf("R%u\n", i);
         RenderQuad(-width, -height);

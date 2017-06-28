@@ -121,14 +121,14 @@ void Callback_Material(const FunctionCallbackInfo<Value>& args) {
     printf("NEW: kcomponent: %s\n", arg.c_str());
     // TODO, don't push back
     uint16_t f = -1;
-    for (uint16_t i = 0; i < Resources::KMaterial::materials.size(); i ++) {
-      if (arg == Resources::KMaterial::materials[i]->identifier) {
-        printf("Match: %s\n", Resources::KMaterial::materials[i]->identifier.c_str());
+    for (uint16_t i = 0; i < Resources::KShader::shaders.size(); i ++) {
+      if (arg == Resources::KShader::shaders[i]->identifier) {
+        printf("Match: %s\n", Resources::KShader::shaders[i]->identifier.c_str());
         f = i;
       }
     }
-    Resources::KMaterial::indices.push_back(f);
-    uint16_t* o = &(Resources::KMaterial::indices[0]);
+    Resources::KShader::indices.push_back(f);
+    uint16_t* o = &(Resources::KShader::indices[0]);
     
     args.This()->SetInternalField(0, External::New(isolate, o));
     args.GetReturnValue().Set(args.This());

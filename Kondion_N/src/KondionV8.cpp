@@ -636,7 +636,7 @@ void UpdateInput() {
 
 }
 
-std::string* ParseShader(std::string* in, Resources::KMaterial& mat) {
+std::string* ParseShader(std::string* in, Resources::KShader& mat) {
   // again, fancy V8 things
   Isolate::Scope isolate_scope(isolate);
   HandleScope handle_scope(isolate);

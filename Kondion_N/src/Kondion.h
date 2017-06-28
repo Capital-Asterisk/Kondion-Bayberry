@@ -42,7 +42,7 @@ class KComponent;
 struct KCurve;
 
 namespace Resources {
-class KMaterial;
+class KShader;
 class KTextures;
 }
 
@@ -539,14 +539,14 @@ void transform3f(const glm::mat4& a, const glm::vec3& b);
 
 namespace Resources {
 
-class KMaterial {
+class KShader {
  public:
 
-  static std::vector<KMaterial *> materials;
+  static std::vector<KShader *> shaders;
   static std::vector<uint16_t> indices;
   //static std::vector<uint16_t> loadMe;
   
-  static KMaterial* New(const std::string& name, const std::string& src);
+  static KShader* New(const std::string& name, const std::string& src);
 
   bool internal;
   bool loaded;
@@ -560,10 +560,10 @@ class KMaterial {
   virtual void Utilize(Renderer::RenderPass* pass) = 0;
 
  protected:
-  KMaterial() {
+  KShader() {
   }
   
-  virtual ~KMaterial() {
+  virtual ~KShader() {
   }
 };
 
@@ -630,7 +630,7 @@ void Setup();
 void Start();
 void UpdateInput();
 
-std::string* ParseShader(std::string* in, Resources::KMaterial& mat);
+std::string* ParseShader(std::string* in, Resources::KShader& mat);
 
 namespace ON {
 size_t Parse(const std::string& s);
