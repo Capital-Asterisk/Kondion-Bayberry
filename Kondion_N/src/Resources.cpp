@@ -99,21 +99,23 @@ void AddCarton(const std::string& path) {
       // Enter the graphics section of the json
       uint16_t graphics = JS::ON::Enter(json, "Graphics");
 
+      // Put all arrays in here
+      std::vector<std::string> entry;
+      std::vector<std::string> elements;
+
       // Get all the keys in Graphics, these are texture names
-      std::vector<std::string> dummy;
-      JS::ON::GetKeys(graphics, dummy);
+      JS::ON::GetKeys(graphics, entry);
 
       printf("Graphics: %i\n", graphics);
 
       // Start registering textures
-      std::vector<std::string> elements;
-      for (uint16_t i = 0; i < dummy.size(); i ++) {
+      for (uint16_t i = 0; i < entry.size(); i ++) {
 
-        printf("Texture to load %s\n", dummy[i].c_str());
-        JS::ON::GetStringArray(graphics, dummy[i], elements);
+        //printf("Texture to load %s\n", dummy[i].c_str());
+        JS::ON::GetStringArray(graphics, entry[i], elements);
 
         // TODO parse traits
-        new KTexture(dummy[i], c->id + ":" + elements[0], 0);
+        new KTexture(entry[i], c->id + ":" + elements[0], 0);
 
         // This is only for printing
         for (uint8_t j = 0; j < elements.size(); j ++) {
@@ -123,10 +125,28 @@ void AddCarton(const std::string& path) {
         // The elements array is reused for the next texture entry
         elements.clear();
       }
-
+      
       // dispose of graphics becuase we don't need it anymore.
       // if not, then memory leak
+      // Now, enter materials, do the same procedure as textures
       JS::ON::Dispose(graphics);
+      uint16_t materials = JS::ON::Enter(json, "Materials");
+
+      // Clear entry, now use it for materials
+      entry.clear();
+      JS::ON::GetKeys(materials, entry);
+      
+      // Register materials like textures
+      for (uint16_t i = 0; i < entry.size(); i ++) {
+        JS::ON::GetStringArray(materials, entry[i], elements);
+        Resources::KMaterial::New(entry[i], c->id + ":" + elements[0]);
+        
+        //for (uint8_t j = 0; j < elements.size(); j ++) {
+        //  printf("Param %s\n", elements[j].c_str());
+        //}
+
+        elements.clear();
+      }
 
       // Don't mind this
       if (c->isGame) {
@@ -215,6 +235,7 @@ void Setup() {
 
 
   KTexture::textures[0] = new KTexture("k_test", textureId, 32, 32);
+  Resources::KMaterial::New("defmat", "kdefault:shaders/defmat");
 
   //Raw* f = Get("kotega_2:masterscript");
 

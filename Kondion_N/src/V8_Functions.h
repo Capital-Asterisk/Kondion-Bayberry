@@ -120,7 +120,14 @@ void Callback_Material(const FunctionCallbackInfo<Value>& args) {
     std::string arg = std::string(*String::Utf8Value(args[0]));
     printf("NEW: kcomponent: %s\n", arg.c_str());
     // TODO, don't push back
-    Resources::KMaterial::indices.push_back(0);
+    uint16_t f = -1;
+    for (uint16_t i = 0; i < Resources::KMaterial::materials.size(); i ++) {
+      if (arg == Resources::KMaterial::materials[i]->identifier) {
+        printf("Match: %s\n", Resources::KMaterial::materials[i]->identifier.c_str());
+        f = i;
+      }
+    }
+    Resources::KMaterial::indices.push_back(f);
     uint16_t* o = &(Resources::KMaterial::indices[0]);
     
     args.This()->SetInternalField(0, External::New(isolate, o));

@@ -43,9 +43,9 @@ void CharCallback(GLFWwindow* linuxisbetter, uint32_t c) {
 int CreateWindow(uint16_t width, uint16_t height) {
   //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
   //glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  //glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  //glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-  w = glfwCreateWindow(width, height, "Hello World", NULL, NULL);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+  w = glfwCreateWindow(width, height, "Kondion Default title", NULL, NULL);
   if (!w) {
     glfwTerminate();
     return -1;

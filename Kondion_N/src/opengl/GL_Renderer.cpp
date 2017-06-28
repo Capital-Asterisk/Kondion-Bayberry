@@ -521,22 +521,27 @@ void GLRenderPass::render() {
 
     glDrawBuffers(1, ducky + 2);
     glTranslatef(width / 2.0f, height / 2.0f, -1.0f);
-
+    
     normalmode = true;
     for (uint16_t i = 0; i < Resources::GL_Material::materials.size(); i ++) {
-      static_cast<Resources::GL_Material*>(Resources::GL_Material::materials[i])
-          ->Utilize(this);
-      RenderQuad(-width, -height);
+    
+      printf("IsLoaded; %i\n", Resources::GL_Material::materials[i]->loaded);
+      if (Resources::GL_Material::materials[i]->loaded) {
+        static_cast<Resources::GL_Material*>(Resources::GL_Material::materials[i])
+            ->Utilize(this);
+        RenderQuad(-width, -height);
+      }
     }
 
     glDrawBuffers(2, ducky + 5);
     normalmode = false;
     for (uint16_t i = 0; i < Resources::GL_Material::materials.size(); i++) {
-      static_cast<Resources::GL_Material*>(Resources::GL_Material::materials[i])
-          ->Utilize(this);
-      //printf("R%u\n", i);
-
-      RenderQuad(-width, -height);
+      if (Resources::GL_Material::materials[i]->loaded) {
+        static_cast<Resources::GL_Material*>(Resources::GL_Material::materials[i])
+            ->Utilize(this);
+        //printf("R%u\n", i);
+        RenderQuad(-width, -height);
+      }
     }
 
     // Jelly render is done

@@ -18,11 +18,14 @@ kdion.initialize(function() {
   var cubeB = new KCompnent("cube");
   var cubeC = new KCompnent("cube");
   
+  var matman = new KMaterial("defmat");
+  
   var tm = mat4.create();
   mat4.rotateX(tm, tm, Math.PI / 2);
   flat.setMatrix(tm);
   mat4.identity(tm);
   mat4.rotateY(tm, tm, Math.PI / 4 * 3);
+  mat4.rotateX(tm, tm, Math.PI / 4);
   wall.setMatrix(tm);
   mat4.identity(tm);
   mat4.rotateX(tm, tm, -Math.PI / 2);

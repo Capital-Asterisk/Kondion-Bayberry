@@ -64,7 +64,7 @@ void GL_Material::Load(bool a) {
         uniformsLocations[4] = glGetUniformLocation(programId, "depth");
         //uniformsLocations[5] = glGetUniformLocation(programId, "materials");
         //uniformsLocations[6] = glGetUniformLocation(programId, "coords");
-          uniformsLocations[5] = glGetUniformLocation(programId, "coormats");
+        uniformsLocations[5] = glGetUniformLocation(programId, "coormats");
         uniformsLocations[6] = glGetUniformLocation(programId, "normals");
         uniformsLocations[7] = glGetUniformLocation(programId, "mapmals");
         uniformsLocations[8] = glGetUniformLocation(programId, "bright");
@@ -74,6 +74,8 @@ void GL_Material::Load(bool a) {
           glUniform1i(uniformsLocations[4 + i], i);
 
         glUniform1i(uniformsLocations[7], 3);
+        
+        loaded = true;
 
       } else {
 
@@ -104,13 +106,15 @@ void GL_Material::Utilize(Renderer::RenderPass* pass) {
     glUniform1i(uniformsLocations[1], Kondion::TimeMs());
     glUniform1f(uniformsLocations[2], KObj_Node::worldObject->sceneTime);
     glUniform1i(uniformsLocations[3], p->normalmode);
-
+    
 
   }
 }
 
 KMaterial* KMaterial::New(const std::string& name, const std::string& src) {
+  printf("New KMaterial\n");
   GL_Material* mat = new GL_Material;
+  mat->loaded = false;
   mat->identifier = name;
   mat->source = src;
   mat->internal = (src == "i");

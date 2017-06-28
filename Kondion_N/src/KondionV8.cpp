@@ -116,20 +116,31 @@ std::string GetString(size_t id, const std::string& key) {
 }
 
 void GetStringArray(size_t id, const std::string& key, std::vector<std::string> &in) {
-  // TODO make this readable
+  // TODO: remove todo message
+  // TODO: make this readable
   if (id >= 0 && objects.size() >= id) {
     if (objects[id]) {
+      // Make V8 stuff work
       Isolate::Scope isolate_scope(isolate);
       HandleScope handle_scope(isolate);
-      //Local<Context> context = Local<Context>::New(isolate, contextp);
+      
+      // Open the object that id specifies, the array with key is inside
       Local<Value> json = Local<Value>::New(isolate, *objects[id]);
+      
+      // Make sure the object isn't empty
       if (!json.IsEmpty()) {
+        // Check if the object has the key [array]
         if (json->ToObject(isolate)->Has(
             String::NewFromUtf8(isolate, key.c_str()))) {
+          
+          // Get the object as an array, TODO: check if array
           Local<Array> object = Local<Array>::Cast(
               json->ToObject(isolate)->Get(
                   String::NewFromUtf8(isolate, key.c_str())));
-          std::vector<std::string> ret;
+                  
+          //std::vector<std::string> ret;
+          
+          // Push all the elements into in
           for (uint16_t i = 0; i < object->Length(); i ++) {
             in.push_back(std::string(*String::Utf8Value(object->Get(i))));
           }
@@ -137,13 +148,13 @@ void GetStringArray(size_t id, const std::string& key, std::vector<std::string> 
           perror("JSON: no such key");
         }
       } else {
-        perror("JSON: attempted to access an empty whatever");
+        perror("JSON: attempted to access an empty whatever\n");
       }
     } else {
-      perror("JSON: object at x id does not exist");
+      perror("JSON: object at x id does not exist\n");
     }
   } else {
-    perror("JSON: invalid Id");
+    perror("JSON: invalid Id\n");
   }
 }
 
