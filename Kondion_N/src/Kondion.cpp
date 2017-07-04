@@ -39,6 +39,7 @@ double delta;
 }
 
 std::vector<KObj_Node *> KObj_Node::all;
+std::vector<KMaterial *> Kondion::KMaterial::materials;
 KObj::GKO_World* KObj_Node::worldObject;
 
 const std::string KObj_Node::myClass = "error_node";
@@ -265,12 +266,12 @@ void GameLoop() {
   f->add(Input::ControlIndex("D_L"), 64, 1.0f);
   f->add(Input::ControlIndex("D_D"), 128, 1.0f);
   f->add(Input::ControlIndex("D_R"), 192, 1.0f);
+  
+  Resources::KShader::shaders[0]->Load(true);
 
   Input::MouseLock(true);
 
   glfwSetTime(15.0);
-
-  Resources::KShader::shaders[0]->Load(true);
 
   double lastTime = glfwGetTime();
   double currentTime = 0;
@@ -411,6 +412,9 @@ int main(int argc, const char* argv[]) {
 
     // make space for the default texture.
     Kondion::Resources::KTexture::textures.push_back(NULL);
+    
+    // Add default material
+    Kondion::Resources::KShader::New("defmat", "kdefault:shaders/defmat");
 
     // Load cartons, goal: loading screen asap
     unsigned char mode = 1;  // 0: none, 1: carton

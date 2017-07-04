@@ -332,7 +332,7 @@ kdion.materialParser = function(code) {
       + "\nvec3 hsv(float a, float b, float c) {return hsv(vec3(a, b, c));}"
       
       + "\nvoid main() {"
-      + "\n//if (floor(texture2D(materials, texCoord.st).r * 255) != id) discard;"
+      + "\nif (floor(texture2D(coormats, texCoord.st).b * 255.0) == id) discard;"
       + "\nif (normalmode) {"
       + "\n//normalvars"
       + "\n//normalout;"

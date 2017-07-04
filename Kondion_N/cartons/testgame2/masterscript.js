@@ -2,6 +2,8 @@
  * @file Masterscript, this script is run first
  * @author Neal Nicdao (Capital_Asterisk)
  */
+ 
+var matman;
 
 kdion.initialize(function() {
   
@@ -18,7 +20,7 @@ kdion.initialize(function() {
   var cubeB = new KCompnent("cube");
   var cubeC = new KCompnent("cube");
   
-  var matman = new KMaterial("defmat");
+  matman = new KMaterial("defmat");
   
   var tm = mat4.create();
   mat4.rotateX(tm, tm, Math.PI / 2);
@@ -84,6 +86,7 @@ kdion.initialize(function() {
   //  + tm[12] + ", " + tm[13] + ", " + tm[14] + ", " + tm[15] + "]\n");
   
   kdion.doLoad(2);
+  
 });
 
 kdion.globalUpdate(function() {

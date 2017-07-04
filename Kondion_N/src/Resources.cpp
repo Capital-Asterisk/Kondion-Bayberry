@@ -36,7 +36,7 @@ const unsigned char CARTON_KCA = 0, CARTON_FOLDER = 1, CARTON_ZIP = 2;
 
 std::vector<KTexture *> KTexture::textures;
 std::vector<KShader *> KShader::shaders;
-std::vector<uint16_t> KShader::indices;
+//std::vector<uint16_t> KShader::indices;
 //std::vector<uint16_t> KTexture::loadMe;
 
 struct Carton {
@@ -235,7 +235,6 @@ void Setup() {
 
 
   KTexture::textures[0] = new KTexture("k_test", textureId, 32, 32);
-  Resources::KShader::New("defmat", "kdefault:shaders/defmat");
 
   //Raw* f = Get("kotega_2:masterscript");
 

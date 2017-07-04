@@ -118,17 +118,15 @@ void Callback_Material(const FunctionCallbackInfo<Value>& args) {
 
   if (args.IsConstructCall()) {
     std::string arg = std::string(*String::Utf8Value(args[0]));
-    printf("NEW: kcomponent: %s\n", arg.c_str());
-    // TODO, don't push back
-    uint16_t f = -1;
+    printf("NEW: kmaterial: %s\n", arg.c_str());
+    KMaterial* o = new KMaterial;
+    o->shader = -1;
     for (uint16_t i = 0; i < Resources::KShader::shaders.size(); i ++) {
       if (arg == Resources::KShader::shaders[i]->identifier) {
         printf("Match: %s\n", Resources::KShader::shaders[i]->identifier.c_str());
-        f = i;
+        o->shader = i;
       }
     }
-    Resources::KShader::indices.push_back(f);
-    uint16_t* o = &(Resources::KShader::indices[0]);
     
     args.This()->SetInternalField(0, External::New(isolate, o));
     args.GetReturnValue().Set(args.This());

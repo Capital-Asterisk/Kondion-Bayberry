@@ -38,6 +38,7 @@ class KObj_Entity;
 class KObj_Instance;
 
 class KComponent;
+class KMaterial;
 
 struct KCurve;
 
@@ -149,7 +150,9 @@ class KObj_Oriented : public KObj_Node {
 class KObj_Renderable : public KObj_Oriented {
  public:
   static const std::string myClass;
+  uint16_t material;
   bool complex = false;
+
   //virtual int getType();
   const std::string* getClass() {
     return &myClass;
@@ -234,6 +237,21 @@ class KComponent {
 
   }
  protected:
+};
+
+class KMaterial {
+ public:
+  static std::vector<KMaterial*> materials;
+
+  uint16_t shader;
+  uint16_t* uni_textures;
+  int32_t* uni_ints;
+  float* uni_floats;
+  
+  KMaterial() {
+    materials.push_back(this);
+  }
+
 };
 
 namespace KObj {

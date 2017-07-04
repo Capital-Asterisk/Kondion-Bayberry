@@ -52,7 +52,7 @@ void printWorld() {
   printf("---- ALL NODES: %i\n", KObj_Node::all.size());
     for (uint16_t i = 0; i < KObj_Node::all.size(); i ++) {
       KObj_Node* e = KObj_Node::all[i];
-      printf("%s(%i): %s[%i] par:%i\n", e->getClass()->c_str(), e->depth, e->name.c_str(), e->treeSize,
+      printf("%s(%u): %s[%u] par:%i\n", e->getClass()->c_str(), e->depth, e->name.c_str(), e->treeSize,
              (e->getParent() == NULL) ? -1 : e->getParent()->allIndex);
     }
 }

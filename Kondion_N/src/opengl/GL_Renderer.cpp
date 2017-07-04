@@ -30,6 +30,7 @@ GLuint grill;
 
 GLuint temp_prog_deferred;
 GLuint temp_prog_monotex;
+GLuint temp_prog_monotex_id;
 
 void Composite() {
   for (size_t i = 0; i < RenderPass::passes.size(); i++) {
@@ -142,11 +143,10 @@ void Setup() {
   glAttachShader(temp_prog_monotex, monotex_frag);
   glLinkProgram(temp_prog_monotex);
   glUseProgram(temp_prog_monotex);
-  printf("uniform typeee: %i\n",
-         glGetUniformLocation(temp_prog_monotex, "color"));
-
-  glProgramUniform1i(temp_prog_monotex,
-                     glGetUniformLocation(temp_prog_monotex, "texture0"), 0);
+  
+  temp_prog_monotex_id = glGetUniformLocation(temp_prog_monotex, "type");
+  
+  //printf("TYPE EGGS MC BIRD BIRD: %u\n", temp_prog_monotex_id);
 
   temp_prog_deferred = glCreateProgram();
   glAttachShader(temp_prog_deferred, monotex_vert);
@@ -166,7 +166,6 @@ void Setup() {
   glUniform1i(glGetUniformLocation(temp_prog_deferred, "texture3"), 3);
   glUniform1i(glGetUniformLocation(temp_prog_deferred, "texture4"), 4);
   glUniform1i(glGetUniformLocation(temp_prog_deferred, "texture5"), 5);
-
 
   //delete [] interlevedDataA;
 
@@ -256,9 +255,6 @@ void Three(KObj::OKO_Camera_* c, uint16_t width, uint16_t height) {
   //glGetUniformiv(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "type"), &30);
   glUseProgram(temp_prog_monotex);
   //printf("uniform type: %i\n", glGetUniformLocation(temp_prog_monotex, "color"));
-  glUniform1i(glGetUniformLocation(temp_prog_monotex, "type"), 30);
-  glUniform4f(glGetUniformLocation(temp_prog_monotex, "color"), 1.0f,
-                     1.0f, 1.0f, 1.0f);
 }
 
 void Two(uint8_t window) {
@@ -483,6 +479,10 @@ void GLRenderPass::render() {
     for (size_t i = 0; i < items.size(); i++) {
       if (!items[i]->complex) {
         glPushMatrix();
+        //glUniform1i(temp_prog_monotex_id,
+        //            Kondion::KMaterial::materials[items[i]->material]->shader);
+        printf("BIRD INDEX: %u\n", i);
+        glUniform1i(temp_prog_monotex_id, i);
         items[i]->render();
         glPopMatrix();
       }
@@ -522,12 +522,15 @@ void GLRenderPass::render() {
     glDrawBuffers(1, ducky + 2);
     glTranslatef(width / 2.0f, height / 2.0f, -1.0f);
     
-    normalmode = true;
-    for (uint16_t i = 0; i < Resources::GL_Material::shaders.size(); i ++) {
+    Kondion::Resources::KShader* shader;
     
-      //printf("IsLoaded; %i\n", Resources::GL_Material::materials[i]->loaded);
-      if (Resources::GL_Material::shaders[i]->loaded) {
-        static_cast<Resources::GL_Material*>(Resources::GL_Material::shaders[i])
+    normalmode = true;
+    for (uint16_t i = 0; i < Kondion::KMaterial::materials.size(); i ++) {
+      shader = Resources::GL_Material::shaders
+               [Kondion::KMaterial::materials[i]->shader];
+      if (shader->loaded) {
+        shader->id = i;
+        static_cast<Resources::GL_Material*>(shader)
             ->Utilize(this);
         RenderQuad(-width, -height);
       }
@@ -535,11 +538,12 @@ void GLRenderPass::render() {
 
     glDrawBuffers(2, ducky + 5);
     normalmode = false;
-    for (uint16_t i = 0; i < Resources::GL_Material::shaders.size(); i++) {
-      if (Resources::GL_Material::shaders[i]->loaded) {
-        static_cast<Resources::GL_Material*>(Resources::GL_Material::shaders[i])
+    for (uint16_t i = 0; i < Kondion::KMaterial::materials.size(); i ++) {
+      shader = Resources::GL_Material::shaders
+               [Kondion::KMaterial::materials[i]->shader];
+      if (shader->loaded) {
+        static_cast<Resources::GL_Material*>(shader)
             ->Utilize(this);
-        //printf("R%u\n", i);
         RenderQuad(-width, -height);
       }
     }

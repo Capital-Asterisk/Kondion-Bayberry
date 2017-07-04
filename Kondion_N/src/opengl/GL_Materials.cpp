@@ -38,8 +38,8 @@ void GL_Material::Load(bool a) {
 
     if (frag[0] != "E") {
 
-      printf("##################\nParser result:\n%s\n##################\n",
-             frag->c_str());
+      //printf("##################\nParser result:\n%s\n##################\n",
+      //       frag->c_str());
 
       fragId = Renderer::CompileShader(GL_FRAGMENT_SHADER, *frag, "[TWM] " + source);
 
@@ -106,7 +106,6 @@ void GL_Material::Utilize(Renderer::RenderPass* pass) {
     glUniform1i(uniformsLocations[1], Kondion::TimeMs());
     glUniform1f(uniformsLocations[2], KObj_Node::worldObject->sceneTime);
     glUniform1i(uniformsLocations[3], p->normalmode);
-    
 
   }
 }
