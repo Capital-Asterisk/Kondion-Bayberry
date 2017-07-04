@@ -19,7 +19,7 @@ void CPN_Cube::render() {
   glPushMatrix();
   glMultMatrixf(glm::value_ptr(offset));
   Kondion::Renderer::RenderCube(1.0f);
-  parent->material = 1;
+  //parent->material = 1;
   
   //glTranslatef(0, -1, 0);
   //Kondion::Renderer::RenderQuad(20, 20);

@@ -51,8 +51,8 @@ void Callback_Entity_AddComponent(const FunctionCallbackInfo<Value>& args) {
 
   Local<FunctionTemplate> f = Local<FunctionTemplate>::New(isolate,
                                                            p_component);
-  //printf("Arg0 is component: %i\n", f->HasInstance(args[0]));
-
+  
+  // Check if arg0 is a component
   if (!f->HasInstance(args[0]))
     return;
   KObj_Entity* pointer_this = static_cast<KObj_Entity*>(Local<External>::Cast(
@@ -60,10 +60,31 @@ void Callback_Entity_AddComponent(const FunctionCallbackInfo<Value>& args) {
   KComponent* pointer_arg0 = static_cast<KComponent*>(Local<External>::Cast(
       Local<Object>::Cast(args[0])->GetInternalField(0))->Value());
 
-  //KComponent* dupe = new KComponent;
-  //dupe = *pointer_arg0;
-
   pointer_this->components.push_back(pointer_arg0);
+}
+
+void Callback_Entity_SetMaterial(const FunctionCallbackInfo<Value>& args) {
+  if (args.IsConstructCall() || args.Length() == 0)
+    return;
+
+  Local<FunctionTemplate> f = Local<FunctionTemplate>::New(isolate,
+                                                           p_material);
+  // Check if argument is a material
+  if (!f->HasInstance(args[0]))
+    return;
+  KObj_Entity* pointer_this = static_cast<KObj_Entity*>(Local<External>::Cast(
+      args.This()->GetInternalField(0))->Value());
+  KMaterial* pointer_arg0 = static_cast<KMaterial*>(Local<External>::Cast(
+      Local<Object>::Cast(args[0])->GetInternalField(0))->Value()); 
+  uint16_t i = 0;
+  //printf("pointer: %p\n", pointer_this);
+  pointer_this->material = uint16_t(-1);
+  while (pointer_this->material == uint16_t(-1) && i != KMaterial::materials.size()) {
+    if (KMaterial::materials[i] == pointer_arg0)
+      pointer_this->material = i;
+    i ++;
+  }
+  
 }
 
 void Callback_Entity_PhysLevel(const FunctionCallbackInfo<Value>& args) {

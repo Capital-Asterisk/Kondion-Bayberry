@@ -325,14 +325,14 @@ kdion.materialParser = function(code) {
       + "\n"
       + "\nvec3 hsv(vec3 c) { // https://stackoverflow.com/questions/15095909"
       + "\nvec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);"
-      + "\nvec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);"
+      + "\nvec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);" 
       + "\nreturn c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);"
       + "\n}"
       
       + "\nvec3 hsv(float a, float b, float c) {return hsv(vec3(a, b, c));}"
       
       + "\nvoid main() {"
-      + "\nif (floor(texture2D(coormats, texCoord.st).b * 255.0) == id) discard;"
+      + "\nif (floor(texture2D(coormats, texCoord.st).b * 255.0) != id) discard;"
       + "\nif (normalmode) {"
       + "\n//normalvars"
       + "\n//normalout;"

@@ -273,6 +273,7 @@ void Destroy() {
   p_oko_camera.Reset();
   p_context.Reset();
   p_component.Reset();
+  p_material.Reset();
   p_gupdate.Reset();
   p_input.Reset();
   //for (uint16_t i = 0; i < ON::objects.size(); i++) {
@@ -411,8 +412,9 @@ void Setup() {
   kmaterial->InstanceTemplate()->SetInternalFieldCount(1);
 
 
-  // KObj constructors
+  // *** KObj constructors
 
+  // ** Node
   Local<FunctionTemplate> kobj_node = FunctionTemplate::New(isolate);
   kobj_node->InstanceTemplate()->SetInternalFieldCount(1);
   kobj_node->PrototypeTemplate()->Set(
@@ -426,6 +428,7 @@ void Setup() {
       FunctionTemplate::New(isolate, Callback_KObj_SetParent));
   //kobj_node->HasInstance(object)
 
+  // ** Oriented
   Local<FunctionTemplate> kobj_oriented = FunctionTemplate::New(isolate);
   kobj_oriented->InstanceTemplate()->SetInternalFieldCount(1);
   kobj_oriented->Inherit(kobj_node);
@@ -456,6 +459,7 @@ void Setup() {
       String::NewFromUtf8(isolate, "dirUp"),
       FunctionTemplate::New(isolate, Callback_OKO_DirUp));
 
+  // ** Entity
   Local<FunctionTemplate> kobj_entity = FunctionTemplate::New(
       isolate, Callback_KObj_Entity);
   kobj_entity->InstanceTemplate()->SetInternalFieldCount(1);
@@ -466,6 +470,11 @@ void Setup() {
   kobj_entity->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "physLevel"),
       FunctionTemplate::New(isolate, Callback_Entity_PhysLevel));
+  kobj_entity->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "setMaterial"),
+      FunctionTemplate::New(isolate, Callback_Entity_SetMaterial));
+      
+  // Physics stuff
   kobj_entity->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "thrust"),
       FunctionTemplate::New(isolate, Callback_Kdion_Blank));
@@ -482,13 +491,13 @@ void Setup() {
   kobj_instance->InstanceTemplate()->SetInternalFieldCount(1);
   kobj_instance->Inherit(kobj_oriented);
 
-  // GKO
+  // ** GKO
   Local<FunctionTemplate> gko_world = FunctionTemplate::New(isolate,
                                                             Callback_GKO_World);
   gko_world->InstanceTemplate()->SetInternalFieldCount(1);
   gko_world->Inherit(kobj_node);
 
-  // OKO
+  // ** OKO
 
   Local<FunctionTemplate> oko_camera = FunctionTemplate::New(isolate,
                                                               Callback_OKO_Camera);
@@ -575,6 +584,8 @@ void Setup() {
                                                                      context);
   p_component = Persistent<FunctionTemplate,
        CopyablePersistentTraits<FunctionTemplate>>(isolate, kcomponent);
+  p_material = Persistent<FunctionTemplate,
+       CopyablePersistentTraits<FunctionTemplate>>(isolate, kmaterial);
   p_kobj_node = Persistent<FunctionTemplate,
       CopyablePersistentTraits<FunctionTemplate>>(isolate, kobj_node);
   p_gupdate = Persistent<Array, CopyablePersistentTraits<Array>>(

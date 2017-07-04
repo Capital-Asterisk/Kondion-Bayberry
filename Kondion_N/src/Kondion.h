@@ -150,7 +150,7 @@ class KObj_Oriented : public KObj_Node {
 class KObj_Renderable : public KObj_Oriented {
  public:
   static const std::string myClass;
-  uint16_t material;
+  uint16_t material = 0;
   bool complex = false;
 
   //virtual int getType();
@@ -220,7 +220,7 @@ class KComponent {
   KObj_Entity* parent;  // this caused my first circular dependency
   void* jsObject;
 
-  glm::mat4x4 offset;
+  glm::mat4x4 offset; 
 
   // Physical properties
 
@@ -249,6 +249,7 @@ class KMaterial {
   float* uni_floats;
   
   KMaterial() {
+    shader = 0;
     materials.push_back(this);
   }
 

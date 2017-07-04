@@ -4,6 +4,7 @@
  */
  
 var matman;
+var ripmat;
 
 kdion.initialize(function() {
   
@@ -21,6 +22,7 @@ kdion.initialize(function() {
   var cubeC = new KCompnent("cube");
   
   matman = new KMaterial("defmat");
+  ripmat = new KMaterial("test");
   
   var tm = mat4.create();
   mat4.rotateX(tm, tm, Math.PI / 2);
@@ -69,6 +71,7 @@ kdion.initialize(function() {
   top.setName("Cube_Top");
   top.addComponent(cubeC);
   top.setParent(e);
+  top.setMaterial(ripmat);
   
   kdion.queueLoad({textures: ["tiles_diff", "tiles_norm"]}, 2);
   kdion.camera = camera;
