@@ -378,6 +378,7 @@ void Callback_Kdion_Load(const FunctionCallbackInfo<Value>& args) {
     return;
   Local<Object> a = args[0]->ToObject();
   HandleScope handle_scope(isolate);
+  
   // Start loading textures (if any)
   if (a->HasOwnProperty(String::NewFromUtf8(isolate, "textures"))) {
     Local<Value> b = a->Get(String::NewFromUtf8(isolate, "textures"));
@@ -387,6 +388,25 @@ void Callback_Kdion_Load(const FunctionCallbackInfo<Value>& args) {
       for (uint16_t i = 0; i < c->Length(); i++) {
         std::string s(*String::Utf8Value(c->Get(i)));
         Resources::Load(s, 1);
+      }
+    }
+  }
+  
+  // Start loading materials (if any)
+  if (a->HasOwnProperty(String::NewFromUtf8(isolate, "materials"))) {
+    Local<Value> b = a->Get(String::NewFromUtf8(isolate, "materials"));
+    if (b->IsArray()) {
+      Local<Array> c = Local<Array>::Cast(b);
+      //printf("JS: start texture queue\n");
+      bool loaded = false;
+      for (uint16_t i = 0; i < c->Length(); i++) {
+        std::string s(*String::Utf8Value(c->Get(i)));
+        for (uint16_t i = 0; i < Resources::KShader::shaders.size() && !loaded; i ++) {
+          if (Resources::KShader::shaders[i]->identifier == s) {
+            Resources::KShader::shaders[i]->Load(true);
+            loaded = false;
+          }
+        }
       }
     }
   }

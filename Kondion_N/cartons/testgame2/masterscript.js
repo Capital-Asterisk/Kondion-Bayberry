@@ -73,7 +73,7 @@ kdion.initialize(function() {
   top.setParent(e);
   top.setMaterial(ripmat);
   
-  kdion.queueLoad({textures: ["tiles_diff", "tiles_norm"]}, 2);
+  kdion.queueLoad({textures: ["tiles_diff", "tiles_norm"], materials: ["test"]}, 2);
   kdion.camera = camera;
   
   //kdion.log(mat4.identity);
