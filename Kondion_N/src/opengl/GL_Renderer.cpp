@@ -479,7 +479,7 @@ void GLRenderPass::render() {
     for (size_t i = 0; i < items.size(); i++) {
       if (!items[i]->complex) {
         glPushMatrix();
-        printf("Material: %u\n", items[i]->material);
+        //printf("Material: %u\n", items[i]->material);
         glUniform1i(temp_prog_monotex_id, items[i]->material);
         //printf("MATERIAL: %u %s POINT: %p\n", items[i]->material, Kondion::KMaterial::materials.size(), items[i]);
         //glUniform1i(temp_prog_monotex_id, i);
@@ -529,7 +529,7 @@ void GLRenderPass::render() {
       shader = Resources::GL_Material::shaders
                [Kondion::KMaterial::materials[i]->shader];
       if (shader->loaded) {
-        printf("Rendering: %u\n", i);
+        //printf("Rendering: %u\n", i);
         shader->id = i;
         static_cast<Resources::GL_Material*>(shader)
             ->Utilize(this);

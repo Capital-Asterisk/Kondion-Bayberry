@@ -210,7 +210,18 @@ void PhysicsUpdate() {
                     ent->orientation[3].x -= ci.normB.x * ci.sink;
                     ent->orientation[3].y -= ci.normB.y * ci.sink;
                     ent->orientation[3].z -= ci.normB.z * ci.sink;
-
+                    
+                    // Calculate normal force velocity
+                    float elasticity = 0.5;
+                    Physics::tvec4[0].x = glm::dot(ci.normB, ent->velocity);
+                    ent->velocity -= (ci.normB * (Physics::tvec4[0].x * (elasticity + 1)));
+                    
+                    //ent->velocity.x *= (1.0 - glm::abs(ci.normB.x));
+                    //ent->velocity.y *= (1.0 - glm::abs(ci.normB.y));
+                    //ent->velocity.z *= (1.0 - glm::abs(ci.normB.z));
+                    //ent->velocity.x += ci.normB.x * 20;
+                    //ent->velocity.y += ci.normB.y * 20;
+                    //ent->velocity.z += ci.normB.z * 20;
                   }
                 }
               }
@@ -218,7 +229,7 @@ void PhysicsUpdate() {
           }
         }
 
-
+        
         ent->velocity.x += ent->acceleration.x * steptime;
         ent->velocity.y += ent->acceleration.y * steptime;
         ent->velocity.z += ent->acceleration.z * steptime;

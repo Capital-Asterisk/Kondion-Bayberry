@@ -42,6 +42,7 @@ std::vector<KObj_Node *> KObj_Node::all;
 std::vector<KMaterial *> Kondion::KMaterial::materials;
 KObj::GKO_World* KObj_Node::worldObject;
 
+// TODO: make all of these into unique ints.
 const std::string KObj_Node::myClass = "error_node";
 const std::string KObj_Oriented::myClass = "error_oriented";
 const std::string KObj_Renderable::myClass = "error_renderable";
@@ -160,8 +161,8 @@ void KObj_Oriented::parentTransform() {
 }
 
 void KObj_Entity::updateA() {
-  if (this->physics != 0)
-    rotVelocity = glm::quat(glm::vec3(0.0, 0.0, 0.01));
+  //if (this->physics != 0)
+  //  rotVelocity = glm::quat(glm::vec3(0.0, 0.0, 0.01));
   // TODO, add previous velocity, then use the acceleration equation from physics
   orientation = orientation * glm::toMat4(rotVelocity);
   if (physics != 0) {

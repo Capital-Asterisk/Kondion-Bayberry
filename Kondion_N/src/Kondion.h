@@ -1,9 +1,4 @@
-/*
- * KondionWindow.h
- *
- *  Created on: Aug 22, 2016
- *      Author: neal
- */
+// License goes here
 
 #ifndef KONDION_H_
 #define KONDION_H_
@@ -27,7 +22,7 @@
 #include <string.h>
 #include <vector>
 
-// TODO: eventually replace a bunch of uint16_t with 32_t because of object count
+// TODO: eventually replace a bunch of uint16_t with 32_t because object count
 
 namespace Kondion {
 
@@ -55,8 +50,9 @@ namespace KObj {
 class GKO_World;
 }
 
-// Curve struct
-
+// Made for mathmatical curves, and possible animations. Suppose to generate
+// common wave functions like sine, square, saw, noise, etc... This would also
+// have smooth interpolation between data points, such as linear and bezier.
 struct KCurve {
   uint8_t type;
   uint16_t size;
@@ -73,19 +69,20 @@ struct KCurve {
   }
 };
 
-// Base kobj classes
-
-/** Base class for all KObjs, only a node in the tree.
- *  type: 0
- */
+// Base class for all KObjs, only a node in the tree. It's only function is to
+// be a node that can have more nodes in it, and also keep track of it's parent
+//
+// KObj_Node is sad and lonely, as it could never physically interact with any
+// of it's friends.
 class KObj_Node {
  public:
   // All of the KObj_Nodes in existance, including the ones that aren't in world.
   static std::vector<KObj_Node *> all;
   // The current world object, has no parent
   static KObj::GKO_World* worldObject;
-  // what is this for?
+  // use for identification
   static const std::string myClass;
+  
   // Time since scene started, affected by timescale;
   double sceneTime;
   // Name to identify with
@@ -125,11 +122,13 @@ class KObj_Node {
   KObj_Node* parent = NULL;
 };
 
-// GKO, type 1
-
-/** Base class for Entity and Instance, has an orientation in the world.
- *  type: 2
- */
+// This type of node has a place in the physical world. Not your world where
+// you exist in, but the virtual Kondion world. Oriented nodes can be parented
+// to another oriented node, and it would inherit it's transformation. (follow
+// it's parent around). This object is not solid, and has no mesh of any sort,
+// more of a single point in space, or like an empty in Blender 3D.
+// 
+// Orienteds are not chinese, or asian, bug are less lonely as KObj_Nodes
 class KObj_Oriented : public KObj_Node {
  public:
   static const std::string myClass;
@@ -147,6 +146,9 @@ class KObj_Oriented : public KObj_Node {
   //virtual ~KObj_Oriented() {};
 };
 
+// Just why does this exist, would there ever be a renderable object that isn't
+// an entity? Renderables are just made to be rendered. They are eatable by the
+// renderer, most likely OpenGL.
 class KObj_Renderable : public KObj_Oriented {
  public:
   static const std::string myClass;
@@ -160,9 +162,10 @@ class KObj_Renderable : public KObj_Oriented {
   virtual void render()=0;
 };
 
-/** Used to represent actual objects in the game world through Components;
- *  type: 3
- */
+// Used to represent actual objects in the game world through Components.
+// Entities are physical, have physics, mass, and fancy stuff. Without
+// components, entities are just blank points in space that react to forces.
+// Components are added to make the entity solid.
 class KObj_Entity : public KObj_Renderable {
  public:
   static const std::string myClass;
@@ -192,10 +195,11 @@ class KObj_Entity : public KObj_Renderable {
   void parentTransform();
 };
 
-/** Refers to an entity, but still its own object; use this so
- * that entities do not have to be copied multiple times.
- *  type: 3
- */
+// This thing should actually inherit Entity. If there's a lot of the same
+// entity, then the engine would get slow. Instances are just duplicates of an
+// entity they're linked too, and are suppose to be much faster than multiple
+// copies of the same entity, as this solution would use data from the entity.
+// Example: Bullets
 class KObj_Instance : public KObj_Renderable {
  public:
   static const std::string myClass;
@@ -209,7 +213,9 @@ class KObj_Instance : public KObj_Renderable {
   }
 };
 
-// Component part
+// Components are slaves to the entities, they come in many different shapes
+// and sizes. Cubes, infinite planes, balls, custom 3D objects, and more!
+// They can be rendered, or used as colliders.
 class KComponent {
  public:
   static const std::string myClass;
@@ -239,6 +245,10 @@ class KComponent {
  protected:
 };
 
+// Materials are linked to a shader. They contain information to feed the
+// shader. The shader must be loaded for it to work, as shaders are resources.
+// For example: material stores colour blue, and the simple colour shader draws
+// blue.
 class KMaterial {
  public:
   static std::vector<KMaterial*> materials;
@@ -257,6 +267,9 @@ class KMaterial {
 
 namespace KObj {
 
+// The world where everything is stored. This node is just at the very top, and
+// is probably parented to itself. It holds some information about the world,
+// and keeps track of objects.
 class GKO_World : public KObj_Node {
  public:
   static const std::string myClass;
@@ -278,6 +291,11 @@ class GKO_World : public KObj_Node {
   }
 };
 
+// Cheese! This oriented object is suppose to be the eye into the world.
+// Multiple cameras could be made and can be switched between, or used with
+// different render passes.
+// 
+// The strange underscore is a reference to my very first 3D game engine
 class OKO_Camera_ : public KObj_Oriented {
  public:
   static const std::string myClass;
@@ -290,6 +308,8 @@ class OKO_Camera_ : public KObj_Oriented {
   void parentTransform();
 };
 
+// Gravity, wind, ropes, springs, rockets, and mysterous attractors. All these
+// should be forces, as calculations should include acceleration.
 class OKO_Force : public KObj_Oriented {
  public:
 
@@ -334,6 +354,21 @@ class OKO_Force : public KObj_Oriented {
 
 namespace Physics {
 
+// Apply a force to an object, assuming mass is 1. The object's velocity and
+// rotational velocity would change. Imagine hitting a cube on the corner vs
+// a face center.
+//
+// Position determines where the force is applied, (0, 0, 0) being center of 
+// mass.
+//
+// Vector is the direction and magnitude of the force. Would cause rotation if
+// if's not pointed at the center of mass.
+void applyVelocity(glm::vec3 position, glm::vec3 vector);
+
+// Same as applyVelocity but the... nevermind just use the one above...
+//void applyForce(glm::vec3 position, glm::vec3 force);
+
+// Stores information about what happened on a collision.
 class CollisionInfo {
 
  public:
