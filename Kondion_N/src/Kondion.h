@@ -182,6 +182,8 @@ class KObj_Entity : public KObj_Renderable {
   // physics stuff
   glm::vec3 acceleration;  // total calculated acceleration
   uint16_t radius;  // radius of influence (farthest component)
+  // a 1kg 1m hollow shell is easier to turn than a 1kg 40m hollow shell
+  float radialMass;
   double accel;
 
   const std::string* getClass() {
@@ -363,10 +365,19 @@ namespace Physics {
 //
 // Vector is the direction and magnitude of the force. Would cause rotation if
 // if's not pointed at the center of mass.
-void applyVelocity(glm::vec3 position, glm::vec3 vector);
+void applyVelocity(KObj_Entity* ent, glm::vec3 position, glm::vec3 vector);
 
 // Same as applyVelocity but the... nevermind just use the one above...
-//void applyForce(glm::vec3 position, glm::vec3 force);
+// wait... actually this is more important.
+// Apply a force to an object, The object's velocity and rotational velocity
+// would change. Imagine hitting a cube on the corner vs a face center.
+//
+// Position determines where the force is applied, (0, 0, 0) being center of 
+// mass.
+//
+// Vector is the direction and magnitude of the force. Would cause rotation if
+// if's not pointed at the center of mass.
+void applyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force);
 
 // Stores information about what happened on a collision.
 class CollisionInfo {

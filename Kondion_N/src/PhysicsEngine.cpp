@@ -12,11 +12,24 @@ namespace Kondion {
 namespace Physics {
 
 // used for calculations
+// any physics function will never call another physics function
 glm::mat4 tmat4[2];
 glm::vec4 tvec4[2];
 glm::vec3 tvec3[3];
 
-// Collision between a cube and an infinite plane
+void applyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
+  // distance from center of mass	
+  float dist = glm::length(position);
+  // how much the force is pointed towards the center
+  float dot = 1 - glm::abs(glm::dot(glm::normalize(force), glm::normalize(position)));
+  // the sigmoid thing that calculates how much percent of energy goes into 
+  // angular stuff
+  float amt = dist / (ent->radialMass + dist) * dot;
+  
+  
+}
+
+// Detect collision between a cube and an infinite plane
 void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
                     Physics::CollisionInfo& ci) {
 
@@ -118,6 +131,8 @@ void PhysicsUpdate() {
 
   double timeleft;
   double steptime = Delta();
+  
+  float dot;
 
   // Loop through all objects for physics
   KObj_Entity* ent;
@@ -213,8 +228,8 @@ void PhysicsUpdate() {
                     
                     // Calculate normal force velocity
                     float elasticity = 0.5;
-                    Physics::tvec4[0].x = glm::dot(ci.normB, ent->velocity);
-                    ent->velocity -= (ci.normB * (Physics::tvec4[0].x * (elasticity + 1)));
+                    dot = glm::dot(ci.normB, ent->velocity);
+                    ent->velocity -= (ci.normB * (dot * (elasticity + 1)));
                     
                     //ent->velocity.x *= (1.0 - glm::abs(ci.normB.x));
                     //ent->velocity.y *= (1.0 - glm::abs(ci.normB.y));

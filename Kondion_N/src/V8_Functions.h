@@ -199,6 +199,7 @@ void Callback_KObj_Entity(const FunctionCallbackInfo<Value>& args) {
     printf("NEW: Entity\n");
     KObj_Entity* o = new KObj_Entity();
     o->physics = 1;
+    o->radialMass = 1;
     //o->material = 0;
     //o->components.push_back(new Component::CPN_Cube);
     o->jsObject = new Persistent<Object,
