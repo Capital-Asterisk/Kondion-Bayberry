@@ -18,15 +18,38 @@ glm::vec4 tvec4[2];
 glm::vec3 tvec3[3];
 
 void applyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
+  // magnitude of force
+  float mag = glm::length(force);
+  
   // distance from center of mass	
   float dist = glm::length(position);
   // how much the force is pointed towards the center
-  float dot = 1 - glm::abs(glm::dot(glm::normalize(force), glm::normalize(position)));
+  float dot = 1 - glm::abs(glm::dot(glm::normalize(force),
+      glm::normalize(position)));
   // the sigmoid thing that calculates how much percent of energy goes into 
   // angular stuff
-  float amt = dist / (ent->radialMass + dist) * dot;
+  float amt = (dist == 0.0f) ? 0.0f : dist / (ent->radialMass + dist) * dot;
   
-  
+  // amount of rotation
+  // sqrt(f/0.5i) = v
+  //float angVel = glm::sqrt((amt * mag * dist) / (0.5f * ent->radialMass)) / glm::pi<float>() * 2;
+  float angVel = (amt * mag * dist) / ent->radialMass / glm::pi<float>() * 2;
+  glm::quat bird = glm::angleAxis(angVel / 32, glm::cross(glm::normalize(position),
+      glm::normalize(force)));
+  //rotVelocity = glm::quat(glm::vec3(0.0, 0.0, 0.01));
+  //glm::rotate
+  printf("AMT: %f\n", amt);
+  printf("LIN-NRG: %4.2fJ LIN-SPD: %4.2fm/s\n",
+  0.5f * ent->mass * glm::pow(glm::length(ent->velocity), 2), glm::length(ent->velocity));
+  printf("ROT-NRG: %4.2fJ TAN-SPD: %4.2frad/s\n", 0.5f * ent->radialMass * glm::pow(glm::angle(ent->rotVelocity) * 32, 2), glm::angle(ent->rotVelocity) * 32);
+  if (amt != 0.0f) {
+    ent->rotVelocity *= bird;
+    //ent->rotVelocity = glm::normalize(ent->rotVelocity);
+  }
+  //ent->velocity.x += glm::sqrt(glm::abs(force.x) * (1 - amt)) / (ent->mass * 0.5f) * glm::sign(force.x)
+  //ent->velocity.y += glm::sqrt(glm::abs(force.y) * (1 - amt)) / (ent->mass * 0.5f) * glm::sign(force.y);
+  //ent->velocity.z += glm::sqrt(glm::abs(force.z) * (1 - amt)) / (ent->mass * 0.5f) * glm::sign(force.z);
+  ent->velocity += force / ent->mass;
 }
 
 // Detect collision between a cube and an infinite plane

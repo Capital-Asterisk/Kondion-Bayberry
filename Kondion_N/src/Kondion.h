@@ -182,6 +182,7 @@ class KObj_Entity : public KObj_Renderable {
   // physics stuff
   glm::vec3 acceleration;  // total calculated acceleration
   uint16_t radius;  // radius of influence (farthest component)
+  float mass;
   // a 1kg 1m hollow shell is easier to turn than a 1kg 40m hollow shell
   float radialMass;
   double accel;
