@@ -169,8 +169,8 @@ void KObj_Entity::updateA() {
     //velocity.y += 0.000004f;
     //rotVelocity *= glm::quat(glm::vec3(0.0, 0.0, 0.01));
     mass = 1.0f;
-    radialMass = mass * 1.5 * 1.5;
-    Physics::applyForce(this, glm::vec3(-9.0, 5.3, 2.6), glm::vec3(-1.0 * delta, 0.0, 0.0));
+    radialMass = mass;
+    Physics::applyForce(this, glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, 0.1 * delta, 0.0));
   }
 }
 

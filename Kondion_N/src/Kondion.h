@@ -397,6 +397,7 @@ class CollisionInfo {
   glm::vec3 normB;
 
   // Where the collisions happened
+  // relative to center of mass without rotation
   glm::vec3 spotA;
   glm::vec3 spotB;
 
@@ -598,9 +599,15 @@ float ValuePrev(uint16_t i);
 void DebugPrint();
 }
 
+//TODO: possibly move to its own header
+
 namespace Math {
 void transform3f(const glm::mat4& a, const glm::vec3& b);
 
+// Function that returns B if it is close enough to A by THRESHOLD (<=)
+inline float magnet(float a, float b, float c) {
+  return (glm::abs(a - b) <= c) ? b : a;
+}
 }
 
 namespace Resources {

@@ -16,11 +16,19 @@ namespace Kondion {
 
 namespace Math {
 
+//template<typename V>
 //const
+
 
 void transform3f(const glm::mat4x4& a, const glm::vec3& b) {
 
 }
+
+// Function that returns B if it is close enough to A by THRESHOLD (<=)
+//V magnet(const& ) {
+//inline float magnet(float a, float b, float c) {
+//  return (glm::abs(a - b) <= c) ? b : a;
+//}
 
 }
 

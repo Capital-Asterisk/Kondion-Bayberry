@@ -38,10 +38,10 @@ void applyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
       glm::normalize(force)));
   //rotVelocity = glm::quat(glm::vec3(0.0, 0.0, 0.01));
   //glm::rotate
-  printf("AMT: %f\n", amt);
-  printf("LIN-NRG: %4.2fJ LIN-SPD: %4.2fm/s\n",
-  0.5f * ent->mass * glm::pow(glm::length(ent->velocity), 2), glm::length(ent->velocity));
-  printf("ROT-NRG: %4.2fJ TAN-SPD: %4.2frad/s\n", 0.5f * ent->radialMass * glm::pow(glm::angle(ent->rotVelocity) * 32, 2), glm::angle(ent->rotVelocity) * 32);
+  //printf("AMT: %f\n", amt);
+  //printf("LIN-NRG: %4.2fJ LIN-SPD: %4.2fm/s\n",
+  //    0.5f * ent->mass * glm::pow(glm::length(ent->velocity), 2), glm::length(ent->velocity));
+  //printf("ROT-NRG: %4.2fJ TAN-SPD: %4.2frad/s\n", 0.5f * ent->radialMass * glm::pow(glm::angle(ent->rotVelocity) * 32, 2), glm::angle(ent->rotVelocity) * 32);
   if (amt != 0.0f) {
     ent->rotVelocity *= bird;
     //ent->rotVelocity = glm::normalize(ent->rotVelocity);
@@ -69,9 +69,10 @@ void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
     // Collision detected
     //a.parent->velocity.y = Kondion::Delta() * 9;
     ci.collided = true;
-    ci.normB.x = -b.offset[2][0];
-    ci.normB.y = -b.offset[2][1];
-    ci.normB.z = -b.offset[2][2];
+    ci.normB = -b.offset[2];
+    //ci.normB.x = -b.offset[2][0];
+    //ci.normB.y = -b.offset[2][1];
+    //ci.normB.z = -b.offset[2][2];
 
     //printf("NormB: (%f, %f, %f)\n", ci.normB.x, ci.normB.y, ci.normB.z);
 
@@ -102,6 +103,38 @@ void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
     //       + 2 * tvec3[2].z * -tvec3[0].x, tvec3[2].z);
 
     ci.sink = tvec3[0].x;
+    
+    // Calculate point of collision on cube
+    // 1. multiply B's normal [ci.normB] by A's inverse 3x3
+    // 2. do rounding thing
+    // 3. multiply back
+    
+    ci.spotA = ci.normB *
+            glm::mat3(a.parent->orientation * a.offset);
+    
+    //float zero = 0.01;
+    //if (glm::abs)
+    // if a number is close enough to zero, then set to zero.
+    ci.spotA.x = Math::magnet(ci.spotA.x, 0.0f, 0.01f);
+    ci.spotA.y = Math::magnet(ci.spotA.y, 0.0f, 0.01f);
+    ci.spotA.z = Math::magnet(ci.spotA.z, 0.0f, 0.01f);
+    
+    ci.spotA = -glm::sign(ci.spotA); // i didn't know this can be done
+    
+    //ci.spotA = ci.spotA * glm::mat3(a.parent->orientation * a.offset);
+    ci.spotA /= 2;
+    
+    printf("CORNER: %4.2f (%4.2f, %4.2f, %4.2f)\n",
+            glm::length(ci.spotA), ci.spotA.x, ci.spotA.y, ci.spotA.z);
+    // ||
+    // ||||
+    // |||||
+    // ||||||
+    // |||||||
+    // ||||||
+    // |||||
+    // ||||
+    // ||
 
   }
 }
@@ -245,14 +278,17 @@ void PhysicsUpdate() {
                     // TODO: the response I was trying to do previously but
                     // gived up for now
                   } else {
-                    ent->orientation[3].x -= ci.normB.x * ci.sink;
-                    ent->orientation[3].y -= ci.normB.y * ci.sink;
-                    ent->orientation[3].z -= ci.normB.z * ci.sink;
+                    ent->orientation[3].x += ci.normB.x * -ci.sink;
+                    ent->orientation[3].y += ci.normB.y * -ci.sink;
+                    ent->orientation[3].z += ci.normB.z * -ci.sink;
+                    
                     
                     // Calculate normal force velocity
                     float elasticity = 0.5;
-                    dot = glm::dot(ci.normB, ent->velocity);
-                    ent->velocity -= (ci.normB * (dot * (elasticity + 1)));
+                    dot = glm::abs(glm::dot(ci.normB, ent->velocity));
+                    printf("%f\n", dot);
+                    //ent->velocity -= (ci.normB * (dot * (elasticity + 1)));
+                    Physics::applyForce(ent, ci.spotA, ci.normB * (ent->mass * dot * (elasticity + 1)));
                     
                     //ent->velocity.x *= (1.0 - glm::abs(ci.normB.x));
                     //ent->velocity.y *= (1.0 - glm::abs(ci.normB.y));
