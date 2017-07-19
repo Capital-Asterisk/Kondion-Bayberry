@@ -17,7 +17,7 @@ glm::mat4 tmat4[2];
 glm::vec4 tvec4[2];
 glm::vec3 tvec3[3];
 
-void applyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
+void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
   // magnitude of force
   float mag = glm::length(force);
   
@@ -32,10 +32,11 @@ void applyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
   
   // amount of rotation
   // sqrt(f/0.5i) = v
-  //float angVel = glm::sqrt((amt * mag * dist) / (0.5f * ent->radialMass)) / glm::pi<float>() * 2;
+  // float angVel = glm::sqrt((amt * mag * dist) / (0.5f * ent->radialMass)) / glm::pi<float>() * 2;
   float angVel = (amt * mag * dist) / ent->radialMass / glm::pi<float>() * 2;
+  
   glm::quat bird = glm::angleAxis(angVel / 32, glm::cross(glm::normalize(position),
-      glm::normalize(force)));
+      glm::normalize(force)) * glm::mat3(ent->transform));
   //rotVelocity = glm::quat(glm::vec3(0.0, 0.0, 0.01));
   //glm::rotate
   //printf("AMT: %f\n", amt);
@@ -55,6 +56,8 @@ void applyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
 // Detect collision between a cube and an infinite plane
 void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
                     Physics::CollisionInfo& ci) {
+
+  //printf("PAR: %s\n", a.parent->name.c_str());
 
   tmat4[0] = glm::inverse(b.parent->orientation * b.offset);
   // multiply by transform and store result in temp4
@@ -124,8 +127,8 @@ void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
     //ci.spotA = ci.spotA * glm::mat3(a.parent->orientation * a.offset);
     ci.spotA /= 2;
     
-    printf("CORNER: %4.2f (%4.2f, %4.2f, %4.2f)\n",
-            glm::length(ci.spotA), ci.spotA.x, ci.spotA.y, ci.spotA.z);
+    //printf("CORNER: %4.2f (%4.2f, %4.2f, %4.2f)\n",
+    //        glm::length(ci.spotA), ci.spotA.x, ci.spotA.y, ci.spotA.z);
     // ||
     // ||||
     // |||||
@@ -238,7 +241,7 @@ void PhysicsUpdate() {
 
         for (size_t j = 0; j < KObj_Node::worldObject->terrain.size(); j++) {
           //printf(
-          //    "Terrain: %s\n",
+          //    "Terrain: %s, %s\n", ent->name.c_str(),
           //    KObj_Node::all[KObj_Node::worldObject->terrain[j]]->name.c_str());
           terrain =
               static_cast<KObj_Entity*>(KObj_Node::all[KObj_Node::worldObject
@@ -251,6 +254,10 @@ void PhysicsUpdate() {
 
               // Go test the collision
               ent->components[k]->testCollision(*terrain->components[l], ci);
+
+              //printf(
+              //    "Terrain: %u%s, %u%s\nEEE %f\n", k, ent->name.c_str(), l,
+              //    KObj_Node::all[KObj_Node::worldObject->terrain[j]]->name.c_str(), ci.sink);
 
               // Collision detected!
               if (ci.collided) {
@@ -286,9 +293,18 @@ void PhysicsUpdate() {
                     // Calculate normal force velocity
                     float elasticity = 0.5;
                     dot = glm::abs(glm::dot(ci.normB, ent->velocity));
-                    printf("%f\n", dot);
+                    //printf("%f\n", dot);
                     //ent->velocity -= (ci.normB * (dot * (elasticity + 1)));
-                    Physics::applyForce(ent, ci.spotA, ci.normB * (ent->mass * dot * (elasticity + 1)));
+                    ci.spotA = ci.spotA * glm::mat3(glm::inverse(ent->transform));
+                    //printf("SPOT: %4.2f (%4.2f, %4.2f, %4.2f)\n",
+                    //    glm::length(ci.spotA), ci.spotA.x, ci.spotA.y, ci.spotA.z);
+                    
+                    static_cast<KObj_Entity*>(KObj_Node::all[5])->orientation[3].x = ci.spotA.x + ent->orientation[3].x;
+                    static_cast<KObj_Entity*>(KObj_Node::all[5])->orientation[3].y = ci.spotA.y + ent->orientation[3].y;
+                    static_cast<KObj_Entity*>(KObj_Node::all[5])->orientation[3].z = ci.spotA.z + ent->orientation[3].z;
+                    
+                    //Physics::ApplyForce(ent, ci.spotA, ci.normB * (ent->mass * dot * (elasticity + 1)));
+                    Physics::ApplyForce(ent, ci.spotA, ci.normB);
                     
                     //ent->velocity.x *= (1.0 - glm::abs(ci.normB.x));
                     //ent->velocity.y *= (1.0 - glm::abs(ci.normB.y));

@@ -165,12 +165,14 @@ void KObj_Entity::updateA() {
   //  rotVelocity = glm::quat(glm::vec3(0.0, 0.0, 0.01));
   // TODO, add previous velocity, then use the acceleration equation from physics
   orientation = orientation * glm::toMat4(glm::mix(glm::quat(glm::vec3(0.0, 0.0, 0.0)), rotVelocity, float(delta) * 32));
+  
+  //rotVelocity = glm::mix(glm::quat(glm::vec3(0.0, 0.0, 0.0)), rotVelocity, 0.997f);
   if (physics != 0) {
     //velocity.y += 0.000004f;
     //rotVelocity *= glm::quat(glm::vec3(0.0, 0.0, 0.01));
     mass = 1.0f;
-    radialMass = mass;
-    Physics::applyForce(this, glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, 0.1 * delta, 0.0));
+    radialMass = 0.2f;
+    //Physics::applyForce(this, glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, 0.05 * delta, 0.0));
   }
 }
 
@@ -308,6 +310,7 @@ void GameLoop() {
 
     Input::Update();
     JS::UpdateInput();
+    
     //Input::DebugPrint();
 
     //player->offset = glm::translate(

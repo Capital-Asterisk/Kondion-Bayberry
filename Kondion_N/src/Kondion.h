@@ -366,7 +366,7 @@ namespace Physics {
 //
 // Vector is the direction and magnitude of the force. Would cause rotation if
 // if's not pointed at the center of mass.
-void applyVelocity(KObj_Entity* ent, glm::vec3 position, glm::vec3 vector);
+//void applyVelocity(KObj_Entity* ent, glm::vec3 position, glm::vec3 vector);
 
 // Same as applyVelocity but the... nevermind just use the one above...
 // wait... actually this is more important.
@@ -378,7 +378,7 @@ void applyVelocity(KObj_Entity* ent, glm::vec3 position, glm::vec3 vector);
 //
 // Vector is the direction and magnitude of the force. Would cause rotation if
 // if's not pointed at the center of mass.
-void applyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force);
+void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force);
 
 // Stores information about what happened on a collision.
 class CollisionInfo {

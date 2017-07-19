@@ -22,6 +22,34 @@
 namespace Kondion {
 namespace JS {
 
+// Connects to the Physics::applyForce thing
+// applyForce(x, y, z, x, y, z);
+void Callback_Entity_ApplyForce(
+    const FunctionCallbackInfo<v8::Value>& args) {
+    
+  // lazy TODO, do this some day
+  //if ((!(args[0]->IsFloat32Array() || args[0]->IsArray())))
+  //    || (!(args[1]->IsFloat32Array() || args[1]->IsArray())))
+  //  return;
+    
+  Local<Array> a = Local<Array>::Cast(args[0]);
+  Local<Array> b = Local<Array>::Cast(args[1]);
+  
+  KObj_Entity* pointer_this =
+      static_cast<KObj_Entity*>(Local<External>::Cast(
+          args.This()->GetInternalField(0))->Value());
+  
+  Physics::ApplyForce(pointer_this, glm::vec3(
+      a->Get(0)->NumberValue(),
+      a->Get(1)->NumberValue(),
+      a->Get(2)->NumberValue()), glm::vec3(
+      b->Get(0)->NumberValue(),
+      b->Get(1)->NumberValue(),
+      b->Get(2)->NumberValue()));
+  
+  
+}
+
 void Callback_Entity_Accelerate(
     const FunctionCallbackInfo<v8::Value>& args) {
   if (args.IsConstructCall() || args.Length() == 0)
@@ -34,15 +62,13 @@ void Callback_Entity_Accelerate(
   KObj_Entity* pointer_this =
       static_cast<KObj_Entity*>(Local<External>::Cast(
           args.This()->GetInternalField(0))->Value());
+          
+  //Physics::applyForce(pointer_this, glm::vec3(a->Get(0)->NumberValue(), 0.0,
+  //        a->Get(2)->NumberValue()), glm::vec3(0.0f, -0.004f, 0.0f));
   pointer_this->acceleration.x += a->Get(0)->NumberValue();
   pointer_this->acceleration.y += a->Get(1)->NumberValue();
   pointer_this->acceleration.z += a->Get(2)->NumberValue();
-  //printf("E\n");
-  //const float* b = glm::value_ptr(pointer_this->offset);
-  //b[12] = a->Get(0)->NumberValue();
-  //b[13] = a->Get(1)->NumberValue();
-  //b[14] = a->Get(2)->NumberValue();
-  //pointer_this->transform;
+
 }
 
 void Callback_Entity_AddComponent(const FunctionCallbackInfo<Value>& args) {
@@ -59,7 +85,7 @@ void Callback_Entity_AddComponent(const FunctionCallbackInfo<Value>& args) {
       args.This()->GetInternalField(0))->Value());
   KComponent* pointer_arg0 = static_cast<KComponent*>(Local<External>::Cast(
       Local<Object>::Cast(args[0])->GetInternalField(0))->Value());
-
+  pointer_arg0->parent = pointer_this;
   pointer_this->components.push_back(pointer_arg0);
 }
 

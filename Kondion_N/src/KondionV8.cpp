@@ -475,12 +475,12 @@ void Setup() {
       FunctionTemplate::New(isolate, Callback_Entity_SetMaterial));
       
   // Physics stuff
-  kobj_entity->PrototypeTemplate()->Set(
-      String::NewFromUtf8(isolate, "thrust"),
-      FunctionTemplate::New(isolate, Callback_Kdion_Blank));
+  //kobj_entity->PrototypeTemplate()->Set(
+  //    String::NewFromUtf8(isolate, "thrust"),
+  //    FunctionTemplate::New(isolate, Callback_Kdion_Blank));
   kobj_entity->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "thrustN"),
-      FunctionTemplate::New(isolate, Callback_Kdion_Blank));
+      FunctionTemplate::New(isolate, Callback_Entity_ApplyForce));
   kobj_entity->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "accel"),
       FunctionTemplate::New(isolate, Callback_Entity_Accelerate));

@@ -66,7 +66,7 @@ kdion.initialize(function() {
   //left.setParent(e);
   mat4.fromTranslation(tm, [-1.0, 1.0, 0.0]);
   cubeB.setMatrix(tm);
-  e.addComponent(cubeB);
+  //e.addComponent(cubeB);
   
   var top = new KObj_Entity();
   top.translate(1.0, 2.0, 0.0);
@@ -74,6 +74,17 @@ kdion.initialize(function() {
   top.addComponent(cubeC);
   top.setParent(e);
   top.setMaterial(ripmat);
+  
+  var debug = new KObj_Entity();
+  var cubeD = new KCompnent("cube");
+  mat4.fromScaling(tm, vec3.fromValues(0.2, 0.2, 0.2)); 
+  cubeD.setMatrix(tm);
+  debug.setName("Debug");
+  debug.addComponent(cubeD);
+  debug.setMaterial(ripmat);
+  debug.setParent(kdion.World);
+  debug.translate(-4, 5, 0);
+  debug.physLevel(0);
   
   kdion.queueLoad({textures: ["tiles_diff", "tiles_norm"], materials: ["test", "ground"]}, 2);
   kdion.camera = camera;
@@ -147,7 +158,14 @@ kdion.globalUpdate(function() {
   // Now multiply by input and speed
   vec3.scale(foo, foo, -kdion.input["MOVE_X"] * 30);
   vec3.scale(bar, bar, -kdion.input["MOVE_Y"] * 30);
-  
+  //kdion.log(kdion.input["DEBUGA"]);
+  // Press K to spaz
+  if (kdion.input["DEBUGA"])
+    kdion.e.thrustN([
+          Math.random() * 2.0 - 1.0,
+          Math.random() * 2.0 - 1.0,
+          Math.random() * 2.0 - 1.0],
+          [0.0, 0.2, 0.0]);
   // add foo and bar, put result in foo
   vec3.add(foo, foo, bar);
   //kdion.log(foo[0] + " " + foo[1] + " " + foo[2]);
