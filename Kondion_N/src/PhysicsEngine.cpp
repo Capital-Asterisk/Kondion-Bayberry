@@ -21,6 +21,9 @@ void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
   // magnitude of force
   float mag = glm::length(force);
   
+  if (mag == 0 || glm::isnan(mag))
+    return;
+  
   // distance from center of mass	
   float dist = glm::length(position);
   // how much the force is pointed towards the center
@@ -255,15 +258,8 @@ void PhysicsUpdate() {
               // Go test the collision
               ent->components[k]->testCollision(*terrain->components[l], ci);
 
-              //printf(
-              //    "Terrain: %u%s, %u%s\nEEE %f\n", k, ent->name.c_str(), l,
-              //    KObj_Node::all[KObj_Node::worldObject->terrain[j]]->name.c_str(), ci.sink);
-
               // Collision detected!
               if (ci.collided) {
-
-                //printf("Steptime: %f EEE: %i\n", steptime, steptime >= ci.collideTime);
-                //printf("Component: %i Collided, sink: %f\n", k, ci.sink);
 
                 if (true || steptime >= ci.collideTime - 0.001) {
 
@@ -290,21 +286,47 @@ void PhysicsUpdate() {
                     ent->orientation[3].z += ci.normB.z * -ci.sink;
                     
                     
-                    // Calculate normal force velocity
-                    float elasticity = 0.5;
-                    dot = glm::abs(glm::dot(ci.normB, ent->velocity));
                     //printf("%f\n", dot);
                     //ent->velocity -= (ci.normB * (dot * (elasticity + 1)));
                     ci.spotA = ci.spotA * glm::mat3(glm::inverse(ent->transform));
                     //printf("SPOT: %4.2f (%4.2f, %4.2f, %4.2f)\n",
                     //    glm::length(ci.spotA), ci.spotA.x, ci.spotA.y, ci.spotA.z);
                     
-                    static_cast<KObj_Entity*>(KObj_Node::all[5])->orientation[3].x = ci.spotA.x + ent->orientation[3].x;
-                    static_cast<KObj_Entity*>(KObj_Node::all[5])->orientation[3].y = ci.spotA.y + ent->orientation[3].y;
-                    static_cast<KObj_Entity*>(KObj_Node::all[5])->orientation[3].z = ci.spotA.z + ent->orientation[3].z;
+                    // Move the debug object to impact position
+                    static_cast<KObj_Entity*>(KObj_Node::all[5])
+                        ->orientation[3].x = ci.spotA.x + ent->orientation[3].x;
+                    static_cast<KObj_Entity*>(KObj_Node::all[5])
+                        ->orientation[3].y = ci.spotA.y + ent->orientation[3].y;
+                    static_cast<KObj_Entity*>(KObj_Node::all[5])
+                        ->orientation[3].z = ci.spotA.z + ent->orientation[3].z;
                     
-                    //Physics::ApplyForce(ent, ci.spotA, ci.normB * (ent->mass * dot * (elasticity + 1)));
-                    Physics::ApplyForce(ent, ci.spotA, ci.normB);
+                    // Calculate normal force velocity
+                    float elasticity = 0.0;
+                    
+                    // Linear velocity directed towards the normal
+                    float linVel = glm::abs(glm::dot(ci.normB, ent->velocity));
+                    //dot = 1.0;
+                    
+                    //float tanVel = glm::abs(glm::dot(ci.normB, glm::cross(
+                    //        glm::normalize(ci.spotA),
+                    //        glm::normalize(ent->rotVelocity)))
+                    //        * (glm::angle(ent->rotVelocity) * 32.0f)
+                    //        * glm::length(ci.spotA) * ent->radialMass);
+                    
+                    // Tangental velocity directed towards the normal
+                    float tanVel = glm::max(-glm::dot(ci.normB, glm::cross(
+                            glm::normalize(glm::axis(ent->rotVelocity))
+                            * glm::angle(ent->rotVelocity) * 32.0f,
+                            glm::normalize(ci.spotA))
+                            * glm::length(ci.spotA)), 0.0f);
+                    
+                    glm::vec3 force = ci.normB * ((linVel * ent->mass) * (elasticity + 1));
+                    
+                    printf("F: %4.2f %4.2f (%4.2f, %4.2f, %4.2f)\n",
+                            tanVel, glm::length(force), force.x, force.y, force.z);
+                    
+                    Physics::ApplyForce(ent, ci.spotA, force);
+                    //Physics::ApplyForce(ent, ci.spotA, ci.normB);
                     
                     //ent->velocity.x *= (1.0 - glm::abs(ci.normB.x));
                     //ent->velocity.y *= (1.0 - glm::abs(ci.normB.y));

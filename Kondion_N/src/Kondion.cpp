@@ -161,18 +161,12 @@ void KObj_Oriented::parentTransform() {
 }
 
 void KObj_Entity::updateA() {
-  //if (this->physics != 0)
-  //  rotVelocity = glm::quat(glm::vec3(0.0, 0.0, 0.01));
-  // TODO, add previous velocity, then use the acceleration equation from physics
-  orientation = orientation * glm::toMat4(glm::mix(glm::quat(glm::vec3(0.0, 0.0, 0.0)), rotVelocity, float(delta) * 32));
-  
-  //rotVelocity = glm::mix(glm::quat(glm::vec3(0.0, 0.0, 0.0)), rotVelocity, 0.997f);
+  orientation = orientation * glm::toMat4(glm::mix(
+          glm::quat(glm::vec3(0.0, 0.0, 0.0)),
+          rotVelocity, float(delta) * 32));
   if (physics != 0) {
-    //velocity.y += 0.000004f;
-    //rotVelocity *= glm::quat(glm::vec3(0.0, 0.0, 0.01));
     mass = 1.0f;
-    radialMass = 0.2f;
-    //Physics::applyForce(this, glm::vec3(-1.0, 0.0, 0.0), glm::vec3(0.0, 0.05 * delta, 0.0));
+    radialMass = mass / 12.0f; // moment of inertia for a 1x1 cube
   }
 }
 
