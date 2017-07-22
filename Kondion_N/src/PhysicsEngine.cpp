@@ -38,7 +38,7 @@ void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
   // float angVel = glm::sqrt((amt * mag * dist) / (0.5f * ent->radialMass)) / glm::pi<float>() * 2;
   float angVel = (amt * mag * dist) / ent->radialMass / glm::pi<float>() * 2;
   
-  glm::quat bird = glm::angleAxis(angVel / 32, glm::cross(glm::normalize(position),
+  glm::quat bird = glm::angleAxis(angVel / 32.0f, glm::cross(glm::normalize(position),
       glm::normalize(force)) * glm::mat3(ent->transform));
   //rotVelocity = glm::quat(glm::vec3(0.0, 0.0, 0.01));
   //glm::rotate
@@ -311,16 +311,16 @@ void PhysicsUpdate() {
                     //        glm::normalize(ci.spotA),
                     //        glm::normalize(ent->rotVelocity)))
                     //        * (glm::angle(ent->rotVelocity) * 32.0f)
-                    //        * glm::length(ci.spotA) * ent->radialMass);
+                    //        * glm::length(ci.spotA) * ent->radialMass);e
                     
                     // Tangental velocity directed towards the normal
-                    float tanVel = glm::max(-glm::dot(ci.normB, glm::cross(
-                            glm::normalize(glm::axis(ent->rotVelocity))
-                            * glm::angle(ent->rotVelocity) * 32.0f,
-                            glm::normalize(ci.spotA))
-                            * glm::length(ci.spotA)), 0.0f);
                     
-                    glm::vec3 force = ci.normB * ((linVel * ent->mass) * (elasticity + 1));
+                    float tanVel = -glm::dot(ci.normB, glm::cross(
+                            glm::normalize(glm::axis(ent->rotVelocity)),
+                            glm::normalize(ci.spotA)) * glm::angle(ent->rotVelocity) * 32.0f
+                            * glm::length(ci.spotA) * (1 - glm::abs(glm::dot(glm::normalize(glm::axis(ent->rotVelocity)), glm::normalize(ci.spotA)))));
+                    
+                    glm::vec3 force = ci.normB * ((linVel * ent->mass + tanVel * ent->radialMass) * (elasticity + 1));
                     
                     printf("F: %4.2f %4.2f (%4.2f, %4.2f, %4.2f)\n",
                             tanVel, glm::length(force), force.x, force.y, force.z);

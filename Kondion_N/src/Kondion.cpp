@@ -161,6 +161,8 @@ void KObj_Oriented::parentTransform() {
 }
 
 void KObj_Entity::updateA() {
+
+  rotVelocity = glm::normalize(rotVelocity);
   orientation = orientation * glm::toMat4(glm::mix(
           glm::quat(glm::vec3(0.0, 0.0, 0.0)),
           rotVelocity, float(delta) * 32));
