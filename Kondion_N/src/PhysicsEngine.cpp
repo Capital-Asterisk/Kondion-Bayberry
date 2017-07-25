@@ -36,7 +36,7 @@ void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
   // amount of rotation
   // sqrt(f/0.5i) = v
   // float angVel = glm::sqrt((amt * mag * dist) / (0.5f * ent->radialMass)) / glm::pi<float>() * 2;
-  float angVel = (amt * mag * dist) / ent->radialMass / glm::pi<float>() * 2;
+  float angVel = (amt * mag) / ent->radialMass / glm::pi<float>() * 2;
   
   glm::quat bird = glm::angleAxis(angVel / 32.0f, glm::cross(glm::normalize(position),
       glm::normalize(force)) * glm::mat3(ent->transform));
@@ -115,8 +115,8 @@ void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
     // 2. do rounding thing
     // 3. multiply back
     
-    ci.spotA = ci.normB *
-            glm::mat3(a.parent->orientation * a.offset);
+    ci.spotA = glm::vec4(ci.normB *
+            glm::mat3(a.parent->orientation), 1.0f);
     
     //float zero = 0.01;
     //if (glm::abs)
@@ -129,6 +129,10 @@ void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
     
     //ci.spotA = ci.spotA * glm::mat3(a.parent->orientation * a.offset);
     ci.spotA /= 2;
+    
+    ci.spotA += glm::vec3(a.offset[3]);
+    
+    ci.spotA = ci.spotA * glm::inverse(glm::mat3(a.parent->transform));
     
     //printf("CORNER: %4.2f (%4.2f, %4.2f, %4.2f)\n",
     //        glm::length(ci.spotA), ci.spotA.x, ci.spotA.y, ci.spotA.z);
@@ -288,7 +292,6 @@ void PhysicsUpdate() {
                     
                     //printf("%f\n", dot);
                     //ent->velocity -= (ci.normB * (dot * (elasticity + 1)));
-                    ci.spotA = ci.spotA * glm::mat3(glm::inverse(ent->transform));
                     //printf("SPOT: %4.2f (%4.2f, %4.2f, %4.2f)\n",
                     //    glm::length(ci.spotA), ci.spotA.x, ci.spotA.y, ci.spotA.z);
                     
@@ -301,7 +304,7 @@ void PhysicsUpdate() {
                         ->orientation[3].z = ci.spotA.z + ent->orientation[3].z;
                     
                     // Calculate normal force velocity
-                    float elasticity = 0.0;
+                    float elasticity = 0.1f;
                     
                     // Linear velocity directed towards the normal
                     float linVel = glm::abs(glm::dot(ci.normB, ent->velocity));
@@ -315,15 +318,17 @@ void PhysicsUpdate() {
                     
                     // Tangental velocity directed towards the normal
                     
-                    float tanVel = -glm::dot(ci.normB, glm::cross(
+                    float tanVel = glm::max(-glm::dot(ci.normB, glm::cross(
                             glm::normalize(glm::axis(ent->rotVelocity)),
                             glm::normalize(ci.spotA)) * glm::angle(ent->rotVelocity) * 32.0f
-                            * glm::length(ci.spotA) * (1 - glm::abs(glm::dot(glm::normalize(glm::axis(ent->rotVelocity)), glm::normalize(ci.spotA)))));
+                            * glm::length(ci.spotA) * (1 - glm::abs(glm::dot(glm::normalize(glm::axis(ent->rotVelocity)), glm::normalize(ci.spotA))))), 0.0f);
+                    
+                    //printf("tanvel: %f\n", tanVel);
                     
                     glm::vec3 force = ci.normB * ((linVel * ent->mass + tanVel * ent->radialMass) * (elasticity + 1));
                     
-                    printf("F: %4.2f %4.2f (%4.2f, %4.2f, %4.2f)\n",
-                            tanVel, glm::length(force), force.x, force.y, force.z);
+                    //printf("F: %4.2f %4.2f (%4.2f, %4.2f, %4.2f)\n",
+                    //        tanVel, glm::length(force), force.x, force.y, force.z);
                     
                     Physics::ApplyForce(ent, ci.spotA, force);
                     //Physics::ApplyForce(ent, ci.spotA, ci.normB);

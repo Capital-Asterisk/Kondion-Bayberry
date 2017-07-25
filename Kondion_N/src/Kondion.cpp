@@ -168,7 +168,7 @@ void KObj_Entity::updateA() {
           rotVelocity, float(delta) * 32));
   if (physics != 0) {
     mass = 1.0f;
-    radialMass = mass / 12.0f; // moment of inertia for a 1x1 cube
+    radialMass = mass / 12.0f * 4.0f; // moment of inertia for a 1x1 cube
   }
 }
 

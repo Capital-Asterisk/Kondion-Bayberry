@@ -66,7 +66,7 @@ kdion.initialize(function() {
   //left.setParent(e);
   mat4.fromTranslation(tm, [-1.0, 1.0, 0.0]);
   cubeB.setMatrix(tm);
-  //e.addComponent(cubeB);
+  e.addComponent(cubeB);
   
   var top = new KObj_Entity();
   top.translate(1.0, 2.0, 0.0);
