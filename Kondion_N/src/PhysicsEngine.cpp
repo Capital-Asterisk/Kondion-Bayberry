@@ -42,7 +42,7 @@ void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
       glm::normalize(force)) * glm::mat3(ent->transform));
   //rotVelocity = glm::quat(glm::vec3(0.0, 0.0, 0.01));
   //glm::rotate
-  printf("AMT: %f\n", amt);
+  //printf("AMT: %f\n", amt);
   //printf("LIN-NRG: %4.2fJ LIN-SPD: %4.2fm/s\n",
   //    0.5f * ent->mass * glm::pow(glm::length(ent->velocity), 2), glm::length(ent->velocity));
   //printf("ROT-NRG: %4.2fJ TAN-SPD: %4.2frad/s\n", 0.5f * ent->radialMass * glm::pow(glm::angle(ent->rotVelocity) * 32, 2), glm::angle(ent->rotVelocity) * 32);
@@ -54,6 +54,7 @@ void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
   //ent->velocity.y += glm::sqrt(glm::abs(force.y) * (1 - amt)) / (ent->mass * 0.5f) * glm::sign(force.y);
   //ent->velocity.z += glm::sqrt(glm::abs(force.z) * (1 - amt)) / (ent->mass * 0.5f) * glm::sign(force.z);
   ent->velocity += force / ent->mass * (1.0f - amt);
+  
 }
 
 // Detect collision between a cube and an infinite plane
@@ -304,7 +305,7 @@ void PhysicsUpdate() {
                         ->orientation[3].z = ci.spotA.z + ent->orientation[3].z;
                     
                     // Calculate normal force velocity
-                    float elasticity = 1.0f;
+                    float elasticity = 0.0f;
                     
                     // Linear velocity directed towards the normal
                     float linVel = glm::abs(glm::dot(ci.normB, ent->velocity));

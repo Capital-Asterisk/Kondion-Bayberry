@@ -6,6 +6,18 @@
 var matman;
 var ripmat;
 
+function quickMakeACube(name, pos, velo) {
+  var ent = new KObj_Entity();
+  var woot = new KCompnent("cube");
+  ent.setName(name);
+  ent.addComponent(woot);
+  ent.setMaterial(ripmat);
+  ent.translate(pos[0], pos[1], pos[2]);
+  ent.setParent(kdion.World);
+  ent.thrustN([0.0, 0.05, 0.0], velo);
+  return ent;
+}
+
 kdion.initialize(function() {
   
   OKO_Camera_ = OKO_Camera;
@@ -124,7 +136,7 @@ kdion.globalUpdate(function() {
     //kdion.camera.setPosition(vec3.add(bar, unit));
     // raise foo, doesn't actually raise the cube, only this vector.
     // this makes the camera move towards a point above the cube
-    foo[1] += 2.6;
+    foo[1] += 4.6;
     // get a direction between the two objects
     var unit = vec3.sub(vec3.fromValues(0, 0, 0), bar, foo);
     unit[1] = 0;
@@ -172,8 +184,16 @@ kdion.globalUpdate(function() {
   
   // Then translate, change this to something else soon
   kdion.e.accel([foo[0], 0.0, foo[2]]);
-  //kdion.log(kdion.camera);
-  //kdion.camera.translate(0.0, 0.01, kdion.input["MOVE_Y"] * 0.03);
+  
+  // CUBE SPAM!
+  if (kdion.input["DEBUGB"]) {
+    quickMakeACube("asdf" + Math.random(), [0.0, 2.0, 5.0], [
+          Math.random() * 24.0 - 12.0,
+          -Math.random() * 10.0,
+          Math.random() * 24.0 - 12.0]);
+  }
+  
+  
   
 });
 
