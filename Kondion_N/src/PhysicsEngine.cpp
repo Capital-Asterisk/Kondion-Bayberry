@@ -286,60 +286,54 @@ void PhysicsUpdate() {
                     // TODO: the response I was trying to do previously but
                     // gived up for now
                   } else {
+                  
+                    // Calculate normal force velocity and other stuff
+                  
                     ent->orientation[3].x += ci.normB.x * -ci.sink;
                     ent->orientation[3].y += ci.normB.y * -ci.sink;
                     ent->orientation[3].z += ci.normB.z * -ci.sink;
                     
+                    float elasticity = 0.0f;
+                    float frictionMew = 0.7f;
                     
-                    //printf("%f\n", dot);
-                    //ent->velocity -= (ci.normB * (dot * (elasticity + 1)));
-                    //printf("SPOT: %4.2f (%4.2f, %4.2f, %4.2f)\n",
-                    //    glm::length(ci.spotA), ci.spotA.x, ci.spotA.y, ci.spotA.z);
+                    // Tangental velocity of the spot
+                    glm::vec3 tanVel = glm::cross(
+                            glm::normalize(glm::axis(ent->rotVelocity)),
+                            glm::normalize(ci.spotA)) * glm::angle(ent->rotVelocity) * 32.0f
+                            * glm::length(ci.spotA) * (1 - glm::abs(glm::dot(glm::normalize(glm::axis(ent->rotVelocity)), glm::normalize(ci.spotA))));
+                    
+                    // Tangental velocity directed towards normal
+                    // = glm::max(-glm::dot(ci.normB, tanVel), 0.0f);
+                    
+                    glm::vec3 normalForce = ci.normB * ((-glm::dot(ci.normB, ent->velocity) * ent->mass + glm::max(-glm::dot(ci.normB, tanVel), 0.0f) * ent->radialMass) * (elasticity + 1));
+                    
+                    glm::vec3 pointForce = ent->velocity * ent->mass;//tanVel * ent->radialMass;
+                    
+                    glm::vec3 frictionA = -pointForce + (ci.normB * glm::dot(ci.normB, pointForce));
+                    glm::vec3 frictionB = glm::normalize(frictionA) * glm::length(normalForce) * frictionMew;
+                    glm::vec3 frictionForce = frictionB * glm::min(1.0f, glm::length(frictionA - frictionB));
+                    
+                    // Limit friction force somehow
+                    
+                    if (glm::length(frictionA) == 0)
+                      frictionForce = glm::vec3(0.0f);
+                    
+                    printf("FF: %4.2f (%4.2f, %4.2f, %4.2f)\n",
+                      glm::length(frictionA), frictionA.x, frictionA.y, frictionA.z);
                     
                     // Move the debug object to impact position
                     static_cast<KObj_Entity*>(KObj_Node::all[5])
-                        ->orientation[3].x = ci.spotA.x + ent->orientation[3].x;
+                        ->orientation[3].x = ci.spotA.x + ent->orientation[3].x + frictionA.x;
                     static_cast<KObj_Entity*>(KObj_Node::all[5])
-                        ->orientation[3].y = ci.spotA.y + ent->orientation[3].y;
+                        ->orientation[3].y = ci.spotA.y + ent->orientation[3].y + frictionA.y;
                     static_cast<KObj_Entity*>(KObj_Node::all[5])
-                        ->orientation[3].z = ci.spotA.z + ent->orientation[3].z;
-                    
-                    // Calculate normal force velocity
-                    float elasticity = 0.0f;
-                    
-                    // Linear velocity directed towards the normal
-                    float linVel = glm::abs(glm::dot(ci.normB, ent->velocity));
-                    //dot = 1.0;
-                    
-                    //float tanVel = glm::abs(glm::dot(ci.normB, glm::cross(
-                    //        glm::normalize(ci.spotA),
-                    //        glm::normalize(ent->rotVelocity)))
-                    //        * (glm::angle(ent->rotVelocity) * 32.0f)
-                    //        * glm::length(ci.spotA) * ent->radialMass);e
-                    
-                    // Tangental velocity directed towards the normal
-                    
-                    float tanVel = glm::max(-glm::dot(ci.normB, glm::cross(
-                            glm::normalize(glm::axis(ent->rotVelocity)),
-                            glm::normalize(ci.spotA)) * glm::angle(ent->rotVelocity) * 32.0f
-                            * glm::length(ci.spotA) * (1 - glm::abs(glm::dot(glm::normalize(glm::axis(ent->rotVelocity)), glm::normalize(ci.spotA))))), 0.0f);
-                    
-                    //printf("tanvel: %f\n", tanVel);
-                    
-                    glm::vec3 force = ci.normB * ((linVel * ent->mass + tanVel * ent->radialMass) * (elasticity + 1));
+                        ->orientation[3].z = ci.spotA.z + ent->orientation[3].z + frictionA.z;
                     
                     //printf("F: %4.2f %4.2f (%4.2f, %4.2f, %4.2f)\n",
                     //        tanVel, glm::length(force), force.x, force.y, force.z);
                     
-                    Physics::ApplyForce(ent, ci.spotA, force);
+                    Physics::ApplyForce(ent, ci.spotA, normalForce + frictionForce);
                     //Physics::ApplyForce(ent, ci.spotA, ci.normB);
-                    
-                    //ent->velocity.x *= (1.0 - glm::abs(ci.normB.x));
-                    //ent->velocity.y *= (1.0 - glm::abs(ci.normB.y));
-                    //ent->velocity.z *= (1.0 - glm::abs(ci.normB.z));
-                    //ent->velocity.x += ci.normB.x * 20;
-                    //ent->velocity.y += ci.normB.y * 20;
-                    //ent->velocity.z += ci.normB.z * 20;
                   }
                 }
               }
@@ -365,3 +359,4 @@ void PhysicsUpdate() {
 }
 
 }
+

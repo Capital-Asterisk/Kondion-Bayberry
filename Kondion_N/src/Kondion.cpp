@@ -290,6 +290,8 @@ void GameLoop() {
     currentTime = glfwGetTime();
     delta = currentTime - lastTime;
     lastTime = currentTime;
+    
+    //delta *= 0.2f;
 
     KObj_Node::worldObject->sceneTime += delta;
 

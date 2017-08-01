@@ -174,10 +174,10 @@ kdion.globalUpdate(function() {
   // Press K to spaz
   if (kdion.input["DEBUGA"])
     kdion.e.thrustN([
-          Math.random() * 0.2 - 3.0,
-          Math.random() * 0.2 - 0.1,
-          Math.random() * 0.2 - 0.1],
-          [0.0, 0.1, 0.0]);
+          10.0,
+          Math.random() * 0.0 - 0.0,
+          Math.random() * 0.0 - 0.0],
+          [0.0, 0.5, 0.0]);
   // add foo and bar, put result in foo
   vec3.add(foo, foo, bar);
   //kdion.log(foo[0] + " " + foo[1] + " " + foo[2]);
