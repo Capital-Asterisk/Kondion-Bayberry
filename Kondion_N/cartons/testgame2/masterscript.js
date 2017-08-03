@@ -78,7 +78,7 @@ kdion.initialize(function() {
   //left.setParent(e);
   mat4.fromTranslation(tm, [-1.0, 1.0, 0.0]);
   cubeB.setMatrix(tm);
-  e.addComponent(cubeB);
+  //e.addComponent(cubeB);
   
   var top = new KObj_Entity();
   top.translate(1.0, 2.0, 0.0);
@@ -87,16 +87,27 @@ kdion.initialize(function() {
   top.setParent(e);
   top.setMaterial(ripmat);
   
-  var debug = new KObj_Entity();
-  var cubeD = new KCompnent("cube");
   mat4.fromScaling(tm, vec3.fromValues(0.2, 0.2, 0.2)); 
+  
+  var debugA = new KObj_Entity();
+  var cubeD = new KCompnent("cube");
   cubeD.setMatrix(tm);
-  debug.setName("Debug");
-  debug.addComponent(cubeD);
-  debug.setMaterial(ripmat);
-  debug.setParent(kdion.World);
-  debug.translate(-4, 5, 0);
-  debug.physLevel(0);
+  debugA.setName("DebugA");
+  debugA.addComponent(cubeD);
+  debugA.setMaterial(ripmat);
+  debugA.setParent(kdion.World);
+  debugA.translate(-4, 5, 0);
+  debugA.physLevel(0);
+  
+  var debugB = new KObj_Entity();
+  var cubeE = new KCompnent("cube");
+  cubeE.setMatrix(tm);
+  debugB.setName("DebugB");
+  debugB.addComponent(cubeE);
+  debugB.setMaterial(ripmat);
+  debugB.setParent(kdion.World);
+  debugB.translate(-4, 5, 0);
+  debugB.physLevel(0);
   
   kdion.queueLoad({textures: ["tiles_diff", "tiles_norm"], materials: ["test", "ground"]}, 2);
   kdion.camera = camera;
@@ -174,16 +185,16 @@ kdion.globalUpdate(function() {
   // Press K to spaz
   if (kdion.input["DEBUGA"])
     kdion.e.thrustN([
-          10.0,
+          20.0,
           Math.random() * 0.0 - 0.0,
           Math.random() * 0.0 - 0.0],
-          [0.0, 0.5, 0.0]);
+          [0.0, 0.1, 0.0]);
   // add foo and bar, put result in foo
   vec3.add(foo, foo, bar);
   //kdion.log(foo[0] + " " + foo[1] + " " + foo[2]);
   
   // Then translate, change this to something else soon
-  kdion.e.accel([foo[0], 0.0, foo[2]]);
+  kdion.e.thrustN([0.0, 0.0, 0.0], [foo[0] / 100.0, 0.0, foo[2] / 100.0]);
   
   // CUBE SPAM!
   if (kdion.input["DEBUGB"]) {
