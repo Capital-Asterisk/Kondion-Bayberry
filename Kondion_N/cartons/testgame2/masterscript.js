@@ -109,7 +109,8 @@ kdion.initialize(function() {
   debugB.translate(-4, 5, 0);
   debugB.physLevel(0);
   
-  kdion.queueLoad({textures: ["tiles_diff", "tiles_norm"], materials: ["test", "ground"]}, 2);
+  kdion.queueLoad({textures: ["tiles_diff", "tiles_norm"],
+                   materials: ["test", "ground"]}, 2);
   kdion.camera = camera;
   
   //kdion.log(mat4.identity);
@@ -185,10 +186,10 @@ kdion.globalUpdate(function() {
   // Press K to spaz
   if (kdion.input["DEBUGA"])
     kdion.e.thrustN([
-          20.0,
+          10.0,
           Math.random() * 0.0 - 0.0,
           Math.random() * 0.0 - 0.0],
-          [0.0, 0.1, 0.0]);
+          [0.0, 10.0, 0.0]);
   // add foo and bar, put result in foo
   vec3.add(foo, foo, bar);
   //kdion.log(foo[0] + " " + foo[1] + " " + foo[2]);
