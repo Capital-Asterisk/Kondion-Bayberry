@@ -167,7 +167,7 @@ void KObj_Entity::updateA() {
           glm::quat(glm::vec3(0.0, 0.0, 0.0)),
           rotVelocity, float(delta) * 32));
   if (physics != 0) {
-    mass = 1.0f;
+    mass = 0.7f;
     radialMass = mass / 12.0f; // moment of inertia for a 1x1 cube
   }
 }

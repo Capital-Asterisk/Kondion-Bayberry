@@ -34,7 +34,7 @@ void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
 
   // amount of rotation
   // sqrt(f/0.5i) = v
-  float angVel = (amt * mag) / ent->radialMass / glm::pi<float>() * 2;
+  float angVel = (amt * mag) / ent->radialMass / glm::pi<float>();
 
   glm::quat bird = glm::angleAxis(
       angVel * (1.0f - amt) / 32.0f,
@@ -275,7 +275,7 @@ void PhysicsUpdate() {
                     ent->orientation[3].z += ci.normB.z * -ci.sink;
 
                     float elasticity = 0.0f;
-                    float frictionMew = 0.5f;
+                    float frictionMew = 136.5f;
                     
                     // Temporary stuff, remove soon
                     glm::vec3 temp =
@@ -303,8 +303,7 @@ void PhysicsUpdate() {
                          (elasticity + 1));
 
                     // Force needed to stop the point
-                    glm::vec3 pointForce = ent->velocity * ent->mass
-                                           + tanVel * ent->radialMass * 3.1415f;
+                    glm::vec3 pointForce = ent->velocity + tanVel;
 
                     // Velocity flattened towards the normal
                     glm::vec3 frictionA =
@@ -331,7 +330,8 @@ void PhysicsUpdate() {
 
                     // Move the debug object(s) to something
 
-                    frictionB = frictionB * frictionMew / glm::length(normalForce);
+                    frictionB = -(tanVel - ent->velocity) +
+                        (ci.normB * glm::dot(ci.normB, (tanVel - ent->velocity)));
 
                     static_cast<KObj_Entity*>(KObj_Node::all[5])
                         ->orientation[3]
