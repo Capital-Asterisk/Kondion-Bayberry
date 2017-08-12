@@ -42,7 +42,7 @@ kdion.initialize(function() {
   flat.setMatrix(tm);
   mat4.identity(tm);
   mat4.rotateY(tm, tm, Math.PI / 4 * 4);
-  mat4.rotateX(tm, tm, Math.PI / 4 * 8);
+  mat4.rotateX(tm, tm, Math.PI / 4 * 9.7);
   wall.setMatrix(tm);
   mat4.identity(tm);
   mat4.rotateX(tm, tm, -Math.PI / 2);
@@ -78,7 +78,7 @@ kdion.initialize(function() {
   //left.setParent(e);
   mat4.fromTranslation(tm, [-1.0, 1.0, 0.0]);
   cubeB.setMatrix(tm);
-  //e.addComponent(cubeB);
+  e.addComponent(cubeB);
   
   var top = new KObj_Entity();
   top.translate(1.0, 2.0, 0.0);

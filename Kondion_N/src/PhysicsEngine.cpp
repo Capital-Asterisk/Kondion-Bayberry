@@ -274,8 +274,8 @@ void PhysicsUpdate() {
                     ent->orientation[3].y += ci.normB.y * -ci.sink;
                     ent->orientation[3].z += ci.normB.z * -ci.sink;
 
-                    float elasticity = 0.0f;
-                    float frictionMew = 136.5f;
+                    float elasticity = 0.2f;
+                    float frictionMew = 0.5f;
                     
                     // Temporary stuff, remove soon
                     glm::vec3 temp =
@@ -303,7 +303,10 @@ void PhysicsUpdate() {
                          (elasticity + 1));
 
                     // Force needed to stop the point
-                    glm::vec3 pointForce = ent->velocity + tanVel;
+                    glm::vec3 pointForce =
+                        glm::normalize(ent->velocity + tanVel)
+                        * glm::length(ent->velocity * ent->mass
+                                      + tanVel * ent->radialMass);
 
                     // Velocity flattened towards the normal
                     glm::vec3 frictionA =
