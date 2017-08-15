@@ -53,16 +53,21 @@ class GLRenderPass : public RenderPass {
 
 namespace Resources {
 
-class GL_Material : public KShader {
+class GL_Shader : public KShader {
  public:
   static GLuint vertId;
-  bool* locals;
+  //bool* locals;
   GLuint programId;
   GLuint fragId;
   GLint* uniformsLocations;
+  GLint* uniformsTextures;
   void Load(bool a);
-  void Utilize(Renderer::RenderPass* pass);
+  void Utilize(Renderer::RenderPass* pass, KTexture* textures);
   //void New(const std::string& src);
+  ~GL_Shader() {
+    delete[] uniformsLocations;
+    delete[] uniformsTextures;
+  }
 };
 
 }

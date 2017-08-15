@@ -39,7 +39,7 @@ struct KCurve;
 
 namespace Resources {
 class KShader;
-class KTextures;
+class KTexture;
 }
 
 namespace Physics {
@@ -625,12 +625,13 @@ class KShader {
   bool loaded;
   uint16_t id;
   uint16_t uniformCount;
+  uint16_t textureCount;
   std::string source, identifier;
   //GLuint vert;
   //GLuint frag;
 
   virtual void Load(bool a) = 0;
-  virtual void Utilize(Renderer::RenderPass* pass) = 0;
+  virtual void Utilize(Renderer::RenderPass* pass, KTexture* textures) = 0;
 
  protected:
   KShader() {

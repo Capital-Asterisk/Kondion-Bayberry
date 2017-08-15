@@ -16,11 +16,11 @@ namespace Kondion {
 
 namespace Resources {
 
-GLuint GL_Material::vertId;
+GLuint GL_Shader::vertId;
 
-void GL_Material::Load(bool a) {
+void GL_Shader::Load(bool a) {
   if (a) {
-    // Load image
+    // Load material
     if (loaded && internal)
       return;
     Raw* r = Resources::Get(source);
@@ -74,7 +74,7 @@ void GL_Material::Load(bool a) {
           glUniform1i(uniformsLocations[4 + i], i);
 
         glUniform1i(uniformsLocations[7], 3);
-        
+
         loaded = true;
 
       } else {
@@ -98,7 +98,7 @@ void GL_Material::Load(bool a) {
   }
 }
 
-void GL_Material::Utilize(Renderer::RenderPass* pass) {
+void GL_Shader::Utilize(Renderer::RenderPass* pass, KTexture* textures) {
   Renderer::GLRenderPass* p = static_cast<Renderer::GLRenderPass*>(pass);
   if (p->type == 0) {
     glUseProgram(programId);
@@ -106,13 +106,13 @@ void GL_Material::Utilize(Renderer::RenderPass* pass) {
     glUniform1i(uniformsLocations[1], Kondion::TimeMs());
     glUniform1f(uniformsLocations[2], KObj_Node::worldObject->sceneTime);
     glUniform1i(uniformsLocations[3], p->normalmode);
-
+    printf("COUNT: %u\n", textureCount);
   }
 }
 
 KShader* KShader::New(const std::string& name, const std::string& src) {
   printf("New KShader\n");
-  GL_Material* mat = new GL_Material;
+  GL_Shader* mat = new GL_Shader;
   mat->loaded = false;
   mat->identifier = name;
   mat->source = src;

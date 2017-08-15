@@ -136,7 +136,7 @@ void Setup() {
   GLuint defer_frag = CompileShader(GL_FRAGMENT_SHADER, baostring.str(),
                                     "Temporary Deferred shader (FRAG)");
 
-  Resources::GL_Material::vertId = monotex_vert;
+  Resources::GL_Shader::vertId = monotex_vert;
 
   temp_prog_monotex = glCreateProgram();
   glAttachShader(temp_prog_monotex, monotex_vert);
@@ -526,13 +526,13 @@ void GLRenderPass::render() {
     
     normalmode = true;
     for (uint16_t i = 0; i < Kondion::KMaterial::materials.size(); i ++) {
-      shader = Resources::GL_Material::shaders
+      shader = Resources::GL_Shader::shaders
                [Kondion::KMaterial::materials[i]->shader];
       if (shader->loaded) {
         //printf("Rendering: %u\n", i);
         shader->id = i;
-        static_cast<Resources::GL_Material*>(shader)
-            ->Utilize(this);
+        static_cast<Resources::GL_Shader*>(shader)
+            ->Utilize(this, NULL);
         RenderQuad(-width, -height);
       }
     }
@@ -540,11 +540,11 @@ void GLRenderPass::render() {
     glDrawBuffers(2, ducky + 5);
     normalmode = false;
     for (uint16_t i = 0; i < Kondion::KMaterial::materials.size(); i ++) {
-      shader = Resources::GL_Material::shaders
+      shader = Resources::GL_Shader::shaders
                [Kondion::KMaterial::materials[i]->shader];
       if (shader->loaded) {
-        static_cast<Resources::GL_Material*>(shader)
-            ->Utilize(this);
+        static_cast<Resources::GL_Shader*>(shader)
+            ->Utilize(this, NULL);
         RenderQuad(-width, -height);
       }
     }

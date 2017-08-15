@@ -684,6 +684,8 @@ std::string* ParseShader(std::string* in, Resources::KShader& mat) {
         String::NewFromUtf8(isolate, "result"));
     mat.uniformCount = value->ToObject()->Get(
         String::NewFromUtf8(isolate, "uniformCount"))->Int32Value();
+    mat.textureCount = Local<Array>::Cast(value->ToObject()->Get(
+        String::NewFromUtf8(isolate, "utexture")))->Length();
     if (final->IsString()) {
       // Tada!
       return new std::string(*String::Utf8Value(final));
