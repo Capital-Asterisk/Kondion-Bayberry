@@ -527,12 +527,12 @@ void GLRenderPass::render() {
     normalmode = true;
     for (uint16_t i = 0; i < Kondion::KMaterial::materials.size(); i ++) {
       shader = Resources::GL_Shader::shaders
-               [Kondion::KMaterial::materials[i]->shader];
+               [KMaterial::materials[i]->shader];
       if (shader->loaded) {
         //printf("Rendering: %u\n", i);
         shader->id = i;
         static_cast<Resources::GL_Shader*>(shader)
-            ->Utilize(this, NULL);
+            ->Utilize(this, KMaterial::materials[i]);
         RenderQuad(-width, -height);
       }
     }
@@ -541,10 +541,10 @@ void GLRenderPass::render() {
     normalmode = false;
     for (uint16_t i = 0; i < Kondion::KMaterial::materials.size(); i ++) {
       shader = Resources::GL_Shader::shaders
-               [Kondion::KMaterial::materials[i]->shader];
+               [KMaterial::materials[i]->shader];
       if (shader->loaded) {
         static_cast<Resources::GL_Shader*>(shader)
-            ->Utilize(this, NULL);
+            ->Utilize(this, KMaterial::materials[i]);
         RenderQuad(-width, -height);
       }
     }

@@ -51,10 +51,10 @@ void GL_Shader::Load(bool a) {
         glLinkProgram(programId);
         glUseProgram(programId);
 
-        printf("Location: %i\n", glGetUniformLocation(programId, "normalmode"));
-        printf("Uniform count: %u\n", uniformCount);
+        //printf("Location: %i\n", glGetUniformLocation(programId, "normalmode"));
+        //printf("Uniform count: %u\n", uniformCount);
 
-        uniformsLocations = new GLint[11 + uniformCount];
+        uniformsLocations = new GLint[10];
 
         uniformsLocations[0] = glGetUniformLocation(programId, "id");
         uniformsLocations[1] = glGetUniformLocation(programId, "mstime");
@@ -98,15 +98,24 @@ void GL_Shader::Load(bool a) {
   }
 }
 
-void GL_Shader::Utilize(Renderer::RenderPass* pass, KTexture* textures) {
+void GL_Shader::Utilize(Renderer::RenderPass* pass, KMaterial* material) {
+  // Cast renderpass to opengl one, becuase it likely is an opengl one
   Renderer::GLRenderPass* p = static_cast<Renderer::GLRenderPass*>(pass);
   if (p->type == 0) {
+    // use program, what else
     glUseProgram(programId);
+
+    // Set default uniforms
     glUniform1i(uniformsLocations[0], id);
     glUniform1i(uniformsLocations[1], Kondion::TimeMs());
     glUniform1f(uniformsLocations[2], KObj_Node::worldObject->sceneTime);
     glUniform1i(uniformsLocations[3], p->normalmode);
-    printf("COUNT: %u\n", textureCount);
+    printf("COUNT: %u\n", uniformCount);
+
+    // Set texure uniforms
+    for (uint16_t i = 0; i < textureCount; i ++) {
+      
+    }
   }
 }
 

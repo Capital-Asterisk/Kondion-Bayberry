@@ -286,6 +286,7 @@ kdion.materialParser = function(code) {
     
     stack = "";
     for (i = 0; i < final.uniforms.length; i ++) {
+      kdion.log("UNIFORM: " + final.uniforms[i]);
       stack += "uniform " + eggs[final.uniforms[i][0]] + " u" + i + ";\n";
     }
     

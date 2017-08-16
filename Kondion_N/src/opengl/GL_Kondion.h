@@ -60,9 +60,9 @@ class GL_Shader : public KShader {
   GLuint programId;
   GLuint fragId;
   GLint* uniformsLocations;
-  GLint* uniformsTextures;
+  
   void Load(bool a);
-  void Utilize(Renderer::RenderPass* pass, KTexture* textures);
+  void Utilize(Renderer::RenderPass* pass, KMaterial* material);
   //void New(const std::string& src);
   ~GL_Shader() {
     delete[] uniformsLocations;

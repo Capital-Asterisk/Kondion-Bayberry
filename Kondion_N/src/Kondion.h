@@ -621,17 +621,19 @@ class KShader {
   
   static KShader* New(const std::string& name, const std::string& src);
 
+  std::string source, identifier;
   bool internal;
   bool loaded;
   uint16_t id;
   uint16_t uniformCount;
   uint16_t textureCount;
-  std::string source, identifier;
+  uint16_t* uniformsTextures;
+  
   //GLuint vert;
   //GLuint frag;
 
   virtual void Load(bool a) = 0;
-  virtual void Utilize(Renderer::RenderPass* pass, KTexture* textures) = 0;
+  virtual void Utilize(Renderer::RenderPass* pass, KMaterial* material) = 0;
 
  protected:
   KShader() {

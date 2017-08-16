@@ -686,6 +686,14 @@ std::string* ParseShader(std::string* in, Resources::KShader& mat) {
         String::NewFromUtf8(isolate, "uniformCount"))->Int32Value();
     mat.textureCount = Local<Array>::Cast(value->ToObject()->Get(
         String::NewFromUtf8(isolate, "utexture")))->Length();
+    
+    mat.uniformsTextures = new uint16_t[mat.textureCount];
+    
+    for (uint16_t i = 0; i < mat.textureCount; i ++) {
+      mat.uniformsTextures[i] = Local<Array>::Cast(value->ToObject()->Get(
+        String::NewFromUtf8(isolate, "utexture")))->Get(i)->Int32Value();
+    }
+    
     if (final->IsString()) {
       // Tada!
       return new std::string(*String::Utf8Value(final));

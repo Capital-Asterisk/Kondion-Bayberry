@@ -101,7 +101,7 @@ void KObj_Node::setParent(KObj_Node* node) {
       return;
     }
   }
-  printf("parent has been set.\n");
+  //printf("parent has been set.\n");
   parent->children.push_back(this);
   depth = parent->depth + 1;
   // world related stuff
@@ -124,7 +124,7 @@ void KObj_Node::setParent(KObj_Node* node) {
 
     KObj::GKO_World* world = static_cast<KObj::GKO_World*>(top);
 
-    printf("Index: %i\n", index);
+    //printf("Index: %i\n", index);
     world->world.insert(world->world.begin() + index - 1, allIndex);
 
     if (entity) {
