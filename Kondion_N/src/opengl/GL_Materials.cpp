@@ -54,7 +54,7 @@ void GL_Shader::Load(bool a) {
         //printf("Location: %i\n", glGetUniformLocation(programId, "normalmode"));
         //printf("Uniform count: %u\n", uniformCount);
 
-        uniformsLocations = new GLint[10];
+        uniformsLocations = new GLint[16 + uniformCount];
 
         uniformsLocations[0] = glGetUniformLocation(programId, "id");
         uniformsLocations[1] = glGetUniformLocation(programId, "mstime");
@@ -69,6 +69,14 @@ void GL_Shader::Load(bool a) {
         uniformsLocations[7] = glGetUniformLocation(programId, "mapmals");
         uniformsLocations[8] = glGetUniformLocation(programId, "bright");
         uniformsLocations[9] = glGetUniformLocation(programId, "specs");
+
+        for (uint8_t i = 0; i < uniformCount; i ++) {
+          uniformsLocations[16 + i]
+            = glGetUniformLocation(programId,
+                                   ("u" + std::to_string(i)).c_str());
+          printf("[TWM] Uniform: %i %s\n", uniformsLocations[16 + i],
+                 uniforms[i].c_str());
+        }
 
         for (uint8_t i = 0; i < 5; i ++)
           glUniform1i(uniformsLocations[4 + i], i);
@@ -115,7 +123,7 @@ void GL_Shader::Utilize(Renderer::RenderPass* pass, KMaterial* material) {
 }
 
 KShader* KShader::New(const std::string& name, const std::string& src) {
-  printf("New KShader\n");
+  //printf("New KShader\n");
   GL_Shader* mat = new GL_Shader;
   mat->loaded = false;
   mat->identifier = name;

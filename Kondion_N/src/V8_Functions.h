@@ -99,7 +99,7 @@ void Callback_Component(const FunctionCallbackInfo<Value>& args) {
     }
     o->jsObject = new Persistent<Object,
         CopyablePersistentTraits<Object>>(isolate, args.This());
-    printf("NEW: kcomponent: %s\n", o->getClass()->c_str());
+    //printf("NEW: kcomponent: %s\n", o->getClass()->c_str());
     //switch (*String::Utf8Value(args[0]))
     //case "infplane":
     //  o = new Component::CPN_InfinitePlane;
@@ -118,12 +118,12 @@ void Callback_Material(const FunctionCallbackInfo<Value>& args) {
 
   if (args.IsConstructCall()) {
     std::string arg = std::string(*String::Utf8Value(args[0]));
-    printf("NEW: kmaterial: %s\n", arg.c_str());
+    //printf("NEW: kmaterial: %s\n", arg.c_str());
     KMaterial* o = new KMaterial;
     o->shader = -1;
     for (uint16_t i = 0; i < Resources::KShader::shaders.size(); i ++) {
       if (arg == Resources::KShader::shaders[i]->identifier) {
-        printf("Match: %s\n", Resources::KShader::shaders[i]->identifier.c_str());
+        //printf("Match: %s\n", Resources::KShader::shaders[i]->identifier.c_str());
         o->shader = i;
       }
     }
@@ -196,7 +196,7 @@ void Callback_Component_SetMatrix(const FunctionCallbackInfo<Value>& args) {
 void Callback_KObj_Entity(const FunctionCallbackInfo<Value>& args) {
   HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {
-    printf("NEW: Entity\n");
+    //printf("NEW: Entity\n");
     KObj_Entity* o = new KObj_Entity();
     o->physics = 1;
     o->mass = 1.0f;
@@ -286,7 +286,7 @@ void Callback_KObj_SetParent(const FunctionCallbackInfo<Value>& args) {
 void Callback_GKO_World(const FunctionCallbackInfo<Value>& args) {
   HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {
-    printf("NEW: World\n");
+    //printf("NEW: World\n");
     KObj::GKO_World* o = new KObj::GKO_World;
     //o->components.push_back(new Component::CPN_Cube);
     o->name = "World";
@@ -420,7 +420,7 @@ void Callback_Kdion_Log(const FunctionCallbackInfo<Value>& args) {
   if (args.Length() < 1)
     return;
   HandleScope handle_scope(isolate);
-  printf("JS Log: %s\n", *String::Utf8Value(args[0]));
+  printf("[JS Log] %s\n", *String::Utf8Value(args[0]));
 }
 
 

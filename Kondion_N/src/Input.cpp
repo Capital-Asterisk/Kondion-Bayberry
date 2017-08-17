@@ -158,8 +158,8 @@ void MouseLock(bool a) {
 
 void Setup() {
 
-  for (unsigned char i = 0; i < 15; i++) {
-    std::cout << "Controller " << int(i) << ": "
+  for (unsigned char i = 0; i < 4; i++) {
+    std::cout << "[KON] Controller " << int(i) << ": "
               << (glfwJoystickPresent(i) ? "EXISTS" : "NOPE") << "\n";
     if (glfwJoystickPresent(i)) {
       std::cout << "-- " << glfwGetJoystickName(i) << "\n";

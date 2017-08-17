@@ -70,10 +70,6 @@ KObj_Node::KObj_Node() {
   allIndex = all.size() - 1;
 }
 
-KObj_Node* KObj_Node::getParent() {
-  return parent;
-}
-
 void KObj_Node::setParent(KObj_Node* node) {
   // TODO loop parenting, changing parent
   if (node == this) {
@@ -97,11 +93,13 @@ void KObj_Node::setParent(KObj_Node* node) {
   for (uint16_t i = 0; i < parent->children.size(); i++) {
     if (parent->children[i] == NULL) {
       parent->children[i] = this;
+      myIndex = i;
       printf("parent has been set, the other way.\n");
       return;
     }
   }
   //printf("parent has been set.\n");
+  myIndex = parent->children.size();
   parent->children.push_back(this);
   depth = parent->depth + 1;
   // world related stuff

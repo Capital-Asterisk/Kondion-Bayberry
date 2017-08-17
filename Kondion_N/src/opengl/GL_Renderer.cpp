@@ -197,7 +197,7 @@ void Setup() {
 
   //delete [] interlevedDataC;
 
-  std::cout << "oh yeah, " << beef << "beef\n";
+  //std::cout << "oh yeah, " << beef << "beef\n";
 }
 
 // KLoader.java line 300?
@@ -218,7 +218,7 @@ GLuint CompileShader(GLenum type, const std::string& code,
   //printf("%s")
 
   glGetShaderInfoLog(a, b, &b, &d[0]);
-  printf("shader log: %s\n", &d[0]);
+  printf("[TWM] shader log: %s\n", &d[0]);
   if (c == 0) {
     printf("Error in compiling shader %u: %s\n", a, errorname.c_str());
     glDeleteShader(a);
@@ -349,7 +349,7 @@ GLint neat(GLuint* tex, uint16_t width, uint16_t height, GLint internal,
 }
 
 void GLRenderPass::consider(KObj_Renderable* a) {
-  printf("a: %s\n", a->name.c_str());
+  printf("[KGL] Considering: %s\n", a->name.c_str());
   // unable to multiply the two drawLayers and compare to zero. two positive unsigned ints can multiply to zero.
   if ((drawLayer != 0) && (a->drawLayer != 0)
       && ((drawLayer & a->drawLayer) == drawLayer)) {
@@ -391,7 +391,7 @@ void GLRenderPass::generate() {
   //GLint RGB =
 
   ids = new GLuint[12];
-  printf("RenderPass GENERATE\n");
+  printf("[KGL] RenderPass GENERATE\n");
   glGenFramebuffers(1, ids);
   glBindFramebuffer(GL_FRAMEBUFFER, *ids);
 
@@ -444,7 +444,7 @@ void GLRenderPass::generate() {
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT7, GL_TEXTURE_2D,
                          ids[9], 0);
 
-  printf("Framebuffer complete: %u\n",
+  printf("[KGL] Framebuffer complete: %u\n",
          glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 }
 

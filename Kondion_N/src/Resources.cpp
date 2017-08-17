@@ -61,7 +61,7 @@ std::vector<Carton *> Carton::cartons;
 
 void AddCarton(const std::string& path) {
 
-  printf("adding carton: %s\n", path.c_str());
+  //printf("adding carton: %s\n", path.c_str());
 
   // Create an empty carton resource identifier
   Carton* c = new Carton;
@@ -74,7 +74,7 @@ void AddCarton(const std::string& path) {
 
   // Check if the file exists
   if (st == 0) {
-    printf("carton exists\n");
+    //printf("carton exists\n");
     if (buf.st_mode & S_IFDIR) {  // all sources say '&'
 
       //printf("carton is folder\n");
@@ -106,7 +106,7 @@ void AddCarton(const std::string& path) {
       // Get all the keys in Graphics, these are texture names
       JS::ON::GetKeys(graphics, entry);
 
-      printf("Graphics: %i\n", graphics);
+      //printf("Graphics: %i\n", graphics);
 
       // Start registering textures
       for (uint16_t i = 0; i < entry.size(); i ++) {
@@ -118,9 +118,9 @@ void AddCarton(const std::string& path) {
         new KTexture(entry[i], c->id + ":" + elements[0], 0);
 
         // This is only for printing
-        for (uint8_t j = 0; j < elements.size(); j ++) {
-          printf("Param %s\n", elements[j].c_str());
-        }
+        //for (uint8_t j = 0; j < elements.size(); j ++) {
+        //  printf("Param %s\n", elements[j].c_str());
+        //}
 
         // The elements array is reused for the next texture entry
         elements.clear();
@@ -194,7 +194,7 @@ void Load(const std::string& name, uint8_t type) {
       if (KTexture::textures[i]->identifier == name) {
         //KTexture::loadMe.push_back(i);
         //printf("Texture is now queued for load: %s\n", name.c_str());
-        printf("Loading texture: %s\n", name.c_str());
+        //printf("Loading texture: %s\n", name.c_str());
         KTexture::textures[i]->Load(true);
         return;
       }
@@ -224,7 +224,7 @@ void Setup() {
   glEnable(GL_TEXTURE_2D);
   GLuint textureId;
   glGenTextures(1, &textureId);
-  std::cout << "Tex: " << textureId << "\n";
+  //std::cout << "Tex: " << textureId << "\n";
   glBindTexture(GL_TEXTURE_2D, textureId);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 32, 32, 0, GL_BGR, GL_UNSIGNED_BYTE,
                ktt2);
@@ -273,7 +273,7 @@ Raw* Get(const std::string& url) {
 
   // url is "carton:directory/directory/filename"
   // it shouldn't be nammed url.
-  printf("[RES]: Loading Resource: %s\n", url.c_str());
+  printf("[RES] Loading Resource: %s\n", url.c_str());
 
   // find the first occourance of ':'
   int found = url.find(':');
@@ -415,17 +415,18 @@ KTexture::KTexture(std::string name, std::string path, uint16_t trait) {
 
 void KTexture::Load(bool a) {
 
-  printf("Loading texture: %s, source: %s\n", identifier.c_str(), source.c_str());
+  printf("[RES] Loading texture: %s, source: %s\n", identifier.c_str(),
+         source.c_str());
 
   if (isLoaded) {
-    printf("Texture already loaded");
+    printf("[RES] Texture already loaded");
     return;
   }
 
   if (textureId == -1) {
     // Generate texture Id if not done so
     glGenTextures(1, &textureId);
-    printf("Generated new textureId: %i\n", textureId);
+    //printf("Generated new textureId: %i\n", textureId);
   }
 
   // bind it
@@ -438,7 +439,7 @@ void KTexture::Load(bool a) {
   int cmp;
   uint8_t* img;
   if (f->carton == CARTON_FOLDER) {
-    printf("Loading from file: %s\n", f->filepath.c_str());
+    //printf("Loading from file: %s\n", f->filepath.c_str());
     img = stbi_load(f->filepath.c_str(), &wid, &hei, &cmp, STBI_rgb_alpha);
     delete f;
   } else {
@@ -472,7 +473,7 @@ void KTexture::Load(bool a) {
   //delete f;
 
 
-  printf("Loaded texture: %s\n Dimensions: %ix%i", identifier.c_str(), wid, hei);
+  //printf("Loaded texture: %s\n Dimensions: %ix%i", identifier.c_str(), wid, hei);
 }
 
 void KTexture::Bind() {

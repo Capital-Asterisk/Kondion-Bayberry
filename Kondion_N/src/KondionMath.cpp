@@ -52,17 +52,68 @@ void printMatrix(const glm::mat4x4& a) {
 
 void printWorld() {
   // Print the world
-  printf("---- WORLD: %i objects\n", KObj::GKO_World::worldObject->treeSize);
-  for (uint16_t i = 0; i < KObj::GKO_World::worldObject->treeSize; i ++) {
-    KObj_Node* e = KObj_Node::all[KObj::GKO_World::worldObject->world[i]];
-    printf("%s(%i): %s[%i]\n", e->getClass()->c_str(), e->depth, e->name.c_str(), e->treeSize);
-  }
-  printf("---- ALL NODES: %i\n", KObj_Node::all.size());
-    for (uint16_t i = 0; i < KObj_Node::all.size(); i ++) {
-      KObj_Node* e = KObj_Node::all[i];
-      printf("%s(%u): %s[%u] par:%i\n", e->getClass()->c_str(), e->depth, e->name.c_str(), e->treeSize,
-             (e->getParent() == NULL) ? -1 : e->getParent()->allIndex);
+  //printf("---- WORLD: %i objects\n", KObj::GKO_World::worldObject->treeSize);
+  //for (uint16_t i = 0; i < KObj::GKO_World::worldObject->treeSize; i ++) {
+  //  KObj_Node* e = KObj_Node::all[KObj::GKO_World::worldObject->world[i]];
+  //  printf("%s(%i): %s[%i]\n", e->getClass()->c_str(), e->depth, e->name.c_str(), e->treeSize);
+  //}
+  //printf("---- ALL NODES: %i\n", KObj_Node::all.size());
+  //  for (uint16_t i = 0; i < KObj_Node::all.size(); i ++) {
+  //    KObj_Node* e = KObj_Node::all[i];
+  //    printf("%s(%u): %s[%u] par:%i\n", e->getClass()->c_str(), e->depth, e->name.c_str(), e->treeSize,
+  //           (e->getParent() == NULL) ? -1 : e->getParent()->allIndex);
+  //  }
+
+  // Print the tree of objects
+
+  printf("[KON] World: %u objects. %u nodes exist.\n",
+         KObj::GKO_World::worldObject->treeSize, KObj_Node::all.size());
+
+  const uint8_t stackmax = 8;
+  uint8_t i = 0;
+  KObj_Node* stack[stackmax]; // array of pointers
+  stack[0] = KObj::GKO_World::worldObject;
+  bool running = true;
+
+  // No recursives for me today
+  while (running) {
+    printf("%s%s(%i): %s\n", std::string(i + 1, '-').c_str(), stack[i]->getClass()->c_str(), stack[i]->depth, stack[i]->name.c_str());
+    if (stack[i]->children.size() != 0) {
+      // Current node has children, go into first child for next loop.
+      stack[i + 1] = stack[i]->children[0];
+      i ++;
+    } else if (stack[i]->getParent() != NULL) {
+      if (stack[i]->myIndex + 1 == stack[i]->getParent()->children.size()) {
+        // If last child
+        if (i == 1) {
+          // the end
+          running = false;
+        } else {
+          // keep going up until it's no longer last child.
+          while (running &&
+                  (stack[i]->myIndex + 1
+                    == stack[i]->getParent()->children.size())) {
+            i --;
+            // If "i" goes below 0, then stop
+            //printf("I: %u\n", i);
+            running = (i != uint8_t(-1));
+            if (!running) {
+              i = 1;
+            }
+          }
+        }
+      }
+
+      if (running)
+        stack[i] = stack[i]->getParent()->children[stack[i]->myIndex + 1];
+
+    } else {
+      // only happens if world is empty...
+      running = false;
     }
+  }
+
+  //delete[] stack;
 }
 
 }

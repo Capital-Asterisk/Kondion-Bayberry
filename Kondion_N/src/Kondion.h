@@ -107,7 +107,9 @@ class KObj_Node {
     return 0;
   }
   void setParent(KObj_Node* node);
-  KObj_Node* getParent();
+  KObj_Node* getParent() {
+    return parent;
+  }
   virtual void updateA() {
   }
   virtual void updateB() {
@@ -682,7 +684,7 @@ class Raw {
   }
   ;
   ~Raw() {
-    printf("raw deleted\n");
+    //printf("raw deleted\n");
     fb->close();
     delete stream;
     delete fb;

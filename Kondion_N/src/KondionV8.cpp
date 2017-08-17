@@ -34,7 +34,7 @@ size_t Parse(const std::string& s) {
   Local<Context> context = Local<Context>::New(isolate, p_context);
   Context::Scope context_scope(context);
   //printf("%s", s.c_str());
-  printf("Parsing some JSON\n");
+  //printf("Parsing some JSON\n");
   Local<String> str =
       String::NewFromUtf8(isolate, s.c_str(), NewStringType::kNormal)
           .ToLocalChecked();
@@ -50,7 +50,7 @@ size_t Parse(const std::string& s) {
   unsigned int j = 0;
   for (unsigned int i = 0; i < objects.size(); i++) {
     if (objects[i] == NULL) {
-      printf("taking space: %i\n", i);
+      //printf("taking space: %i\n", i);
       objects[i] = obj;
       j = i + 1;
     }
@@ -712,33 +712,33 @@ std::string* ParseShader(std::string* in, Resources::KShader& mat) {
               | uint8_t(sudoaptgetinstall[1])) {
         case 26990: // in for int
           mat.uniformTypes[i] = 0;
-          printf("INT\n");
+          //printf("INT\n");
           break;
 
         case 30057: // ui for uint
           mat.uniformTypes[i] = 1;
-          printf("UINT\n");
+          //printf("UINT\n");
           break;
 
         case 26220: // fl for float
           mat.uniformTypes[i] = 10;
-          printf("FLOAT\n");
+          //printf("FLOAT\n");
           break;
 
         case 25711: // do for double
           mat.uniformTypes[i] = 11;
-          printf("DOUBLE NOT YET IMPLEMENTED");
+          printf("[TWM] DOUBLE NOT YET IMPLEMENTED");
           break;
 
         case 29797: // te for texture
           mat.uniformTypes[i] = 30;
-          printf("TEXTURE\n");
+          //printf("TEXTURE\n");
           break;
       }
       
-      printf("McE: (%u) %s\n", (uint16_t(sudoaptgetinstall[comma + 1]) << 8)
-                                | uint8_t(sudoaptgetinstall[comma + 1]),
-             mat.uniforms[i].c_str());
+      //printf("McE: (%u) %s\n", (uint16_t(sudoaptgetinstall[comma + 1]) << 8)
+      //                          | uint8_t(sudoaptgetinstall[comma + 1]),
+      //       mat.uniforms[i].c_str());
     }
     
     if (final->IsString()) {
