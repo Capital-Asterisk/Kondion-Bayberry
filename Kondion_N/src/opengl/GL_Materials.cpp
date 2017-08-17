@@ -110,12 +110,7 @@ void GL_Shader::Utilize(Renderer::RenderPass* pass, KMaterial* material) {
     glUniform1i(uniformsLocations[1], Kondion::TimeMs());
     glUniform1f(uniformsLocations[2], KObj_Node::worldObject->sceneTime);
     glUniform1i(uniformsLocations[3], p->normalmode);
-    printf("COUNT: %u\n", uniformCount);
-
-    // Set texure uniforms
-    for (uint16_t i = 0; i < textureCount; i ++) {
-      
-    }
+    //printf("COUNT: %u\n", uniformCount);
   }
 }
 

@@ -680,18 +680,65 @@ std::string* ParseShader(std::string* in, Resources::KShader& mat) {
   }
 
   if (value->IsObject()) {
+
+    Local<Array> uniforms = Local<Array>::Cast(value->ToObject()->Get(
+        String::NewFromUtf8(isolate, "uniforms")));
+
     Local<Value> final = value->ToObject()->Get(
         String::NewFromUtf8(isolate, "result"));
-    mat.uniformCount = value->ToObject()->Get(
-        String::NewFromUtf8(isolate, "uniformCount"))->Int32Value();
+    mat.uniformCount = uniforms->Length();
     mat.textureCount = Local<Array>::Cast(value->ToObject()->Get(
         String::NewFromUtf8(isolate, "utexture")))->Length();
-    
-    mat.uniformsTextures = new uint16_t[mat.textureCount];
-    
-    for (uint16_t i = 0; i < mat.textureCount; i ++) {
-      mat.uniformsTextures[i] = Local<Array>::Cast(value->ToObject()->Get(
-        String::NewFromUtf8(isolate, "utexture")))->Get(i)->Int32Value();
+
+    mat.uniforms = new std::string[mat.uniformCount];
+    mat.uniformTypes = new uint8_t[mat.uniformCount];
+
+    // Put uniform names into the shader object
+    // Strings are in this format:
+    // type,name
+
+    int comma;
+    std::string sudoaptgetinstall;
+
+    for (uint16_t i = 0; i < mat.uniformCount; i ++) {
+      sudoaptgetinstall = std::string(*String::Utf8Value(uniforms->Get(i)));
+      comma = sudoaptgetinstall.find(",");
+      mat.uniforms[i] = sudoaptgetinstall.substr(comma + 1);
+
+      // String switch by hashing the first 2 characters of the type
+      // TODO: vectors and stuff
+
+      switch((uint16_t(sudoaptgetinstall[0]) << 8)
+              | uint8_t(sudoaptgetinstall[1])) {
+        case 26990: // in for int
+          mat.uniformTypes[i] = 0;
+          printf("INT\n");
+          break;
+
+        case 30057: // ui for uint
+          mat.uniformTypes[i] = 1;
+          printf("UINT\n");
+          break;
+
+        case 26220: // fl for float
+          mat.uniformTypes[i] = 10;
+          printf("FLOAT\n");
+          break;
+
+        case 25711: // do for double
+          mat.uniformTypes[i] = 11;
+          printf("DOUBLE NOT YET IMPLEMENTED");
+          break;
+
+        case 29797: // te for texture
+          mat.uniformTypes[i] = 30;
+          printf("TEXTURE\n");
+          break;
+      }
+      
+      printf("McE: (%u) %s\n", (uint16_t(sudoaptgetinstall[comma + 1]) << 8)
+                                | uint8_t(sudoaptgetinstall[comma + 1]),
+             mat.uniforms[i].c_str());
     }
     
     if (final->IsString()) {

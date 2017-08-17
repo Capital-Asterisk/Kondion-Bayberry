@@ -66,7 +66,7 @@ class GL_Shader : public KShader {
   //void New(const std::string& src);
   ~GL_Shader() {
     delete[] uniformsLocations;
-    delete[] uniformsTextures;
+    //delete[] uniformsTextures;
   }
 };
 

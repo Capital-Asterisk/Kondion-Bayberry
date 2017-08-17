@@ -625,10 +625,11 @@ class KShader {
   bool internal;
   bool loaded;
   uint16_t id;
+  
   uint16_t uniformCount;
   uint16_t textureCount;
-  uint16_t* uniformsTextures;
-  
+  std::string* uniforms; // Non-default
+  uint8_t* uniformTypes; // stuff
   //GLuint vert;
   //GLuint frag;
 
@@ -640,6 +641,8 @@ class KShader {
   }
   
   virtual ~KShader() {
+    delete[] uniforms;
+    delete[] uniformTypes;
   }
 };
 
