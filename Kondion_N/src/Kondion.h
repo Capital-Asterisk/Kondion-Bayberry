@@ -170,8 +170,10 @@ class KObj_Renderable : public KObj_Oriented {
 // Components are added to make the entity solid.
 class KObj_Entity : public KObj_Renderable {
  public:
+
   static const std::string myClass;
-  glm::mat4x4 next;
+
+  //glm::mat4x4 next;
   glm::vec3 velocity;
   glm::quat rotVelocity;
 
@@ -185,9 +187,14 @@ class KObj_Entity : public KObj_Renderable {
   glm::vec3 acceleration;  // total calculated acceleration
   uint16_t radius;  // radius of influence (farthest component)
   float mass;
-  // a 1kg 1m hollow shell is easier to turn than a 1kg 40m hollow shell
-  float radialMass;
+  float radialMass; // moment of inertia
   double accel;
+
+  KObj_Entity() {
+    this->physics = 1;
+    this->mass = 1.0f;
+    this->radialMass = 1.0f;
+  }
 
   const std::string* getClass() {
     return &myClass;
@@ -195,9 +202,11 @@ class KObj_Entity : public KObj_Renderable {
   int getType() {
     return 3;
   }
+  
   void updateA();
-  virtual void render();
   void parentTransform();
+  
+  virtual void render();
 };
 
 // This thing should actually inherit Entity. If there's a lot of the same
@@ -258,12 +267,12 @@ class KMaterial {
  public:
   static std::vector<KMaterial*> materials;
 
+  bool uniformSet;
   uint16_t shader;
-  uint16_t* uni_textures;
-  int32_t* uni_ints;
-  float* uni_floats;
+  void** uniforms;
   
   KMaterial() {
+    uniformSet = false;
     shader = 0;
     materials.push_back(this);
   }
@@ -635,6 +644,7 @@ class KShader {
   //GLuint vert;
   //GLuint frag;
 
+  virtual void prepareMaterial(KMaterial* material) = 0;
   virtual void Load(bool a) = 0;
   virtual void Utilize(Renderer::RenderPass* pass, KMaterial* material) = 0;
 

@@ -296,8 +296,8 @@ void GameLoop() {
     if (currentTime > 16.0) {
       glfwSetTime(currentTime - 16.0);
       lastTime -= 16.0;
-
       Debug::printWorld();
+      
     }
 
     //printf("Time: (%u)(%f)\n", TimeMs() / 1000, KObj_Node::worldObject->sceneTime);

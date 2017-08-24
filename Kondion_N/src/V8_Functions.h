@@ -99,14 +99,7 @@ void Callback_Component(const FunctionCallbackInfo<Value>& args) {
     }
     o->jsObject = new Persistent<Object,
         CopyablePersistentTraits<Object>>(isolate, args.This());
-    //printf("NEW: kcomponent: %s\n", o->getClass()->c_str());
-    //switch (*String::Utf8Value(args[0]))
-    //case "infplane":
-    //  o = new Component::CPN_InfinitePlane;
-    //  break;
-    //default:
-    //  o = new Component::CPN_Cube;
-    //  break;
+
     args.This()->SetInternalField(0, External::New(isolate, o));
     args.GetReturnValue().Set(args.This());
   }
@@ -118,9 +111,8 @@ void Callback_Material(const FunctionCallbackInfo<Value>& args) {
 
   if (args.IsConstructCall()) {
     std::string arg = std::string(*String::Utf8Value(args[0]));
-    //printf("NEW: kmaterial: %s\n", arg.c_str());
     KMaterial* o = new KMaterial;
-    o->shader = -1;
+
     for (uint16_t i = 0; i < Resources::KShader::shaders.size(); i ++) {
       if (arg == Resources::KShader::shaders[i]->identifier) {
         //printf("Match: %s\n", Resources::KShader::shaders[i]->identifier.c_str());
@@ -158,7 +150,6 @@ void Callback_Component_SetMatrix(const FunctionCallbackInfo<Value>& args) {
   KComponent* pointer_this =
           static_cast<KComponent*>(Local<External>::Cast(
               args.This()->GetInternalField(0))->Value());
-  //pointer_this->offset = glm::translate(pointer_this->offset, glm::vec3(111, 222, 333));
 
   Local<Float32Array> a = Local<Float32Array>::Cast(args[0]);
 
@@ -198,11 +189,6 @@ void Callback_KObj_Entity(const FunctionCallbackInfo<Value>& args) {
   if (args.IsConstructCall()) {
     //printf("NEW: Entity\n");
     KObj_Entity* o = new KObj_Entity();
-    o->physics = 1;
-    o->mass = 1.0f;
-    o->radialMass = 1.0f;
-    //o->material = 0;
-    //o->components.push_back(new Component::CPN_Cube);
     o->jsObject = new Persistent<Object,
         CopyablePersistentTraits<Object>>(isolate, args.This());
     //Kondion::world.push_back(o);
@@ -233,7 +219,7 @@ void Callback_KObj_SetName(const FunctionCallbackInfo<Value>& args) {
 void Callback_KObj_GetParent(const FunctionCallbackInfo<Value>& args) {
   //HandleScope handle_scope(isolate);
   if (!args.IsConstructCall()) {
-    //printf("%s\n", static_cast<Persistent<Object, CopyablePersistentTraits<Object>>>(static_cast<KObj_Node*>(args.This()->GetInternalField(0)->Value())->getParent()->jsObject)->name);
+
     Local<External> wrap = Local<External>::Cast(
         args.This()->GetInternalField(0));
     KObj_Node* pointer = static_cast<KObj_Node*>(wrap->Value());
@@ -306,8 +292,8 @@ void Callback_KObj_World_GetCamera(Local<String> property,
   if (Renderer::currentCamera == NULL)
     return;
   Persistent<Object, CopyablePersistentTraits<Object>>* p =
-      static_cast<Persistent<Object, CopyablePersistentTraits<Object>>*>(Renderer::currentCamera
-          ->jsObject);
+      static_cast<Persistent<Object, CopyablePersistentTraits<Object>>*>(
+          Renderer::currentCamera->jsObject);
   Local<Object> o = Local<Object>::New(isolate, *p);
   info.GetReturnValue().Set(o);
 }
@@ -394,7 +380,7 @@ void Callback_Kdion_Load(const FunctionCallbackInfo<Value>& args) {
     }
   }
   
-  // Start loading materials (if any)
+  // Start loading shaders (if any)
   if (a->HasOwnProperty(String::NewFromUtf8(isolate, "materials"))) {
     Local<Value> b = a->Get(String::NewFromUtf8(isolate, "materials"));
     if (b->IsArray()) {

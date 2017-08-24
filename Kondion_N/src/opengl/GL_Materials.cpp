@@ -106,6 +106,20 @@ void GL_Shader::Load(bool a) {
   }
 }
 
+void GL_Shader::prepareMaterial(KMaterial* material) {
+  if (loaded) {
+    material->uniforms = new void*[uniformCount];
+    for (uint8_t i = 0; i < uniformCount; i ++) {
+      switch (uniformTypes[i]) {
+        case 0:
+          material->uniforms[i] = new int32_t;
+          break;
+      }
+    }
+
+  }
+}
+
 void GL_Shader::Utilize(Renderer::RenderPass* pass, KMaterial* material) {
   // Cast renderpass to opengl one, becuase it likely is an opengl one
   Renderer::GLRenderPass* p = static_cast<Renderer::GLRenderPass*>(pass);

@@ -63,6 +63,7 @@ class GL_Shader : public KShader {
   
   void Load(bool a);
   void Utilize(Renderer::RenderPass* pass, KMaterial* material);
+  void prepareMaterial(KMaterial* material);
   //void New(const std::string& src);
   ~GL_Shader() {
     delete[] uniformsLocations;

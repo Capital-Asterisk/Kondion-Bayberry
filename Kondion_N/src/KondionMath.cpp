@@ -66,7 +66,7 @@ void printWorld() {
 
   // Print the tree of objects
 
-  printf("[KON] World: %u objects. %u nodes exist.\n",
+  printf("[KON] World: (%u + 1) objects. %u nodes exist.\n",
          KObj::GKO_World::worldObject->treeSize, KObj_Node::all.size());
 
   const uint8_t stackmax = 8;
@@ -77,7 +77,13 @@ void printWorld() {
 
   // No recursives for me today
   while (running) {
-    printf("%s%s(%i): %s\n", std::string(i + 1, '-').c_str(), stack[i]->getClass()->c_str(), stack[i]->depth, stack[i]->name.c_str());
+    printf("%s[%s]: \"%s\"", std::string(i + 1, '#').c_str(), stack[i]->getClass()->c_str(), stack[i]->name.c_str());
+    if (stack[i]->getType() >= 2) {
+      KObj_Oriented* thing = static_cast<KObj_Oriented*>(stack[i]);
+      printf(" (%4.2f, %4.2f, %4.2f)", thing->orientation[3].x,
+             thing->orientation[3].y, thing->orientation[3].z);
+    }
+    printf("\n");
     if (stack[i]->children.size() != 0) {
       // Current node has children, go into first child for next loop.
       stack[i + 1] = stack[i]->children[0];
