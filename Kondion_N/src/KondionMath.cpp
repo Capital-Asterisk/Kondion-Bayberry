@@ -77,7 +77,7 @@ void printWorld() {
 
   // No recursives for me today
   while (running) {
-    printf("%s[%s]: \"%s\"", std::string(i + 1, '#').c_str(), stack[i]->getClass()->c_str(), stack[i]->name.c_str());
+    printf("%s[%s]: \"%s\"", std::string(i + 1, '#').c_str(), stack[i]->getClass(), stack[i]->name.c_str());
     if (stack[i]->getType() >= 2) {
       KObj_Oriented* thing = static_cast<KObj_Oriented*>(stack[i]);
       printf(" (%4.2f, %4.2f, %4.2f)", thing->orientation[3].x,

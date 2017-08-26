@@ -480,7 +480,7 @@ void GLRenderPass::render() {
       if (!items[i]->complex) {
         glPushMatrix();
         //printf("Material: %u\n", items[i]->material);
-        glUniform1i(temp_prog_monotex_id, items[i]->material);
+        glUniform1i(temp_prog_monotex_id, items[i]->material + 1);
         //printf("MATERIAL: %u %s POINT: %p\n", items[i]->material, Kondion::KMaterial::materials.size(), items[i]);
         //glUniform1i(temp_prog_monotex_id, i);
         items[i]->render();

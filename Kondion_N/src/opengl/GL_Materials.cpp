@@ -85,6 +85,13 @@ void GL_Shader::Load(bool a) {
 
         loaded = true;
 
+        for (uint16_t i = 0; i < KMaterial::materials.size(); i++) {
+          if (shaders[KMaterial::materials[i]->shader] == this) {
+            //printf("HEY LOOK I FOUND MYSELF WOOT NOW SPAM YEAH\n");
+            prepareMaterial(KMaterial::materials[i]);
+          }
+        }
+
       } else {
 
         printf("[TWM] Error with compiling shader: %s\n", frag->c_str());
@@ -110,12 +117,27 @@ void GL_Shader::prepareMaterial(KMaterial* material) {
   if (loaded) {
     material->uniforms = new void*[uniformCount];
     for (uint8_t i = 0; i < uniformCount; i ++) {
+      // initialize uniform variables based on what type they are.
+      // types are determined at ParseShader in KondionV8
       switch (uniformTypes[i]) {
-        case 0:
-          material->uniforms[i] = new int32_t;
+        case 0: // i don't think int/uint matters, byte size same
+        case 1:
+        //case 0 .. 1:
+          material->uniforms[i] = new uint32_t(1);
+          break;
+        case 10:
+          material->uniforms[i] = new float(0.5f);
+          break;
+        case 11:
+          material->uniforms[i] = new double(0.5);
+          break;
+        case 30:
+          material->uniforms[i] = new int16_t(0);
           break;
       }
     }
+
+    material->uniformSet = true;
 
   }
 }
@@ -128,11 +150,36 @@ void GL_Shader::Utilize(Renderer::RenderPass* pass, KMaterial* material) {
     glUseProgram(programId);
 
     // Set default uniforms
-    glUniform1i(uniformsLocations[0], id);
+    glUniform1i(uniformsLocations[0], id + 1);
     glUniform1i(uniformsLocations[1], Kondion::TimeMs());
     glUniform1f(uniformsLocations[2], KObj_Node::worldObject->sceneTime);
     glUniform1i(uniformsLocations[3], p->normalmode);
     //printf("COUNT: %u\n", uniformCount);
+    
+    if (!material->uniformSet)
+      return;
+      
+    for (uint8_t i = 0; i < uniformCount; i ++) {
+      //printf("type: %i\n", uniformTypes[i]);
+      switch ((uniformsLocations[16 + i] != -1) ? uniformTypes[i] : -1) {
+        case 0: // i don't think int/uint matters, byte size same
+        case 1:
+        //case 0 .. 1:
+          glUniform1i(uniformsLocations[16 + i], *static_cast<int32_t*>(material->uniforms[i]));
+          ///printf("UNII %i %i \n", uniformsLocations[16 + i], *static_cast<int32_t*>(material->uniforms[i]));
+          break;
+        case 10:
+          glUniform1f(uniformsLocations[16 + i], *static_cast<float*>(material->uniforms[i]));
+          printf("UNIF %i %p \n", uniformsLocations[16 + i], material->uniforms[i]);
+          break;
+        case 11:
+          //material->uniforms[i] = new double;
+          break;
+        case 30:
+          //material->uniforms[i] = new int16_t;
+          break;
+      }
+    }
   }
 }
 

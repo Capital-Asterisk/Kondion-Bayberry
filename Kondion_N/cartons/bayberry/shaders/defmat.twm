@@ -15,7 +15,7 @@ u3: texture nmap
 #rows/width x column/height
 123x456: 
 #This shader is actually really bad
-[]coords[c0] | [c0,16.0]mul[c1] | [c1]decomp[c1x,c1y] | [c1x]floor[c1xa] | [c1xy,2.0]mod[c2] | [c2,c2,u0,1.0]out[] | -
+[]coords[c0] | [c0,16.0]mul[c1] | [c1]decomp[c1x,c1y] | [c1x]floor[c1xa] | [c1xy,2.0]mod[c2] | [c2,c2,c2,1.0]out[] | -
 []normal[n0] |                  |                     | [c1y]floor[c1ya] | [c1ya,0.0,c1xa]add[c1xy] | -
 []sntime[t0] | [t0,1.0]mod[t1] | [n0,t1]mul[n1] | [n1]norout[] | -
 

@@ -81,7 +81,7 @@ class KObj_Node {
   // The current world object, has no parent
   static KObj::GKO_World* worldObject;
   // use for identification
-  static const std::string myClass;
+  static const char* myClass;
   
   // Time since scene started, affected by timescale;
   double sceneTime;
@@ -114,8 +114,8 @@ class KObj_Node {
   }
   virtual void updateB() {
   }
-  virtual const std::string* getClass() {
-    return &myClass;
+  virtual const char* getClass() {
+    return myClass;
   }
   KObj_Node();
   virtual ~KObj_Node() {
@@ -133,13 +133,13 @@ class KObj_Node {
 // Orienteds are not chinese, or asian, bug are less lonely as KObj_Nodes
 class KObj_Oriented : public KObj_Node {
  public:
-  static const std::string myClass;
+  static const char* myClass;
   glm::mat4x4 transform;
   glm::mat4x4 orientation;
   int woot = 0;
   int farX, farY, farZ;
-  const std::string* getClass() {
-    return &myClass;
+  const char* getClass() {
+    return myClass;
   }
   int getType() {
     return 2;
@@ -153,13 +153,13 @@ class KObj_Oriented : public KObj_Node {
 // renderer, most likely OpenGL.
 class KObj_Renderable : public KObj_Oriented {
  public:
-  static const std::string myClass;
+  static const char* myClass;
   uint16_t material = 0;
   bool complex = false;
 
   //virtual int getType();
-  const std::string* getClass() {
-    return &myClass;
+  const char* getClass() {
+    return myClass;
   }
   virtual void render()=0;
 };
@@ -171,7 +171,7 @@ class KObj_Renderable : public KObj_Oriented {
 class KObj_Entity : public KObj_Renderable {
  public:
 
-  static const std::string myClass;
+  static const char* myClass;
 
   //glm::mat4x4 next;
   glm::vec3 velocity;
@@ -196,8 +196,8 @@ class KObj_Entity : public KObj_Renderable {
     this->radialMass = 1.0f;
   }
 
-  const std::string* getClass() {
-    return &myClass;
+  const char* getClass() {
+    return myClass;
   }
   int getType() {
     return 3;
@@ -216,9 +216,9 @@ class KObj_Entity : public KObj_Renderable {
 // Example: Bullets
 class KObj_Instance : public KObj_Renderable {
  public:
-  static const std::string myClass;
-  const std::string* getClass() {
-    return &myClass;
+  static const char* myClass;
+  const char* getClass() {
+    return myClass;
   }
   int getType() {
     return 4;
@@ -232,7 +232,7 @@ class KObj_Instance : public KObj_Renderable {
 // They can be rendered, or used as colliders.
 class KComponent {
  public:
-  static const std::string myClass;
+  static const char* myClass;
 
   bool collide;
   bool renderable;
@@ -244,8 +244,8 @@ class KComponent {
 
   // Physical properties
 
-  virtual const std::string* getClass() {
-    return &myClass;
+  virtual const char* getClass() {
+    return myClass;
   }
   virtual void render() {
 
@@ -286,7 +286,7 @@ namespace KObj {
 // and keeps track of objects.
 class GKO_World : public KObj_Node {
  public:
-  static const std::string myClass;
+  static const char* myClass;
   float timescale = 0;
   std::vector<uint16_t> world;
   std::vector<uint16_t> terrain;
@@ -300,8 +300,8 @@ class GKO_World : public KObj_Node {
   //std::vector<uint16_t> bounceB;
   //std::vector<float> bounceC;
 
-  const std::string* getClass() {
-    return &myClass;
+  const char* getClass() {
+    return myClass;
   }
 };
 
@@ -312,11 +312,11 @@ class GKO_World : public KObj_Node {
 // The strange underscore is a reference to my very first 3D game engine
 class OKO_Camera_ : public KObj_Oriented {
  public:
-  static const std::string myClass;
+  static const char* myClass;
   glm::vec3 center;
   glm::vec3 up;
-  const std::string* getClass() {
-    return &myClass;
+  const char* getClass() {
+    return myClass;
   }
   void prespective();
   void parentTransform();
@@ -327,7 +327,7 @@ class OKO_Camera_ : public KObj_Oriented {
 class OKO_Force : public KObj_Oriented {
  public:
 
-  static const std::string myClass;
+  static const char* myClass;
 
   // 0: typical acceleration
   // 1: constant velocity
@@ -359,8 +359,8 @@ class OKO_Force : public KObj_Oriented {
 
   std::vector<uint16_t> associations;
 
-  const std::string* getClass() {
-    return &myClass;
+  const char* getClass() {
+    return myClass;
   }
   void parentTransform();
 };
@@ -423,9 +423,9 @@ namespace Component {
 
 class CPN_Cube : public KComponent {
  public:
-  static const std::string myClass;
-  const std::string* getClass() {
-    return &myClass;
+  static const char* myClass;
+  const char* getClass() {
+    return myClass;
   }
   void render();
   void testCollision(KComponent& comp, Kondion::Physics::CollisionInfo& ci);
@@ -433,9 +433,9 @@ class CPN_Cube : public KComponent {
 
 class CPN_InfinitePlane : public KComponent {
  public:
-  static const std::string myClass;
-  const std::string* getClass() {
-    return &myClass;
+  static const char* myClass;
+  const char* getClass() {
+    return myClass;
   }
   void render();
   void testCollision(KComponent& comp, Kondion::Physics::CollisionInfo& ci);
@@ -627,7 +627,7 @@ class KShader {
  public:
 
   static std::vector<KShader *> shaders;
-  static std::vector<uint16_t> indices;
+  //static std::vector<uint16_t> indices;
   //static std::vector<uint16_t> loadMe;
   
   static KShader* New(const std::string& name, const std::string& src);

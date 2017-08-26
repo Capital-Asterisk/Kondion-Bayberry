@@ -42,19 +42,18 @@ std::vector<KObj_Node *> KObj_Node::all;
 std::vector<KMaterial *> Kondion::KMaterial::materials;
 KObj::GKO_World* KObj_Node::worldObject;
 
-// TODO: make all of these into unique ints.
-const std::string KObj_Node::myClass = "error_node";
-const std::string KObj_Oriented::myClass = "error_oriented";
-const std::string KObj_Renderable::myClass = "error_renderable";
-const std::string KObj_Entity::myClass = "entity";
-const std::string KObj_Instance::myClass = "instance";
-const std::string KObj::GKO_World::myClass = "world";
-const std::string KObj::OKO_Camera_::myClass = "camera";
-const std::string KObj::OKO_Force::myClass = "force";
+const char* KObj_Node::myClass = "error_node";
+const char* KObj_Oriented::myClass = "error_oriented";
+const char* KObj_Renderable::myClass = "error_renderable";
+const char* KObj_Entity::myClass = "entity";
+const char* KObj_Instance::myClass = "instance";
+const char* KObj::GKO_World::myClass = "world";
+const char* KObj::OKO_Camera_::myClass = "camera";
+const char* KObj::OKO_Force::myClass = "force";
 
-const std::string KComponent::myClass = "how did this get here?";
-const std::string Component::CPN_Cube::myClass = "cube";
-const std::string Component::CPN_InfinitePlane::myClass = "infplane";
+const char* KComponent::myClass = "how did this get here?";
+const char* Component::CPN_Cube::myClass = "cube";
+const char* Component::CPN_InfinitePlane::myClass = "infplane";
 
 KObj_Node::KObj_Node() {
   jsObject = NULL;
@@ -116,7 +115,7 @@ void KObj_Node::setParent(KObj_Node* node) {
   topObject = top->allIndex;
   //printf("Top: %s\n", top->name);
   // pointer comparison, (instanceof world)
-  if (top->getClass() == &KObj::GKO_World::myClass) {
+  if (top->getClass() == KObj::GKO_World::myClass) {
     // it's a world, add it to the list of the entire tree
     // mightbedone TODO: do something that puts the node into the right place
 
@@ -129,7 +128,7 @@ void KObj_Node::setParent(KObj_Node* node) {
       // I am terrain
       if (static_cast<KObj_Entity*>(this)->physics == 0)
         world->terrain.push_back(allIndex);
-    } else if (getClass() == &KObj::OKO_Force::myClass) {
+    } else if (getClass() == KObj::OKO_Force::myClass) {
       // i am a force, add to forces
       world->forces.push_back(allIndex);
     }
@@ -406,9 +405,8 @@ int main(int argc, const char* argv[]) {
     Kondion::dir = strcat(getcwd(buf, sizeof(buf)), "/");
 
     // Print some information
-    printf("Kondion %s | %s %s\nDirectory:%s\n", KONDION_VERSION, __DATE__,
-    __TIME__,
-           Kondion::dir);
+    printf("Kondion %s | Compiled %s %s\nDirectory: %s\n", KONDION_VERSION,
+        __DATE__, __TIME__, Kondion::dir);
 
     // Setup V8
     Kondion::JS::Setup();

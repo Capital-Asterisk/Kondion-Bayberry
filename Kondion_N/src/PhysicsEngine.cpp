@@ -141,7 +141,7 @@ void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
 namespace Component {
 
 void CPN_Cube::testCollision(KComponent& comp, Physics::CollisionInfo& ci) {
-  if (comp.getClass() == &CPN_InfinitePlane::myClass) {
+  if (comp.getClass() == CPN_InfinitePlane::myClass) {
     // colliding with infinite plane
     Physics::CubeVsInfPlane(*this, dynamic_cast<CPN_InfinitePlane&>(comp), ci);
   }
@@ -149,7 +149,7 @@ void CPN_Cube::testCollision(KComponent& comp, Physics::CollisionInfo& ci) {
 
 void CPN_InfinitePlane::testCollision(KComponent& comp,
                                       Physics::CollisionInfo& ci) {
-  if (comp.getClass() == &CPN_InfinitePlane::myClass) {
+  if (comp.getClass() == CPN_InfinitePlane::myClass) {
     // colliding with cube
   }
 }
