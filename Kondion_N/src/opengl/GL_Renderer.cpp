@@ -24,153 +24,141 @@ namespace Renderer {
 // Camera used for the current render pass
 Kondion::KObj::OKO_Camera_* currentCamera;
 
-GLuint beef;
-GLuint bacon;
-GLuint grill;
+GLuint bacon; // "plane"
+GLuint grill; // "plane coordinates"
 
-GLuint temp_prog_deferred;
-GLuint temp_prog_monotex;
-GLuint temp_prog_monotex_id;
+//GLuint progDeferred;
+GLuint progTexnorm;
+GLuint progTexnormType;
+GLuint progSky;
+GLuint progSkyType;
+GLuint progSkyPresp;
 
+// Pretty much render everything
 void Composite() {
+  // Render all render passes
   for (size_t i = 0; i < RenderPass::passes.size(); i++) {
     glBindTexture(GL_TEXTURE_2D, Resources::KTexture::textures[0]->textureId);
     RenderPass::passes[i]->render();
   }
+  
+  // Switch to 2D mode, and don't use any shaders
   Two(0);
   glUseProgram(0);
+  
+  // Bind the final layer of the first render pass
   glBindTexture(GL_TEXTURE_2D, RenderPass::passes[0]->id(5));
-  //glBindTexture(GL_TEXTURE_2D, Resources::KTexture::textures[0]->textureId);
 
-  //printf("h:\ %i\n", RenderPass::passes[0]->id(2));
-  //glBindTexture(GL_TEXTURE_2D, Resources::textures[0]->textureId);
+  // Do some transformations to put it in the middle
   glTranslatef(800 / 2, 600 / 2, 0.0f);
   //glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
   glScalef(-1.0f, -1.0f, 1.0f);
+  
+  // Draw the thing
   RenderQuad(800, 600);
 }
 
 void Consider(KObj_Renderable* a) {
   for (size_t i = 0; i < RenderPass::passes.size(); i++) {
     RenderPass::passes[i]->consider(a);
-
   }
 }
 
+// Setup some opengl stuff
 void Setup() {
 
-  // TODO Do this properly without copy-paste stuff
+  // Shaders
 
-  glEnable(GL_TEXTURE_2D);
-  glShadeModel(GL_SMOOTH);
-  glClearDepth(1.0f);  // Depth Buffer Setup
-  glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
-  glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	//
+  static char dataTexNorm[] = 
+    "#version 120\n"
+    "uniform int type;"
+    "varying vec3 normal;"
+    "varying vec4 texCoord;"
+    "varying vec4 viewPos;"
+    "varying vec4 worldPos;"
+    "varying mat4 cuteMatrix;"
 
-  glViewport(0, 0, 800, 600);						// Reset The Current Viewport
+    "void main() {"
+    "  gl_FragData[0] = vec4(texCoord.xy, float(type) / 255.0, 1.0);"
+    "  gl_FragData[1] = vec4((normalize(mat3(gl_ModelViewMatrix) * normal)"
+    "                        + 1.0) / 2, 1.0);"
+    "}";
 
-  glMatrixMode(GL_PROJECTION);						// Select The Projection Matrix
-  glLoadIdentity();									// Reset The Projection Matrix
+  static char dataSky[] = 
+    "#version 120\n"
+    "uniform int type;"
+    "uniform mat4 invPresp;"
+    
+    "varying vec3 normal;"
+    "varying vec4 texCoord;"
+    "varying vec4 viewPos;"
+    "varying vec4 worldPos;"
+    "varying mat4 cuteMatrix;"
+    
+    "float atan2(float y, float x) {"
+    "  return x == 0.0 ? sign(y) * 1.570796326 : atan(y, x);"
+    "}"
 
-  // Calculate The Aspect Ratio Of The Window
-  gluPerspective(45.0f, (GLfloat) 800 / (GLfloat) 600, 0.1f, 100.0f);
+    "void main() {"
+    "  vec3 norm = normalize(vec3(invPresp * vec4( "
+    "           2.0 * (gl_FragCoord.x - 0.0) / 1.0 - 1.0, "
+    "           2.0 * (gl_FragCoord.y - 0.0) / 1.0 - 1.0,"
+    "           2.0 * 0.5 - 1.0,"
+    "           1.0)));"
+    "  gl_FragData[0] = vec4(norm.z, 0, 1.0 / 255.0, 1.0);"
+    "  gl_FragData[1] = vec4((norm + 1.0) / 2, 1.0);"
+    "}";
 
-  glMatrixMode(GL_MODELVIEW);							// Select The Modelview Matrix
-  glLoadIdentity();									//
-
-  glClearColor(0.5f, 0.0f, 0.0f, 1.0f);
-
-  //glEnable(GL_POLYGON_SMOOTH);
-  //glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-  //glEnable(GL_MULTISAMPLE);
-
-  // this should go back to birds
-  GLfloat interlevedDataA[] = { 0.5, -0.5, 0.5, 0, -1, 0, 0.5, 0.25, -0.5, -0.5,
-      0.5, 0, -1, 0, 0.5, 0.5, -0.5, -0.5, -0.5, 0, -1, 0, 0.25, 0.5, -0.5, 0.5,
-      -0.5, 0, 1, 0, 0.25, 0.75, -0.5, 0.5, 0.5, 0, 1, 0, 0.5, 0.75, 0.5, 0.5,
-      0.5, 0, 1, 0, 0.5, 1.0, 0.5, 0.5, -0.5, 1, 0, 0, 1.0, 0.75, 0.5, 0.5, 0.5,
-      1, 0, 0, 0.75, 0.75, 0.5, -0.5, 0.5, 1, 0, 0, 0.75, 0.5, 0.5, 0.5, 0.5, 0,
-      0, 1, 0.75, 0.75, -0.5, 0.5, 0.5, 0, 0, 1, 0.5, 0.75, -0.5, -0.5, 0.5, 0,
-      0, 1, 0.5, 0.5, -0.5, -0.5, 0.5, -1, 0, 0, 0.5, 0.5, -0.5, 0.5, 0.5, -1,
-      0, 0, 0.5, 0.75, -0.5, 0.5, -0.5, -1, 0, 0, 0.25, 0.75, 0.5, -0.5, -0.5,
-      0, 0, -1, 0.0, 0.5, -0.5, -0.5, -0.5, 0, 0, -1, 0.25, 0.5, -0.5, 0.5,
-      -0.5, 0, 0, -1, 0.25, 0.75, 0.5, -0.5, -0.5, 0, -1, 0, 0.25, 0.25, 0.5,
-      -0.5, 0.5, 0, -1, 0, 0.5, 0.25, -0.5, -0.5, -0.5, 0, -1, 0, 0.25, 0.5,
-      0.5, 0.5, -0.5, 0, 1, 0, 0.25, 1.0, -0.5, 0.5, -0.5, 0, 1, 0, 0.25, 0.75,
-      0.5, 0.5, 0.5, 0, 1, 0, 0.5, 1.0, 0.5, -0.5, -0.5, 1, 0, 0, 1.0, 0.5, 0.5,
-      0.5, -0.5, 1, 0, 0, 1.0, 0.75, 0.5, -0.5, 0.5, 1, 0, 0, 0.75, 0.5, 0.5,
-      -0.5, 0.5, 0, 0, 1, 0.75, 0.5, 0.5, 0.5, 0.5, 0, 0, 1, 0.75, 0.75, -0.5,
-      -0.5, 0.5, 0, 0, 1, 0.5, 0.5, -0.5, -0.5, -0.5, -1, 0, 0, 0.25, 0.5, -0.5,
-      -0.5, 0.5, -1, 0, 0, 0.5, 0.5, -0.5, 0.5, -0.5, -1, 0, 0, 0.25, 0.75, 0.5,
-      0.5, -0.5, 0, 0, -1, 0.0, 0.75, 0.5, -0.5, -0.5, 0, 0, -1, 0.0, 0.5, -0.5,
-      0.5, -0.5, 0, 0, -1, 0.25, 0.75 };
-
-  glGenBuffers(1, &beef);
-  glBindBuffer(GL_ARRAY_BUFFER, beef);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(interlevedDataA), interlevedDataA,
-  GL_STATIC_DRAW);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   Resources::Raw* av = Resources::Get("kdefault:shaders/solid_col");
   std::ostringstream aaostring;
   aaostring << av->stream->rdbuf();
   //delete av;
 
-  Resources::Raw* af = Resources::Get("kdefault:shaders/solid_tex");
-  std::ostringstream abostring;
-  abostring << af->stream->rdbuf();
+  //Resources::Raw* af = Resources::Get("kdefault:shaders/solid_tex");
+  //std::ostringstream abostring;
+  //abostring << af->stream->rdbuf();
   //delete af;
 
-  Resources::Raw* bf = Resources::Get("kdefault:shaders/deferred");
-  std::ostringstream baostring;
-  baostring << bf->stream->rdbuf();
+  //Resources::Raw* bf = Resources::Get("kdefault:shaders/deferred");
+  //std::ostringstream baostring;
+  //baostring << bf->stream->rdbuf();
   //delete bf;
 
   //printf("abostring: %s", abostring.str().c_str());
 
-  GLuint monotex_vert = CompileShader(GL_VERTEX_SHADER, aaostring.str(),
-                                      "Temporary Monotexture shader (VERT)");
-  GLuint monotex_frag = CompileShader(GL_FRAGMENT_SHADER, abostring.str(),
-                                      "Temporary Monotexture shader (FRAG)");
-  GLuint defer_frag = CompileShader(GL_FRAGMENT_SHADER, baostring.str(),
-                                    "Temporary Deferred shader (FRAG)");
+  GLuint vertPlain = CompileShader(GL_VERTEX_SHADER, aaostring.str(),
+                                      "Plain vertex (VERT)");
+  GLuint fragTexNorm = CompileShader(GL_FRAGMENT_SHADER, dataTexNorm,
+                                      "Tex-Coord & Normal (FRAG)");
+  GLuint fragSky = CompileShader(GL_FRAGMENT_SHADER, dataSky,
+                                      "Sky (FRAG)");
+  //GLuint defer_frag = CompileShader(GL_FRAGMENT_SHADER, baostring.str(),
+  //                                  "Temporary Deferred shader (FRAG)");
 
-  Resources::GL_Shader::vertId = monotex_vert;
+  Resources::GL_Shader::vertId = vertPlain;
 
-  temp_prog_monotex = glCreateProgram();
-  glAttachShader(temp_prog_monotex, monotex_vert);
-  glAttachShader(temp_prog_monotex, monotex_frag);
-  glLinkProgram(temp_prog_monotex);
-  glUseProgram(temp_prog_monotex);
+  progTexnorm = glCreateProgram();
+  glAttachShader(progTexnorm, vertPlain);
+  glAttachShader(progTexnorm, fragTexNorm);
+  glLinkProgram(progTexnorm);
+  glUseProgram(progTexnorm);
   
-  temp_prog_monotex_id = glGetUniformLocation(temp_prog_monotex, "type");
+  progTexnormType = glGetUniformLocation(progTexnorm, "type");
   
-  //printf("TYPE EGGS MC BIRD BIRD: %u\n", temp_prog_monotex_id);
-
-  temp_prog_deferred = glCreateProgram();
-  glAttachShader(temp_prog_deferred, monotex_vert);
-  glAttachShader(temp_prog_deferred, defer_frag);
-  glLinkProgram(temp_prog_deferred);
-  glUseProgram(temp_prog_deferred);
-
-  glProgramUniform4f(temp_prog_deferred,
-                     glGetUniformLocation(temp_prog_deferred, "skyColor"), 1.0f,
-                     1.0f, 1.0f, 1.0f);
-  glProgramUniform1f(temp_prog_deferred,
-                     glGetUniformLocation(temp_prog_deferred, "fog"), 0.02f);
-
-  glUniform1i(glGetUniformLocation(temp_prog_deferred, "texture0"), 0);
-  glUniform1i(glGetUniformLocation(temp_prog_deferred, "texture1"), 1);
-  glUniform1i(glGetUniformLocation(temp_prog_deferred, "texture2"), 2);
-  glUniform1i(glGetUniformLocation(temp_prog_deferred, "texture3"), 3);
-  glUniform1i(glGetUniformLocation(temp_prog_deferred, "texture4"), 4);
-  glUniform1i(glGetUniformLocation(temp_prog_deferred, "texture5"), 5);
+  progSky = glCreateProgram();
+  glAttachShader(progSky, vertPlain);
+  glAttachShader(progSky, fragSky);
+  glLinkProgram(progSky);
+  glUseProgram(progSky);
+  
+  progSkyType = glGetUniformLocation(progSky, "type");
+  progSkyPresp = glGetUniformLocation(progSky, "invPresp");
 
   //delete [] interlevedDataA;
 
   // Plane Vertex and Normals
-  GLfloat interlevedDataB[] = {
+  GLfloat interlevedDataB[] = {                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
       -0.5, -0.5, 0.0,
       0.0, 0.0, 1.0,
       0.5, -0.5, 0.0,
@@ -201,6 +189,7 @@ void Setup() {
 }
 
 // KLoader.java line 300?
+// Compiles a shader, nothing else
 GLuint CompileShader(GLenum type, const std::string& code,
                      const std::string& errorname) {
   GLuint a = glCreateShader(type);
@@ -227,7 +216,7 @@ GLuint CompileShader(GLenum type, const std::string& code,
   return a;
 }
 
-float temp_fog = 0.0f;
+float fog = 0.0f;
 
 void Three(KObj::OKO_Camera_* c, uint16_t width, uint16_t height) {
 
@@ -249,12 +238,11 @@ void Three(KObj::OKO_Camera_* c, uint16_t width, uint16_t height) {
   glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
   glClearDepth(10.0f);
 
-  temp_fog += (Input::Get(Input::ControlIndex("DEBUGA"))->x
+  fog += (Input::Get(Input::ControlIndex("DEBUGA"))->x
       - Input::Get(Input::ControlIndex("DEBUGB"))->x) / 100;
-  //printf("fog: %f\n", temp_fog);
-  //glGetUniformiv(temp_prog_monotex, glGetUniformLocation(temp_prog_monotex, "type"), &30);
-  glUseProgram(temp_prog_monotex);
-  //printf("uniform type: %i\n", glGetUniformLocation(temp_prog_monotex, "color"));
+  //printf("fog: %f\n", fog);
+  //glGetUniformiv(prog_monotex, glGetUniformLocation(prog_monotex, "type"), &30);
+  //printf("uniform type: %i\n", glGetUniformLocation(prog_monotex, "color"));
 }
 
 void Two(uint8_t window) {
@@ -277,6 +265,47 @@ void Two(uint8_t window) {
 
 void RenderCube(float scale) {
 
+  // this is static, so it is consistent between calls
+  static GLuint beef = 0;
+
+  // if not loaded, then load
+  if (beef == 0) {
+    static GLfloat interlevedDataA[] = {
+        0.5,  -0.5, 0.5,  0.0,  -1.0, 0.0,  0.5,  0.25, -0.5, -0.5, 0.5,  0.0,
+        -1.0, 0.0,  0.5,  0.5,  -0.5, -0.5, -0.5, 0.0,  -1.0, 0.0,  0.25, 0.5,
+        -0.5, 0.5,  -0.5, 0.0,  1.0,  0.0,  0.25, 0.75, -0.5, 0.5,  0.5,  0.0,
+        1.0,  0.0,  0.5,  0.75, 0.5,  0.5,  0.5,  0.0,  1.0,  0.0,  0.5,  1.0,
+        0.5,  0.5,  -0.5, 1.0,  0.0,  0.0,  1.0,  0.75, 0.5,  0.5,  0.5,  1.0,
+        0.0,  0.0,  0.75, 0.75, 0.5,  -0.5, 0.5,  1.0,  0.0,  0.0,  0.75, 0.5,
+        0.5,  0.5,  0.5,  0.0,  0.0,  1.0,  0.75, 0.75, -0.5, 0.5,  0.5,  0.0,
+        0.0,  1.0,  0.5,  0.75, -0.5, -0.5, 0.5,  0.0,  0.0,  1.0,  0.5,  0.5,
+        -0.5, -0.5, 0.5,  -1.0, 0.0,  0.0,  0.5,  0.5,  -0.5, 0.5,  0.5,  -1.0,
+        0.0,  0.0,  0.5,  0.75, -0.5, 0.5,  -0.5, -1.0, 0.0,  0.0,  0.25, 0.75,
+        0.5,  -0.5, -0.5, 0.0,  0.0,  -1.0, 0.0,  0.5,  -0.5, -0.5, -0.5, 0.0,
+        0.0,  -1.0, 0.25, 0.5,  -0.5, 0.5,  -0.5, 0.0,  0.0,  -1.0, 0.25, 0.75,
+        0.5,  -0.5, -0.5, 0.0,  -1.0, 0.0,  0.25, 0.25, 0.5,  -0.5, 0.5,  0.0,
+        -1.0, 0.0,  0.5,  0.25, -0.5, -0.5, -0.5, 0.0,  -1.0, 0.0,  0.25, 0.5,
+        0.5,  0.5,  -0.5, 0.0,  1.0,  0.0,  0.25, 1.0,  -0.5, 0.5,  -0.5, 0.0,
+        1.0,  0.0,  0.25, 0.75, 0.5,  0.5,  0.5,  0.0,  1.0,  0.0,  0.5,  1.0,
+        0.5,  -0.5, -0.5, 1.0,  0.0,  0.0,  1.0,  0.5,  0.5,  0.5,  -0.5, 1.0,
+        0.0,  0.0,  1.0,  0.75, 0.5,  -0.5, 0.5,  1.0,  0.0,  0.0,  0.75, 0.5,
+        0.5,  -0.5, 0.5,  0.0,  0.0,  1.0,  0.75, 0.5,  0.5,  0.5,  0.5,  0.0,
+        0.0,  1.0,  0.75, 0.75, -0.5, -0.5, 0.5,  0.0,  0.0,  1.0,  0.5,  0.5,
+        -0.5, -0.5, -0.5, -1.0, 0.0,  0.0,  0.25, 0.5,  -0.5, -0.5, 0.5,  -1.0,
+        0.0,  0.0,  0.5,  0.5,  -0.5, 0.5,  -0.5, -1.0, 0.0,  0.0,  0.25, 0.75,
+        0.5,  0.5,  -0.5, 0.0,  0.0,  -1.0, 0.0,  0.75, 0.5,  -0.5, -0.5, 0.0,
+        0.0,  -1.0, 0.0,  0.5,  -0.5, 0.5,  -0.5, 0.0,  0.0,  -1.0, 0.25, 0.75};
+
+    glGenBuffers(1, &beef);
+    glBindBuffer(GL_ARRAY_BUFFER, beef);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(interlevedDataA), interlevedDataA,
+                 GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+    // This means, the first call isn't drawn, but loaded
+    return;
+  }
+  
   // this code almost all worked when pasted from LWJGL Kondion
 
   glPushMatrix();
@@ -475,18 +504,31 @@ void GLRenderPass::render() {
       Three(camera, width, height);
     else
       Three(currentCamera, width, height);
+      
+    glUseProgram(progSky);
 
     for (size_t i = 0; i < items.size(); i++) {
       if (!items[i]->complex) {
         glPushMatrix();
         //printf("Material: %u\n", items[i]->material);
-        glUniform1i(temp_prog_monotex_id, items[i]->material + 1);
+        //glUniform1i(progTexnormType, items[i]->material + 1);
         //printf("MATERIAL: %u %s POINT: %p\n", items[i]->material, Kondion::KMaterial::materials.size(), items[i]);
-        //glUniform1i(temp_prog_monotex_id, i);
+        //glUniform1i(prog_monotex_id, i);
         items[i]->render();
         glPopMatrix();
       }
     }
+    
+    glUseProgram(progSky);
+
+    // For the sky shader to do it's calculations
+    glm::mat4 presp;
+    glGetFloatv(GL_PROJECTION_MATRIX, &presp[0][0]);
+    Debug::printMatrix(presp);
+    presp = glm::inverse(presp);
+    //printf("e %i\n", progSkyPresp);
+    Debug::printMatrix(presp);
+    glUniformMatrix4fv(progSkyPresp, 1, GL_FALSE, &presp[0][0]);
 
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
@@ -510,6 +552,11 @@ void GLRenderPass::render() {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, ids[3]); // normals
     glActiveTexture(GL_TEXTURE3);
+    
+    glTranslatef(width / 2.0f, height / 2.0f, -1.0f);
+    
+    //RenderQuad(-width, -height);
+    
     glEnable(GL_TEXTURE_2D);
     //glBindTexture(GL_TEXTURE_2D, ids[4]);
     glActiveTexture(GL_TEXTURE4);
@@ -520,7 +567,6 @@ void GLRenderPass::render() {
     //glBindTexture(GL_TEXTURE_2D, ids[6]);
 
     glDrawBuffers(1, ducky + 2);
-    glTranslatef(width / 2.0f, height / 2.0f, -1.0f);
     
     Kondion::Resources::KShader* shader;
     

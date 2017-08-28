@@ -42,7 +42,7 @@ class GLRenderPass : public RenderPass {
   void render();
   void scan();
   GLuint id(uint8_t a) {
-    return ids[8];
+    return ids[3];
   }
   //GLRenderPass();
   GLuint* ids;
