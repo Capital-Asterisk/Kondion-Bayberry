@@ -8,6 +8,7 @@
 #include <GL/glew.h>
 #include <GL/glext.h>
 #include <GLFW/glfw3.h>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include <sstream>
 
@@ -86,6 +87,9 @@ void Setup() {
 
   static char dataSky[] = 
     "#version 120\n"
+    
+    "#define PI 3.1415926535897932384626433832795028841\n"
+    
     "uniform int type;"
     "uniform mat4 invPresp;"
     
@@ -101,11 +105,11 @@ void Setup() {
 
     "void main() {"
     "  vec3 norm = normalize(vec3(invPresp * vec4( "
-    "           2.0 * (gl_FragCoord.x - 0.0) / 1.0 - 1.0, "
-    "           2.0 * (gl_FragCoord.y - 0.0) / 1.0 - 1.0,"
-    "           2.0 * 0.5 - 1.0,"
+    "           (800.0 - gl_FragCoord.x) / 800 - 0.5, "
+    "           (gl_FragCoord.y) / 600 - 0.5,"
+    "           1.0,"
     "           1.0)));"
-    "  gl_FragData[0] = vec4(norm.z, 0, 1.0 / 255.0, 1.0);"
+    "  gl_FragData[0] = vec4((atan2(norm.z, norm.x) + PI) / (PI * 2), (norm.y + 1) / 2, 1.0 / 255.0, 1.0);"
     "  gl_FragData[1] = vec4((norm + 1.0) / 2, 1.0);"
     "}";
 
@@ -523,11 +527,13 @@ void GLRenderPass::render() {
 
     // For the sky shader to do it's calculations
     glm::mat4 presp;
-    glGetFloatv(GL_PROJECTION_MATRIX, &presp[0][0]);
-    Debug::printMatrix(presp);
+    //glGetFloatv(GL_PROJECTION_MATRIX, &presp[0][0]);
+    //Debug::printMatrix(presp);
+    // Remove translation
+    presp = glm::lookAt(glm::vec3(0.0f), glm::vec3(currentCamera->orientation[2]), glm::vec3(currentCamera->orientation[1]));
     presp = glm::inverse(presp);
     //printf("e %i\n", progSkyPresp);
-    Debug::printMatrix(presp);
+    //Debug::printMatrix(presp);
     glUniformMatrix4fv(progSkyPresp, 1, GL_FALSE, &presp[0][0]);
 
     glViewport(0, 0, width, height);
@@ -555,7 +561,7 @@ void GLRenderPass::render() {
     
     glTranslatef(width / 2.0f, height / 2.0f, -1.0f);
     
-    //RenderQuad(-width, -height);
+    RenderQuad(-width, -height);
     
     glEnable(GL_TEXTURE_2D);
     //glBindTexture(GL_TEXTURE_2D, ids[4]);
