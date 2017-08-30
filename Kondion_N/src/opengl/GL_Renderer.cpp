@@ -106,10 +106,10 @@ void Setup() {
     "void main() {"
     "  vec3 norm = normalize(vec3(invPresp * vec4( "
     "           (800.0 - gl_FragCoord.x) / 800 - 0.5, "
-    "           (gl_FragCoord.y) / 600 - 0.5,"
+    "           (gl_FragCoord.y) / 800 - 0.5,"
     "           1.0,"
     "           1.0)));"
-    "  gl_FragData[0] = vec4((atan2(norm.z, norm.x) + PI) / (PI * 2), (norm.y + 1) / 2, 1.0 / 255.0, 1.0);"
+    "  gl_FragData[0] = vec4((atan2(norm.z, norm.x) + PI) / (PI * 2), acos(norm.y) / PI, 1.0 / 255.0, 1.0);"
     "  gl_FragData[1] = vec4((norm + 1.0) / 2, 1.0);"
     "}";
 
@@ -509,13 +509,13 @@ void GLRenderPass::render() {
     else
       Three(currentCamera, width, height);
       
-    glUseProgram(progSky);
+    glUseProgram(progTexnorm);
 
     for (size_t i = 0; i < items.size(); i++) {
       if (!items[i]->complex) {
         glPushMatrix();
         //printf("Material: %u\n", items[i]->material);
-        //glUniform1i(progTexnormType, items[i]->material + 1);
+        glUniform1i(progTexnormType, items[i]->material + 1);
         //printf("MATERIAL: %u %s POINT: %p\n", items[i]->material, Kondion::KMaterial::materials.size(), items[i]);
         //glUniform1i(prog_monotex_id, i);
         items[i]->render();
@@ -545,6 +545,15 @@ void GLRenderPass::render() {
     glLoadIdentity();
 
     glDepthMask(false);
+    //glDisable(GL_DEPTH_TEST);
+    //glDepthFunc(GL_LESS);
+
+    glTranslatef(width / 2.0f, height / 2.0f, 6.0f);
+    
+    RenderQuad(-width, -height);
+    
+    glDepthFunc(GL_LEQUAL);
+
     glDisable(GL_DEPTH_TEST);
 
     glEnable(GL_TEXTURE_2D);
@@ -559,10 +568,7 @@ void GLRenderPass::render() {
     glBindTexture(GL_TEXTURE_2D, ids[3]); // normals
     glActiveTexture(GL_TEXTURE3);
     
-    glTranslatef(width / 2.0f, height / 2.0f, -1.0f);
-    
-    RenderQuad(-width, -height);
-    
+
     glEnable(GL_TEXTURE_2D);
     //glBindTexture(GL_TEXTURE_2D, ids[4]);
     glActiveTexture(GL_TEXTURE4);

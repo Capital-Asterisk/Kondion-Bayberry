@@ -121,18 +121,18 @@ void GL_Shader::prepareMaterial(KMaterial* material) {
       // types are determined at ParseShader in KondionV8
       switch (uniformTypes[i]) {
         case 0: // i don't think int/uint matters, byte size same
-        case 1:
+        case 1: // int
         //case 0 .. 1:
           material->uniforms[i] = new uint32_t(1);
           break;
-        case 10:
+        case 10: // float
           material->uniforms[i] = new float(0.5f);
           break;
-        case 11:
+        case 11: // double
           material->uniforms[i] = new double(0.5);
           break;
-        case 30:
-          material->uniforms[i] = new int16_t(0);
+        case 30: // texture {ktexture index}
+          material->uniforms[i] = new uint16_t(0);
           break;
       }
     }
@@ -155,28 +155,36 @@ void GL_Shader::Utilize(Renderer::RenderPass* pass, KMaterial* material) {
     glUniform1f(uniformsLocations[2], KObj_Node::worldObject->sceneTime);
     glUniform1i(uniformsLocations[3], p->normalmode);
     //printf("COUNT: %u\n", uniformCount);
-    
+
     if (!material->uniformSet)
       return;
-      
+
+    uint16_t tex = 0;
+
     for (uint8_t i = 0; i < uniformCount; i ++) {
       //printf("type: %i\n", uniformTypes[i]);
       switch ((uniformsLocations[16 + i] != -1) ? uniformTypes[i] : -1) {
         case 0: // i don't think int/uint matters, byte size same
         case 1:
         //case 0 .. 1:
-          glUniform1i(uniformsLocations[16 + i], *static_cast<int32_t*>(material->uniforms[i]));
+          glUniform1i(uniformsLocations[16 + i],
+                      *static_cast<int32_t*>(material->uniforms[i]));
           ///printf("UNII %i %i \n", uniformsLocations[16 + i], *static_cast<int32_t*>(material->uniforms[i]));
           break;
         case 10:
-          glUniform1f(uniformsLocations[16 + i], *static_cast<float*>(material->uniforms[i]));
-          printf("UNIF %i %p \n", uniformsLocations[16 + i], material->uniforms[i]);
+          glUniform1f(uniformsLocations[16 + i],
+                      *static_cast<float*>(material->uniforms[i]));
+          //printf("UNIF %i %p \n", uniformsLocations[16 + i], material->uniforms[i]);
           break;
         case 11:
           //material->uniforms[i] = new double;
           break;
         case 30:
-          //material->uniforms[i] = new int16_t;
+          glUniform1i(uniformsLocations[16 + i], tex);
+          glActiveTexture(GL_TEXTURE0 + tex);
+          Resources::KTexture::textures[*static_cast<int16_t*>(material->uniforms[i])]->Bind();
+          //*static_cast<int16_t*>(material->uniforms[i])
+          tex ++;
           break;
       }
     }

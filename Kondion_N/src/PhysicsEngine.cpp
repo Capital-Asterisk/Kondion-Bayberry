@@ -30,7 +30,7 @@ void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
       1 - glm::abs(glm::dot(glm::normalize(force), glm::normalize(position)));
   // the sigmoid thing that calculates how much percent of energy goes into
   // angular stuff
-  float amt = (dist == 0.0f) ? 0.0f : dist / (ent->radialMass + dist) * dot;
+  float amt = (dist == 0.0f) ? 0.0f : dist / (ent->radialMass / 2.0 + dist) * dot;
 
   // amount of rotation
   // sqrt(f/0.5i) = v

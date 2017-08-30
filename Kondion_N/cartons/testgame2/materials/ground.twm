@@ -12,6 +12,7 @@ u3: texture nmap
 #rows/width x column/height
 123x456: 
 #This shader is actually really bad
-[]coords[c0] |                   | [v0,c0]distance[d0] | [0.5,d0]sub[d1] | [d1,0.5]add[d2] | [d2,d2,d2,1.0]out[] | -
+[]coords[c0] |                   | [v0,c0]distance[d0] | [0.5,d0]sub[d1] | [d1,0.5]add[d2] | [x1,1.0]out[] | -
+             |                   | [u2,c0]texture[x0] | [x0,d2]mul[x1] | -
 []normal[n0] | [0.5,0.5]vec2[v0] | -
 []sntime[t0] | [t0,1.0]mod[t1] | [n0,t1]mul[n1] | [n0]norout[] | -
