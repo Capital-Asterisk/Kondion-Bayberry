@@ -83,7 +83,7 @@ void Callback_OKO_SetOffsetPosition(
 void Callback_OKO_Translate(const FunctionCallbackInfo<v8::Value>& args) {
   if (args.IsConstructCall() || args.Length() < 3)
     return;
-  Local<Array> a = Local<Array>::Cast(args[0]);
+  //Local<Array> a = Local<Array>::Cast(args[0]);
   KObj_Oriented* pointer_this =
       static_cast<KObj_Oriented*>(Local<External>::Cast(
           args.This()->GetInternalField(0))->Value());

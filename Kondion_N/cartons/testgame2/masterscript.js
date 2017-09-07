@@ -3,8 +3,7 @@
  * @author Neal Nicdao (Capital_Asterisk)
  */
  
-var matman;
-var ripmat;
+var matman, ripmat, flrmat;
 
 function quickMakeACube(name, pos, velo) {
   var ent = new KObj_Entity();
@@ -205,7 +204,7 @@ kdion.globalUpdate(function() {
           Math.random() * 24.0 - 12.0]);
   }
   
-  
+  flrmat.setUniform(2, Math.floor(Math.random() * 3));
   
 });
 

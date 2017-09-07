@@ -131,7 +131,7 @@ void GL_Shader::prepareMaterial(KMaterial* material) {
         case 11: // double
           material->uniforms[i] = new double(0.5);
           break;
-        case 30: // texture {ktexture index}
+        case 30: // texture index
           material->uniforms[i] = new uint16_t(0);
           break;
       }

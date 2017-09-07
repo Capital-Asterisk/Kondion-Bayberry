@@ -105,26 +105,6 @@ void Callback_Component(const FunctionCallbackInfo<Value>& args) {
   }
 }
 
-void Callback_Material(const FunctionCallbackInfo<Value>& args) {
-  //if (args.Length() < 1) return;
-  HandleScope handle_scope(isolate);
-
-  if (args.IsConstructCall()) {
-    std::string arg = std::string(*String::Utf8Value(args[0]));
-    KMaterial* o = new KMaterial;
-
-    for (uint16_t i = 0; i < Resources::KShader::shaders.size(); i ++) {
-      if (arg == Resources::KShader::shaders[i]->identifier) {
-        //printf("Match: %s\n", Resources::KShader::shaders[i]->identifier.c_str());
-        o->shader = i;
-      }
-    }
-    
-    args.This()->SetInternalField(0, External::New(isolate, o));
-    args.GetReturnValue().Set(args.This());
-  }
-}
-
 void Callback_Component_GetMatrix(const FunctionCallbackInfo<Value>& args) {
   if (args.IsConstructCall() || args.Length() == 0
       || !(args[0]->IsFloat32Array() || args[0]->IsArray()))
@@ -183,6 +163,81 @@ void Callback_Component_SetMatrix(const FunctionCallbackInfo<Value>& args) {
   //Debug::printMatrix(pointer_this->offset);
   //static_cast<Bird*>(pointer)->integrity = value->Int32Value();
 }
+
+void Callback_Material(const FunctionCallbackInfo<Value>& args) {
+  //if (args.Length() < 1) return;
+  HandleScope handle_scope(isolate);
+
+  if (args.IsConstructCall()) {
+    std::string arg = std::string(*String::Utf8Value(args[0]));
+    KMaterial* o = new KMaterial;
+
+    for (uint16_t i = 0; i < Resources::KShader::shaders.size(); i ++) {
+      if (arg == Resources::KShader::shaders[i]->identifier) {
+        //printf("Match: %s\n", Resources::KShader::shaders[i]->identifier.c_str());
+        o->shader = i;
+      }
+    }
+    
+    args.This()->SetInternalField(0, External::New(isolate, o));
+    args.GetReturnValue().Set(args.This());
+  }
+}
+
+void Callback_Material_GetId(const FunctionCallbackInfo<Value>& args) {
+  
+  
+}
+
+void Callback_Material_GetUniform(const FunctionCallbackInfo<Value>& args) {
+  
+}
+
+void Callback_Material_SetUniform(const FunctionCallbackInfo<Value>& args) {
+  if (args.IsConstructCall() || args.Length() < 2 || !args[0]->IsNumber())
+    return;
+  
+  KMaterial* pointerThis =
+      static_cast<KMaterial*>(Local<External>::Cast(
+        args.This()->GetInternalField(0))->Value());
+        
+  uint16_t index = args[0]->NumberValue();
+  
+  // KShader::shaders[pointerThis->shader]
+  Resources::KShader* shader = Resources::KShader::shaders[pointerThis->shader];
+  
+  if (shader->uniformCount <= index) 
+    return;
+    
+ 
+  
+  switch (shader->uniformTypes[index]) {
+    case 0: // int
+      (*static_cast<int32_t*>(pointerThis->uniforms[index])) = uint32_t(args[1]->NumberValue());
+    case 1: // uint
+      (*static_cast<uint32_t*>(pointerThis->uniforms[index])) = int32_t(args[1]->NumberValue());
+      break;
+    case 10: // float
+      (*static_cast<float*>(pointerThis->uniforms[index])) = float(args[1]->NumberValue());
+      break;
+    case 11: // double
+      (*static_cast<double*>(pointerThis->uniforms[index])) = args[1]->NumberValue();
+      break;
+    case 30: // texture
+      if (args[0]->IsNumber())
+        (*static_cast<int16_t*>(pointerThis->uniforms[index])) = uint16_t(args[1]->NumberValue());
+      
+      break;
+  }
+  
+  //for (uint16_t i = 0; i < shader->uniformCount; i ++)
+  
+  
+  
+}
+
+
+
 
 void Callback_KObj_Entity(const FunctionCallbackInfo<Value>& args) {
   HandleScope handle_scope(isolate);

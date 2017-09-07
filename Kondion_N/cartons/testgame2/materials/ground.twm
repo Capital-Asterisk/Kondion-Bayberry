@@ -5,7 +5,7 @@ author: "neal",eggs: "e"
 }
 
 u0: float eggs
-u1: int count
+u1: int counts
 u2: texture tex0
 u3: texture nmap
 

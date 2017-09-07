@@ -217,7 +217,7 @@ size_t Enter(size_t id, const std::string& key) {
   size_t j = 0;
   for (size_t i = 0; i < objects.size(); i++) {
     if (objects[i] == NULL) {
-      printf("taking space: %i\n", i);
+      printf("taking space: %u\n", i);
       objects[i] = objC;
       return i;
     }
@@ -410,6 +410,10 @@ void Setup() {
   Local<FunctionTemplate> kmaterial = FunctionTemplate::New(
       isolate, Callback_Material);
   kmaterial->InstanceTemplate()->SetInternalFieldCount(1);
+  
+  kmaterial->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "setUniform"),
+      FunctionTemplate::New(isolate, Callback_Material_SetUniform));
 
 
   // *** KObj constructors

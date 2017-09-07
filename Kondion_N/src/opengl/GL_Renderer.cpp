@@ -438,17 +438,17 @@ void GLRenderPass::generate() {
                          ids[1], 0);
 
   // Coords (RG), Materials (B)
-  neat(ids + 2, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+  neat(ids + 2, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_SHORT);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          ids[2], 0);
 
   // Normals (RGB)
-  neat(ids + 3, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+  neat(ids + 3, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_SHORT);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D,
                          ids[3], 0);
 
   // Mapped Normals (RGB)
-  neat(ids + 4, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
+  neat(ids + 4, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_SHORT);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D,
                          ids[4], 0);
 
