@@ -204,7 +204,7 @@ kdion.globalUpdate(function() {
           Math.random() * 24.0 - 12.0]);
   }
   
-  flrmat.setUniform(2, Math.floor(Math.random() * 3));
+  flrmat.setUniform(2, Math.floor(Math.random() * 3) * 0 + 1);
   
 });
 

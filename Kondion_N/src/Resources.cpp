@@ -222,10 +222,10 @@ void Setup() {
   }
 
   glEnable(GL_TEXTURE_2D);
-  GLuint textureId;
-  glGenTextures(1, &textureId);
-  //std::cout << "Tex: " << textureId << "\n";
-  glBindTexture(GL_TEXTURE_2D, textureId);
+  GLuint textureId[2];
+  glGenTextures(2, textureId);
+  
+  glBindTexture(GL_TEXTURE_2D, textureId[0]);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 32, 32, 0, GL_BGR, GL_UNSIGNED_BYTE,
                ktt2);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -233,9 +233,23 @@ void Setup() {
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
+  glBindTexture(GL_TEXTURE_2D, textureId[1]);
+  //https://stackoverflow.com/questions/327642/opengl-and-monochrome-texture
+  float ind[] = {0.0, 1.0};
+  glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+  glPixelMapfv(GL_PIXEL_MAP_I_TO_R, 2, ind);
+  glPixelMapfv(GL_PIXEL_MAP_I_TO_G, 2, ind);
+  glPixelMapfv(GL_PIXEL_MAP_I_TO_B, 2, ind);
+  glPixelMapfv(GL_PIXEL_MAP_I_TO_A, 2, ind);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 128, 128, 0, GL_COLOR_INDEX, GL_BITMAP, kondismol_data);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-  KTexture::textures[0] = new KTexture("k_test", textureId, 32, 32);
+  KTexture::textures[0] = new KTexture("k_test", textureId[0], 32, 32);
+  KTexture::textures[1] = new KTexture("k_font", textureId[1], 80, 128);
 
+  delete[] ktt2;
+  
   //Raw* f = Get("kotega_2:masterscript");
 
   //printf("masterscript stream open?: %i\n", f->stream);

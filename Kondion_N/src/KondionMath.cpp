@@ -119,8 +119,8 @@ void printWorld() {
       running = false;
     }
   }
-  
-  printf("E: %u %u %u\n", kondismol_data[0], kondismol_data[1], kondismol_data[2]);
+
+  printf("E: %u %u %u\n", uint8_t(kondismol_data[0]), uint8_t(kondismol_data[1]), uint8_t(kondismol_data[2]));
 
   //delete[] stack
 }

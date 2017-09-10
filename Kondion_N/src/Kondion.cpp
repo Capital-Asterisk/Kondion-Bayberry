@@ -411,7 +411,10 @@ int main(int argc, const char* argv[]) {
     // Setup V8
     Kondion::JS::Setup();
 
-    // make space for the default texture.
+    // make space for the default texture
+    //Kondion::Resources::KTexture::textures.reserve(12);
+    //for (uint8_t i = 0; i < 2; i++)
+    Kondion::Resources::KTexture::textures.push_back(NULL);
     Kondion::Resources::KTexture::textures.push_back(NULL);
     
     // Add default material
