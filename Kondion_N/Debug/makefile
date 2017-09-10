@@ -46,7 +46,8 @@ all: Kondion\ N
 Kondion\ N: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C++ Linker'
-	g++ -o "Kondion N" $(OBJS) $(USER_OBJS) $(LIBS) -Wl,--start-group /home/neal/depot_tools/v8/out/x64.release/obj.target/{tools/gyp/libv8_{base,libbase,external_snapshot,libplatform},third_party/icu/libicu{uc,i18n,data}}.a -Wl,--end-group -lrt -ldl -pthread
+	g++ -o "Kondion N" $(OBJS) $(USER_OBJS) $(LIBS) -Wl,--start-group /home/neal/depot_tools/v8/v8/out/native/obj.target/{tools/gyp/libv8_{base,libbase,external_snapshot,libplatform},third_party/icu/libicu{uc,i18n,data}}.a -Wl,--end-group -lrt -ldl -pthread
+
 	@echo 'Finished building target: $@'
 	@echo ' '
 

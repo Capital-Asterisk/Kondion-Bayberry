@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "Kondion.h"
+#include "ktt2.h"
 
 namespace Kondion {
 
@@ -118,8 +119,10 @@ void printWorld() {
       running = false;
     }
   }
+  
+  printf("E: %u %u %u\n", kondismol_data[0], kondismol_data[1], kondismol_data[2]);
 
-  //delete[] stack;
+  //delete[] stack
 }
 
 }
