@@ -29,6 +29,7 @@ GLuint bacon; // "plane"
 GLuint grill; // "plane coordinates"
 
 //GLuint progDeferred;
+//GLuint progFont;
 GLuint progTexnorm;
 GLuint progTexnormType;
 GLuint progSky;
@@ -57,6 +58,10 @@ void Composite() {
   
   // Draw the thing
   RenderQuad(800, 600);
+  
+  glScalef(2.0f, 2.0f, 1.0f);
+  
+  DebugText("Not Hello World, silly bird");
 }
 
 void Consider(KObj_Renderable* a) {
@@ -265,6 +270,49 @@ void Two(uint8_t window) {
   //GLDrawing.setCoords(new float[] {1, 1, 0, 1, 0, 0, 1, 0});
   glDisable(GL_DEPTH_TEST);
   glDisable(GL_CULL_FACE);
+}
+
+void DebugText(const std::string& text) {
+  glUseProgram(0);
+  glBindTexture(GL_TEXTURE_2D, Resources::KTexture::textures[1]->textureId);
+  
+  // Got very lazy, code inefficient
+  
+  //glPushMatrix();
+  //glScalef(5, -8, -1.0f);
+  float width = 0.625f;
+  float height = 1.0f;
+  float divx = 16.0f;
+  float divy = 16.0f;
+  float spacing = 6.0f;
+  float cwidth = width / divx;
+  float cheight = height / divy;
+  
+  
+  glBegin(GL_QUADS);
+  float cx, cy;
+  
+  for (uint16_t i = 0; i < text.length(); i ++) {
+    uint8_t c = 255 - uint8_t(text[i]);
+    cx = cwidth * (divx - float(c % uint8_t(divx)));
+    cy = cheight * int(c / divy);
+    printf("%f %f\n", cx + cwidth, cy);
+    glTexCoord2f(cx, cy + cheight);
+    glNormal3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(0.0f - i * spacing, 8.0f, 0.0f);
+    glTexCoord2f(cx - cwidth, cy + cheight);
+    glNormal3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(5.0f - i * spacing, 8.0f, 0.0f);
+    glTexCoord2f(cx - cwidth, cy);
+    glNormal3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(5.0f - i * spacing, 0.0f, 0.0f);
+    glTexCoord2f(cx, cy);
+    glNormal3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(0.0f - i * spacing, 0.0f, 0.0f);
+  }
+  glEnd();
+  //glPopMatrix();
+
 }
 
 void RenderCube(float scale) {

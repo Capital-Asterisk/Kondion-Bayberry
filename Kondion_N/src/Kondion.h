@@ -511,6 +511,7 @@ void Consider(KObj_Renderable* a);
 void Setup();
 void Three(KObj::OKO_Camera_* c, uint16_t width, uint16_t height);
 void Two(uint8_t window);
+void DebugText(const std::string& text);
 void RenderCube(float scale);
 void RenderQuad(float width, float height);
 }
