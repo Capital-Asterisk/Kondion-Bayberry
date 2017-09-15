@@ -89,6 +89,22 @@ void Callback_Entity_AddComponent(const FunctionCallbackInfo<Value>& args) {
   pointer_this->components.push_back(pointer_arg0);
 }
 
+void Callback_Entity_GetVelocity(const FunctionCallbackInfo<Value>& args) {
+  if (args.IsConstructCall() || args.Length() == 0
+      || !(args[0]->IsFloat32Array() || args[0]->IsArray()))
+    return;
+  KObj_Entity* pointer_this =
+          static_cast<KObj_Entity*>(Local<External>::Cast(
+              args.This()->GetInternalField(0))->Value());
+
+  Local<Float32Array> a = Local<Float32Array>::Cast(args[0]);
+  a->Set(0, Number::New(isolate, pointer_this->velocity.x));
+  a->Set(1, Number::New(isolate, pointer_this->velocity.y));
+  a->Set(2, Number::New(isolate, pointer_this->velocity.z));
+  //pointer_this->offset[0][0];
+  //static_cast<Bird*>(pointer)->integrity = value->Int32Value();
+}
+
 void Callback_Entity_SetMaterial(const FunctionCallbackInfo<Value>& args) {
   if (args.IsConstructCall() || args.Length() == 0)
     return;

@@ -195,7 +195,10 @@ kdion.globalUpdate(function() {
   
   // Then translate, change this to something else soon
   kdion.e.thrustN([0.0, 0.0, 0.0], [foo[0] / 100.0, 0.0, foo[2] / 100.0]);
-  
+
+  kdion.e.getVelocity(foo)
+  kdion.debug.velocity = vec3.str(foo);
+
   // CUBE SPAM!
   if (kdion.input["DEBUGB"]) {
     quickMakeACube("asdf" + Math.random(), [0.0, 2.0, 5.0], [
@@ -204,7 +207,7 @@ kdion.globalUpdate(function() {
           Math.random() * 24.0 - 12.0]);
   }
   
-  flrmat.setUniform(2, Math.floor(Math.random() * 3) * 0 + 1);
+  flrmat.setUniform(2, Math.floor(Math.random() * 3) * 0 + 2);
   
 });
 

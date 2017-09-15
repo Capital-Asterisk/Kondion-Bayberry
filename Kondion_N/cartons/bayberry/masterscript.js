@@ -413,4 +413,5 @@ kdion.unLoad = function(object) {
   }
 }
 
+kdion.debug = {e: "hey there"}
 kdion.log("-> Done!");

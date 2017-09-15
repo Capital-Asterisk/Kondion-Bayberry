@@ -42,6 +42,7 @@ Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_mater
 
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_kobj_node;
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_oko_camera;
+Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_sky;
 
 // kobj js object:
 // translate(x, y, z);
@@ -331,6 +332,21 @@ void Callback_GKO_World(const FunctionCallbackInfo<Value>& args) {
     KObj::GKO_World* o = new KObj::GKO_World;
     //o->components.push_back(new Component::CPN_Cube);
     o->name = "World";
+    o->jsObject = new Persistent<Object,
+        CopyablePersistentTraits<Object>>(isolate, args.This());
+    //Kondion::world.push_back(o);
+    args.This()->SetInternalField(0, External::New(isolate, o));
+    args.GetReturnValue().Set(args.This());
+  }
+}
+
+void Callback_RKO_Sky(const FunctionCallbackInfo<Value>& args) {
+  HandleScope handle_scope(isolate);
+  if (args.IsConstructCall()) {
+    //printf("NEW: World\n");
+    KObj::RKO_Sky* o = new KObj::RKO_Sky;
+    //o->components.push_back(new Component::CPN_Cube);
+    o->name = "Sky";
     o->jsObject = new Persistent<Object,
         CopyablePersistentTraits<Object>>(isolate, args.This());
     //Kondion::world.push_back(o);

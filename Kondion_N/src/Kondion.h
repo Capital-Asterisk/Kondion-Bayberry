@@ -364,6 +364,18 @@ class OKO_Force : public KObj_Oriented {
   }
   void parentTransform();
 };
+
+// Adds a sky to the world, render doesn't actually do anything
+class RKO_Sky : public KObj_Renderable {
+ public:
+  static const char* myClass;
+  void render() {
+  }
+  const char* getClass() {
+    return myClass;
+  }
+};
+
 }
 
 namespace Physics {
@@ -468,6 +480,7 @@ class RenderPass {
   bool cameraOverride = false;
   std::vector<KObj_Renderable*> items;
   KObj::OKO_Camera_* camera;
+  KObj::RKO_Sky* sky;
   uint32_t drawLayer;
   uint16_t width, height;
   uint8_t type;
@@ -714,6 +727,7 @@ Raw* Get(const std::string& url);
 namespace JS {
 
 void CallFunction(const std::string& s);
+void DebugObjPrint(char* str);
 void Destroy();
 void Eval(const char* s);
 void Eval(const std::string& s);

@@ -59,9 +59,17 @@ void Composite() {
   // Draw the thing
   RenderQuad(800, 600);
   
-  glScalef(2.0f, 2.0f, 1.0f);
-  
+  glTranslatef(800 / 2, 600 / 2 - 10, 0.0f);
+  glScalef(1.0f, 1.0f, 1.0f);
   DebugText("Not Hello World, silly bird");
+  glTranslatef(0.0, -10.0, 0.0f);
+  DebugText("The quick brown fox jumpped over the lazy dog");
+  glTranslatef(0.0, -10.0, 0.0f);
+  DebugText("THE QUICK BROWN FOX JUMPPED OVER THE LAZY DOG");
+  glTranslatef(0.0, -10.0, 0.0f);
+  DebugText("1234567890+-[|]><_?!@#$%^&*(){}\\/ \";:.,~`\"");
+  glTranslatef(0.0, -10.0, 0.0f);
+  JS::DebugObjPrint(NULL);
 }
 
 void Consider(KObj_Renderable* a) {
@@ -273,8 +281,7 @@ void Two(uint8_t window) {
 }
 
 void DebugText(const std::string& text) {
-  glUseProgram(0);
-  glBindTexture(GL_TEXTURE_2D, Resources::KTexture::textures[1]->textureId);
+  glBindTexture(GL_TEXTURE_2D, 0);
   
   // Got very lazy, code inefficient
   
@@ -288,6 +295,21 @@ void DebugText(const std::string& text) {
   float cwidth = width / divx;
   float cheight = height / divy;
   
+  // Dark background to make it visible
+  glColor4f(0.0f, 0.0f, 0.0f, 0.6f);
+  glBegin(GL_QUADS);
+  glNormal3f(0.0f, 0.0f, 1.0f);
+  glVertex3f(0.0f, 9.0f, 0.0f);
+  glNormal3f(0.0f, 0.0f, 1.0f);
+  glVertex3f(-6.0f * text.length() - 1.0f, 9.0f, 0.0f);
+  glNormal3f(0.0f, 0.0f, 1.0f);
+  glVertex3f(-6.0f * text.length() - 1.0f, -1.0f, 0.0f);
+  glNormal3f(0.0f, 0.0f, 1.0f);
+  glVertex3f(0.0f, -1.0f, 0.0f);
+  glEnd();
+  glColor4f(1.0f, 1.0f, 0.8f, 1.0f);
+  
+  glBindTexture(GL_TEXTURE_2D, Resources::KTexture::textures[1]->textureId);
   
   glBegin(GL_QUADS);
   float cx, cy;
@@ -295,20 +317,19 @@ void DebugText(const std::string& text) {
   for (uint16_t i = 0; i < text.length(); i ++) {
     uint8_t c = 255 - uint8_t(text[i]);
     cx = cwidth * (divx - float(c % uint8_t(divx)));
-    cy = cheight * int(c / divy);
-    printf("%f %f\n", cx + cwidth, cy);
+    cy = cheight * int(c / divy); 
     glTexCoord2f(cx, cy + cheight);
     glNormal3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(0.0f - i * spacing, 8.0f, 0.0f);
+    glVertex3f(-6.0f - i * spacing, 8.0f, 0.0f);
     glTexCoord2f(cx - cwidth, cy + cheight);
     glNormal3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(5.0f - i * spacing, 8.0f, 0.0f);
+    glVertex3f(-1.0f - i * spacing, 8.0f, 0.0f);
     glTexCoord2f(cx - cwidth, cy);
     glNormal3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(5.0f - i * spacing, 0.0f, 0.0f);
+    glVertex3f(-1.0f - i * spacing, 0.0f, 0.0f);
     glTexCoord2f(cx, cy);
     glNormal3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(0.0f - i * spacing, 0.0f, 0.0f);
+    glVertex3f(-6.0f - i * spacing, 0.0f, 0.0f);
   }
   glEnd();
   //glPopMatrix();
@@ -435,6 +456,8 @@ void GLRenderPass::consider(KObj_Renderable* a) {
   if ((drawLayer != 0) && (a->drawLayer != 0)
       && ((drawLayer & a->drawLayer) == drawLayer)) {
     items.push_back(a);
+    if (a->getClass() == KObj::RKO_Sky::myClass)
+      sky = static_cast<KObj::RKO_Sky*>(a);
 
   }
   //if (f.isLight()) {
@@ -574,15 +597,15 @@ void GLRenderPass::render() {
     glUseProgram(progSky);
 
     // For the sky shader to do it's calculations
-    glm::mat4 presp;
+    //glm::mat4 presp;
     //glGetFloatv(GL_PROJECTION_MATRIX, &presp[0][0]);
     //Debug::printMatrix(presp);
     // Remove translation
-    presp = glm::lookAt(glm::vec3(0.0f), glm::vec3(currentCamera->orientation[2]), glm::vec3(currentCamera->orientation[1]));
-    presp = glm::inverse(presp);
+    //presp = glm::lookAt(glm::vec3(0.0f), glm::vec3(currentCamera->orientation[2]), glm::vec3(currentCamera->orientation[1]));
+    //presp = glm::inverse(presp);
     //printf("e %i\n", progSkyPresp);
     //Debug::printMatrix(presp);
-    glUniformMatrix4fv(progSkyPresp, 1, GL_FALSE, &presp[0][0]);
+    //glUniformMatrix4fv(progSkyPresp, 1, GL_FALSE, &presp[0][0]);
 
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
@@ -598,7 +621,8 @@ void GLRenderPass::render() {
 
     glTranslatef(width / 2.0f, height / 2.0f, 6.0f);
     
-    RenderQuad(-width, -height);
+    if (sky != NULL)
+      RenderQuad(-width, -height);
     
     glDepthFunc(GL_LEQUAL);
 
@@ -709,6 +733,7 @@ void RenderPass::New(uint8_t type, uint32_t drawLayer, uint16_t width, uint16_t 
   GLRenderPass* rp = new GLRenderPass;
   rp->type = type;
   rp->camera = NULL;
+  rp->sky = NULL;
   rp->ids = {};
   rp->drawLayer = drawLayer;
   rp->width = (width == 0) ? Window::GetWidth(0) : width;

@@ -267,6 +267,31 @@ void CallFunction(const std::string& s) {
   //printf("result: %s\n", *String::Utf8Value(res));
 }
 
+void DebugObjPrint(char* str) {
+  Isolate::Scope isolate_scope(isolate);
+  HandleScope handle_scope(isolate);
+  Local<Context> context = Local<Context>::New(isolate, p_context);
+  Local<Object> obj = context->Global()
+      ->Get(context, String::NewFromUtf8(isolate, "kdion")).ToLocalChecked()
+      ->ToObject()->Get(context, String::NewFromUtf8(isolate, "debug"))
+          .ToLocalChecked()->ToObject();
+  if (obj.IsEmpty())
+    return;
+
+  Local<Array> keys = obj->GetPropertyNames(context).ToLocalChecked();
+
+  std::string printme = "";
+
+  for (uint16_t i = 0; i < keys->Length(); i++) {
+    printme += std::string(*String::Utf8Value(keys->Get(i))) + ": "
+               + std::string(*String::Utf8Value(obj->Get(keys->Get(i))));
+    if (i != keys->Length() - 1)
+      printme += "\n";
+  }
+  
+  Renderer::DebugText(printme);
+}
+
 void Destroy() {
   //Isolate::Scope isolate_scope(isolate);
   p_kobj_node.Reset();
@@ -483,6 +508,9 @@ void Setup() {
   //    String::NewFromUtf8(isolate, "thrust"),
   //    FunctionTemplate::New(isolate, Callback_Kdion_Blank));
   kobj_entity->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "getVelocity"),
+      FunctionTemplate::New(isolate, Callback_Entity_GetVelocity));
+  kobj_entity->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "thrustN"),
       FunctionTemplate::New(isolate, Callback_Entity_ApplyForce));
   kobj_entity->PrototypeTemplate()->Set(
@@ -507,6 +535,12 @@ void Setup() {
                                                               Callback_OKO_Camera);
   oko_camera->InstanceTemplate()->SetInternalFieldCount(1);
   oko_camera->Inherit(kobj_oriented);
+  
+  // ** RKO
+  Local<FunctionTemplate> rko_sky = FunctionTemplate::New(isolate,
+                                                            Callback_RKO_Sky);
+  rko_sky->InstanceTemplate()->SetInternalFieldCount(1);
+  rko_sky->Inherit(kobj_oriented);
 
   //bird->InstanceTemplate()->SetAccessor(String::NewFromUtf8(isolate, "integrity"), Callback_Bird_GetIntegrity, Callback_Bird_SetIntegrity);
 
@@ -527,6 +561,7 @@ void Setup() {
 
   global->Set(String::NewFromUtf8(isolate, "GKO_World"), gko_world);
   global->Set(String::NewFromUtf8(isolate, "OKO_Camera"), oko_camera);
+  global->Set(String::NewFromUtf8(isolate, "RKO_Sky"), rko_sky);
 
   //global->Set(String::NewFromUtf8(isolate, "GKO_World"), gko_world);
 

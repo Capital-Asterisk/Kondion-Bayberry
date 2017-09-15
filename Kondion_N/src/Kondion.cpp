@@ -50,6 +50,7 @@ const char* KObj_Instance::myClass = "instance";
 const char* KObj::GKO_World::myClass = "world";
 const char* KObj::OKO_Camera_::myClass = "camera";
 const char* KObj::OKO_Force::myClass = "force";
+const char* KObj::RKO_Sky::myClass = "sky";
 
 const char* KComponent::myClass = "how did this get here?";
 const char* Component::CPN_Cube::myClass = "cube";
