@@ -488,20 +488,26 @@ void Setup() {
       String::NewFromUtf8(isolate, "dirUp"),
       FunctionTemplate::New(isolate, Callback_OKO_DirUp));
 
+  // ** Rendereable
+  Local<FunctionTemplate> kobj_renderable = FunctionTemplate::New(isolate);
+  kobj_renderable->InstanceTemplate()->SetInternalFieldCount(1);
+  kobj_renderable->Inherit(kobj_oriented);
+  kobj_renderable->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "setMaterial"),
+      FunctionTemplate::New(isolate, Callback_Renderable_SetMaterial));
+
   // ** Entity
   Local<FunctionTemplate> kobj_entity = FunctionTemplate::New(
       isolate, Callback_KObj_Entity);
   kobj_entity->InstanceTemplate()->SetInternalFieldCount(1);
-  kobj_entity->Inherit(kobj_oriented);
+  kobj_entity->Inherit(kobj_renderable);
   kobj_entity->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "addComponent"),
       FunctionTemplate::New(isolate, Callback_Entity_AddComponent));
   kobj_entity->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "physLevel"),
       FunctionTemplate::New(isolate, Callback_Entity_PhysLevel));
-  kobj_entity->PrototypeTemplate()->Set(
-      String::NewFromUtf8(isolate, "setMaterial"),
-      FunctionTemplate::New(isolate, Callback_Entity_SetMaterial));
+
       
   // Physics stuff
   //kobj_entity->PrototypeTemplate()->Set(
@@ -540,7 +546,7 @@ void Setup() {
   Local<FunctionTemplate> rko_sky = FunctionTemplate::New(isolate,
                                                             Callback_RKO_Sky);
   rko_sky->InstanceTemplate()->SetInternalFieldCount(1);
-  rko_sky->Inherit(kobj_oriented);
+  rko_sky->Inherit(kobj_renderable);
 
   //bird->InstanceTemplate()->SetAccessor(String::NewFromUtf8(isolate, "integrity"), Callback_Bird_GetIntegrity, Callback_Bird_SetIntegrity);
 

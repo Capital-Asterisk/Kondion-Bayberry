@@ -105,7 +105,7 @@ void Callback_Entity_GetVelocity(const FunctionCallbackInfo<Value>& args) {
   //static_cast<Bird*>(pointer)->integrity = value->Int32Value();
 }
 
-void Callback_Entity_SetMaterial(const FunctionCallbackInfo<Value>& args) {
+void Callback_Renderable_SetMaterial(const FunctionCallbackInfo<Value>& args) {
   if (args.IsConstructCall() || args.Length() == 0)
     return;
 
@@ -114,7 +114,7 @@ void Callback_Entity_SetMaterial(const FunctionCallbackInfo<Value>& args) {
   // Check if argument is a material
   if (!f->HasInstance(args[0]))
     return;
-  KObj_Entity* pointer_this = static_cast<KObj_Entity*>(Local<External>::Cast(
+  KObj_Renderable* pointer_this = static_cast<KObj_Entity*>(Local<External>::Cast(
       args.This()->GetInternalField(0))->Value());
   KMaterial* pointer_arg0 = static_cast<KMaterial*>(Local<External>::Cast(
       Local<Object>::Cast(args[0])->GetInternalField(0))->Value()); 

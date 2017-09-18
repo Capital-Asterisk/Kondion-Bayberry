@@ -83,9 +83,9 @@ void KObj_Node::setParent(KObj_Node* node) {
   }
   //printf("my type: %i, ", this->getType());
   parent = node;
-  bool entity = this->getType() == 3 || this->getType() == 4;
+  bool entity = this->getType() == 4;
 
-  if (entity) {
+  if (this->getType() == 4 || this->getType() == 3) {
     // Add to renderer if renderable
     KObj_Renderable* a = (dynamic_cast<KObj_Renderable*>(this));
     Renderer::Consider(a);
@@ -342,7 +342,8 @@ void GameLoop() {
     // All objects in the world tree are looped through
     for (size_t i = 0; i < KObj_Node::worldObject->world.size(); i++) {
       if (KObj_Node::all[KObj_Node::worldObject->world[i]]->getType() == 2
-          || KObj_Node::all[KObj_Node::worldObject->world[i]]->getType() == 3) {
+          || KObj_Node::all[KObj_Node::worldObject->world[i]]->getType() == 3
+          || KObj_Node::all[KObj_Node::worldObject->world[i]]->getType() == 4) {
         static_cast<KObj_Oriented*>(KObj_Node::all[KObj_Node::worldObject->world[i]])
             ->parentTransform();
       }

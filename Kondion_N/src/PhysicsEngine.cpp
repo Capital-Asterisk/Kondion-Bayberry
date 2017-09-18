@@ -188,7 +188,7 @@ void PhysicsUpdate() {
   // Loop through all objects for physics
   KObj_Entity* ent;
   for (size_t i = 0; i < KObj_Node::worldObject->children.size(); i++) {
-    if (KObj_Node::worldObject->children[i]->getType() == 3) {
+    if (KObj_Node::worldObject->children[i]->getType() == 4) {
       // or 4;
       ent = static_cast<KObj_Entity*>(KObj_Node::worldObject->children[i]);
       if (ent->physics != 0) {
@@ -244,7 +244,10 @@ void PhysicsUpdate() {
               // Clear ci first
               ci.collided = false;
 
-              // Go test the collision
+              // Go test the collision TODO: solve random segfault
+
+              //printf("notanerrorA: %i %i %i %s\n", k, l, terrain->components.size(), terrain->name.c_str());
+              //printf("notanerrorB: %p\n", terrain->components[l]);
               ent->components[k]->testCollision(*terrain->components[l], ci);
 
               // Collision detected!

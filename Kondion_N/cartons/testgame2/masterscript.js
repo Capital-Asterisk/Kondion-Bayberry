@@ -112,6 +112,10 @@ kdion.initialize(function() {
                    materials: ["test", "ground"]}, 2);
   kdion.camera = camera;
   
+  var sky = new RKO_Sky();
+  sky.setMaterial(ripmat);
+  sky.setParent(kdion.World);
+  
   //kdion.log(mat4.identity);
   //var tm = mat4.fromValues(1);
   //mat4.identity(tm);

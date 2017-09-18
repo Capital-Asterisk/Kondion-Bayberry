@@ -157,7 +157,9 @@ class KObj_Renderable : public KObj_Oriented {
   uint16_t material = 0;
   bool complex = false;
 
-  //virtual int getType();
+  int getType() {
+    return 3;
+  }
   const char* getClass() {
     return myClass;
   }
@@ -191,6 +193,7 @@ class KObj_Entity : public KObj_Renderable {
   double accel;
 
   KObj_Entity() {
+    this->components.clear();
     this->physics = 1;
     this->mass = 1.0f;
     this->radialMass = 1.0f;
@@ -200,7 +203,7 @@ class KObj_Entity : public KObj_Renderable {
     return myClass;
   }
   int getType() {
-    return 3;
+    return 4;
   }
   
   void updateA();
@@ -221,7 +224,7 @@ class KObj_Instance : public KObj_Renderable {
     return myClass;
   }
   int getType() {
-    return 4;
+    return 5;
   }
   virtual void render() {
   }
@@ -254,7 +257,11 @@ class KComponent {
 
   }
   virtual ~KComponent() {
-
+    offset = glm::mat4x4(1);
+    collide = true;
+    renderable = true;
+    parent = NULL;
+    jsObject = NULL;
   }
  protected:
 };

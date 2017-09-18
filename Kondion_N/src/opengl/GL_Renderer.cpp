@@ -122,8 +122,9 @@ void Setup() {
     "           (gl_FragCoord.y) / 800 - 0.5,"
     "           1.0,"
     "           1.0)));"
-    "  gl_FragData[0] = vec4((atan2(norm.z, norm.x) + PI) / (PI * 2), acos(norm.y) / PI, 1.0 / 255.0, 1.0);"
+    "  gl_FragData[0] = vec4((atan2(norm.z, norm.x) + PI) / (PI * 2), acos(norm.y) / PI, float(type) / 255.0, 1.0);"
     "  gl_FragData[1] = vec4((norm + 1.0) / 2, 1.0);"
+    "  gl_FragData[2] = vec4((norm + 1.0) / 2, 1.0);"
     "}";
 
 
@@ -456,9 +457,10 @@ void GLRenderPass::consider(KObj_Renderable* a) {
   if ((drawLayer != 0) && (a->drawLayer != 0)
       && ((drawLayer & a->drawLayer) == drawLayer)) {
     items.push_back(a);
-    if (a->getClass() == KObj::RKO_Sky::myClass)
+    if (a->getClass() == KObj::RKO_Sky::myClass) {
+      printf("SKY ADDED\n");
       sky = static_cast<KObj::RKO_Sky*>(a);
-
+    }
   }
   //if (f.isLight()) {
   //  lights.add(f);
@@ -571,7 +573,7 @@ void GLRenderPass::render() {
     GLenum ducky[] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1,
         GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4,
         GL_COLOR_ATTACHMENT5, GL_COLOR_ATTACHMENT6, GL_COLOR_ATTACHMENT7 };
-    glDrawBuffers(2, ducky);
+    glDrawBuffers(3, ducky);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -597,15 +599,15 @@ void GLRenderPass::render() {
     glUseProgram(progSky);
 
     // For the sky shader to do it's calculations
-    //glm::mat4 presp;
+    glm::mat4 presp;
     //glGetFloatv(GL_PROJECTION_MATRIX, &presp[0][0]);
     //Debug::printMatrix(presp);
     // Remove translation
-    //presp = glm::lookAt(glm::vec3(0.0f), glm::vec3(currentCamera->orientation[2]), glm::vec3(currentCamera->orientation[1]));
-    //presp = glm::inverse(presp);
+    presp = glm::lookAt(glm::vec3(0.0f), glm::vec3(currentCamera->orientation[2]), glm::vec3(currentCamera->orientation[1]));
+    presp = glm::inverse(presp);
     //printf("e %i\n", progSkyPresp);
     //Debug::printMatrix(presp);
-    //glUniformMatrix4fv(progSkyPresp, 1, GL_FALSE, &presp[0][0]);
+    glUniformMatrix4fv(progSkyPresp, 1, GL_FALSE, &presp[0][0]);
 
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
@@ -621,9 +623,11 @@ void GLRenderPass::render() {
 
     glTranslatef(width / 2.0f, height / 2.0f, 6.0f);
     
-    if (sky != NULL)
+    if (sky != NULL) {
+      glUniform1i(progSkyType, sky->material + 1);
       RenderQuad(-width, -height);
-    
+    }
+
     glDepthFunc(GL_LEQUAL);
 
     glDisable(GL_DEPTH_TEST);
@@ -640,7 +644,8 @@ void GLRenderPass::render() {
     glBindTexture(GL_TEXTURE_2D, ids[3]); // normals
     glActiveTexture(GL_TEXTURE3);
     
-
+    
+    
     glEnable(GL_TEXTURE_2D);
     //glBindTexture(GL_TEXTURE_2D, ids[4]);
     glActiveTexture(GL_TEXTURE4);
