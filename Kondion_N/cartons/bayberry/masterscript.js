@@ -221,6 +221,13 @@ kdion.materialParser = function(code) {
       "mul": function(args) {return "(" + args.join("*") + ")";},
       "div": function(args) {return "(" + args.join("/") + ")";},
       
+      "less": function(args) {return "int(" + args[0] + "<" + args[1] + ")";},
+      "equal": function(args) {return "int(" + args[0] + "==" + args[1] + ")";},
+      "lequal": function(args) {return "int(" + args[0] + "<=" + args[1] + ")";},
+      "greater": function(args) {return "int(" + args[0] + ">" + args[1] + ")";},
+      "notequal": function(args) {return "int(" + args[0] + "!=" + args[1] + ")";},
+      "gequal": function(args) {return "int(" + args[0] + ">=" + args[1] + ")";},
+      
       "decomp": function(args, n) {
         return args[0] + "." + ["x", "y", "z", "w"][n];
       },
@@ -409,7 +416,7 @@ kdion.unLoad = function(object) {
     // Clear everything in this level
     kdion.unLoad(kdion.loadQueue[object]);
   } else {
-    //
+    
   }
 }
 

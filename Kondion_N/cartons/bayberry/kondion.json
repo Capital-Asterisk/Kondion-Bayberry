@@ -23,6 +23,6 @@
 	"SAudio": {
 	},
 	"Materials": {
-		
+		"normals": ["shaders/normals"]
 	}
 }

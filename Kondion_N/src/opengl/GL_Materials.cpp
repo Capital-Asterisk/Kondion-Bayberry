@@ -108,7 +108,7 @@ void GL_Shader::Load(bool a) {
 
   } else {
     // Unload shader
-
+    printf("UNLOAD SHADER GOES HERE\n");
 
   }
 }

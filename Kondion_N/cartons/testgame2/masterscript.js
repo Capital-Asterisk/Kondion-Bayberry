@@ -35,6 +35,8 @@ kdion.initialize(function() {
   matman = new KMaterial("defmat");
   flrmat = new KMaterial("ground");
   ripmat = new KMaterial("test");
+  nrmmat = new KMaterial("normals");
+  skymat = new KMaterial("sky");
   
   var tm = mat4.create();
   mat4.rotateX(tm, tm, Math.PI / 2);
@@ -109,11 +111,11 @@ kdion.initialize(function() {
   debugB.physLevel(0);
   
   kdion.queueLoad({textures: ["tiles_diff", "tiles_norm"],
-                   materials: ["test", "ground"]}, 2);
+                   materials: ["test", "ground", "normals", "sky"]}, 2);
   kdion.camera = camera;
   
   var sky = new RKO_Sky();
-  sky.setMaterial(ripmat);
+  sky.setMaterial(skymat);
   sky.setParent(kdion.World);
   
   //kdion.log(mat4.identity);

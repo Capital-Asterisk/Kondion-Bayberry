@@ -1,0 +1,15 @@
+TWMhvbay
+#TWM human readable.
+#Kondion version designed for,
+#vbay for bayberry, vcat for catalpa
+{
+name:"normal shader"
+author: "neal",eggs: "e"
+}
+
+u0: float eggs
+
+123x456: 
+[]coords[c0] | [n0,1.0]add[n1] | [n1,2]div[n2] | [n2,1.0]out[] | -
+[]sntime[t0] | [n0]norout[] | -
+[]normal[n0] | -

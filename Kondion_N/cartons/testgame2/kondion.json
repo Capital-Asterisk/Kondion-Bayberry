@@ -27,6 +27,7 @@
 	},
 	"Materials": {
 		"ground": ["materials/ground"],
+		"sky": ["materials/sky"],
 		"test": ["materials/testcube"]
 	}
 }

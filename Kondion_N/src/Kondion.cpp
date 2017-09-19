@@ -269,7 +269,7 @@ void GameLoop() {
   
   Resources::KShader::shaders[0]->Load(true);
 
-  Input::MouseLock(true);
+  //Input::MouseLock(true);
 
   glfwSetTime(15.0);
 

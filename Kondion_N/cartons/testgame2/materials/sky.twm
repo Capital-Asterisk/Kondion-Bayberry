@@ -1,0 +1,40 @@
+TWMhvbay
+# TWM human readable. 
+# actually, it's hard to read [not hard if you're the one who wrote it, lol]
+# Kondion version designed for,
+# vbay for bayberry, vcat for catalpa
+# Sky shader for the time i don't have a gradient function
+{
+name:"Sky shader"
+author: "neal",eggs: "e"
+}
+
+u0: float a
+u0: float b
+# [cy0,1.0,1.0]hsv[x0] | [x0,1.0]out[] | -
+123x456: 
+[]normal[n0] | [n0]norout[] | -
+[]coords[c0] | -
+[]sntime[t0] | -
+
+# input y
+[c0]decomp[woot1,c1] | [1.0,c1]sub[c2] | [c2,0.45,1.0]clamp[c3] | [c3,0.45]sub[yIn] | -
+
+# Hue
+[yIn,1200.0]mul[hue0] | [hue0,5.0]add[hue1] | [2.0,hue1]div[hue2] | [hue2,0.6]add[hueOut] | -
+
+# Saturation
+[yIn,22.0]mul[sat0] | [sat0,1.0]add[sat1] | [-1.0,sat1]div[sat2] | [sat2,0.98]add[satOut] | -
+
+# Value
+[yIn,0.06]lequal[ifless] | -
+[yIn,0.06]greater[ifmore] | -
+[yIn,1.0]mul[vala0] | [vala0,0.06]sub[vala1] | [-100.0,vala1,vala1]mul[vala2] | [vala2,1.0]add[valx0] | -
+[yIn,1.0]mul[valb0] | [valb0,0.06]sub[valb1] | [-1.5,valb1]mul[valb2] | [valb2,0.3]min[valb3] | [valb3,1.0]add[valx1] | -
+[valx0,ifless]mul[valx10] | -
+[valx1,ifmore]mul[valx11] | -
+[valx10,valx11]add[valOut] | -
+
+# Combine everything
+[hueOut,satOut,valOut]hsv[x0] | [x0,1.0]out[val] | -
+
