@@ -269,7 +269,7 @@ void GameLoop() {
   
   Resources::KShader::shaders[0]->Load(true);
 
-  //Input::MouseLock(true);
+  Input::MouseLock(true);
 
   glfwSetTime(15.0);
 
@@ -349,10 +349,10 @@ void GameLoop() {
       }
     }
 
-    if (Input::Get(Input::ControlIndex("DEBUGC"))->x) {
+    //if (Input::Get(Input::ControlIndex("DEBUGC"))->x) {
       // Temp jump
-      static_cast<KObj_Entity*>(KObj_Node::all[3])->velocity.y += 0.9;
-    }
+    //  static_cast<KObj_Entity*>(KObj_Node::all[3])->velocity.y += 0.9;
+    //}
 
     // do collisions here
     // DoCollisions

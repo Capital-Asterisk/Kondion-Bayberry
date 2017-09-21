@@ -226,6 +226,8 @@ void Update() {
 
     VirtualJoystick* f = VirtualJoystick::vsticks[i];
 
+    f->px = f->x;
+    f->py = f->y;
     f->x = 0;
     f->y = 0;
     //float x, y;

@@ -301,6 +301,7 @@ void Destroy() {
   p_material.Reset();
   p_gupdate.Reset();
   p_input.Reset();
+  p_inputd.Reset();
   //for (uint16_t i = 0; i < ON::objects.size(); i++) {
     //printf("Reset: %i\n", i);
     //ON::objects[i]->Reset();
@@ -586,6 +587,15 @@ void Setup() {
       .ToLocalChecked()->ToObject()->Set(String::NewFromUtf8(isolate, "input"),
                                          input);
 
+  // Input Delta
+
+  Local<Object> inputd = Object::New(isolate);
+  //kdion->Set(String::NewFromUtf8(isolate, "input"), input);
+  // really? (second actually, bottom one came first)
+  context->Global()->Get(context, String::NewFromUtf8(isolate, "kdion"))
+      .ToLocalChecked()->ToObject()->Set(String::NewFromUtf8(isolate, "inputd"),
+                                         inputd);
+
   // World
   //printf("something\n");
   Local<Value> o = gko_world->GetFunction()->CallAsConstructor(context, 0, NULL)
@@ -637,6 +647,8 @@ void Setup() {
       isolate, Array::New(isolate, 0));
   p_input = Persistent<Object, CopyablePersistentTraits<Object>>(isolate,
                                                                  input);
+  p_inputd = Persistent<Object, CopyablePersistentTraits<Object>>(isolate,
+                                                                 inputd);
   p_oko_camera = Persistent<FunctionTemplate,
         CopyablePersistentTraits<FunctionTemplate>>(isolate, oko_camera);
 }
@@ -665,6 +677,7 @@ void UpdateInput() {
 
   //Get a input object handle through the persistent
   Local<Object> input = Local<Object>::New(isolate, p_input);
+  Local<Object> inputd = Local<Object>::New(isolate, p_inputd);
 
   // Put all control values into the object
   for (uint16_t i = 0; i < Input::Count(); i++) {
@@ -676,6 +689,7 @@ void UpdateInput() {
       //if (input->Get(s)->ToNumber()->)
       //}
       input->Set(s, Number::New(isolate, Input::Value(i)));
+      inputd->Set(s, Number::New(isolate, Input::ValuePrev(i)));
     }
   }
 
@@ -688,6 +702,11 @@ void UpdateInput() {
         (Input::VirtualJoystick::vsticks[i]->name + "_Y").c_str());
     input->Set(sx, Number::New(isolate, Input::VirtualJoystick::vsticks[i]->x));
     input->Set(sy, Number::New(isolate, Input::VirtualJoystick::vsticks[i]->y));
+
+    inputd->Set(sx, Number::New(
+        isolate, Input::VirtualJoystick::vsticks[i]->px));
+    inputd->Set(sy, Number::New(
+        isolate, Input::VirtualJoystick::vsticks[i]->py));
   }
 
 }

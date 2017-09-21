@@ -149,7 +149,7 @@ kdion.globalUpdate(function() {
       vec2.fromValues(bar[0], bar[2]));
   //kdion.log("foo: " + dist);
   
-  if (dist > 12) {
+  if (dist > 12 || true) {
     //kdion.camera.setPosition(vec3.add(bar, unit));
     // raise foo, doesn't actually raise the cube, only this vector.
     // this makes the camera move towards a point above the cube
@@ -165,6 +165,12 @@ kdion.globalUpdate(function() {
     vec3.add(foo, unit, foo);
     // Smoothly bar towards foo
     vec3.lerp(bar, foo, bar, 0.96);
+    // Rotate feature
+    var cross = vec3.cross(vec3.fromValues(0, 0, 0), vec3.fromValues(0, 1, 0), unit);
+    vec3.normalize(cross, cross);
+    vec3.scale(cross, cross, kdion.inputd.MOUSE_X - kdion.input.MOUSE_X);
+    vec3.scale(cross, cross, 0.04);
+    vec3.add(bar, bar, cross);
     // self explanatory
     kdion.camera.setPosition(bar);
   }// else {
@@ -192,9 +198,16 @@ kdion.globalUpdate(function() {
   if (kdion.input["DEBUGA"])
     kdion.e.thrustN([
           10.0,
-          Math.random() * 0.0 - 0.0,
-          Math.random() * 0.0 - 0.0],
-          [0.0, 0.1, 0.0]);
+          0.0,
+          0.0],
+          [0.0, 0.0, 10.0]);
+  // Space to jump
+  if (kdion.input["DEBUGC"])
+    kdion.e.thrustN([
+          0.0,
+          0.0,
+          0.0],
+          [0.0, 1.0, 0.0]);
   // add foo and bar, put result in foo
   vec3.add(foo, foo, bar);
   //kdion.log(foo[0] + " " + foo[1] + " " + foo[2]);
@@ -203,6 +216,8 @@ kdion.globalUpdate(function() {
   kdion.e.thrustN([0.0, 0.0, 0.0], [foo[0] / 100.0, 0.0, foo[2] / 100.0]);
 
   kdion.e.getVelocity(foo)
+  kdion.debug.MOUSE_XD = kdion.inputd.MOUSE_X - kdion.input.MOUSE_X;
+  kdion.debug.MOUSE_X = kdion.inputd.MOUSE_X - kdion.input.MOUSE_X;
   kdion.debug.velocity = vec3.str(foo);
 
   // CUBE SPAM!

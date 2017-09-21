@@ -55,19 +55,19 @@ void Composite() {
   glTranslatef(800 / 2, 600 / 2, 0.0f);
   //glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
   glScalef(-1.0f, -1.0f, 1.0f);
-  
+  	
   // Draw the thing
   RenderQuad(800, 600);
   
   glTranslatef(800 / 2, 600 / 2 - 10, 0.0f);
   glScalef(1.0f, 1.0f, 1.0f);
-  DebugText("Not Hello World, silly bird");
-  glTranslatef(0.0, -10.0, 0.0f);
-  DebugText("The quick brown fox jumpped over the lazy dog");
-  glTranslatef(0.0, -10.0, 0.0f);
-  DebugText("THE QUICK BROWN FOX JUMPPED OVER THE LAZY DOG");
-  glTranslatef(0.0, -10.0, 0.0f);
-  DebugText("1234567890+-[|]><_?!@#$%^&*(){}\\/ \";:.,~`\"");
+  //DebugText("Not Hello World, silly bird");
+  //glTranslatef(0.0, -10.0, 0.0f);
+  //DebugText("The quick brown fox jumpped over the lazy dog");
+  //glTranslatef(0.0, -10.0, 0.0f);
+  //DebugText("THE QUICK BROWN FOX JUMPPED OVER THE LAZY DOG");
+  //glTranslatef(0.0, -10.0, 0.0f);
+  DebugText("Not Hello World, silly bird, 1234567890+-[|]><_?!@#$%^&*(){}\\/ \";:.,~`\"");
   glTranslatef(0.0, -10.0, 0.0f);
   JS::DebugObjPrint(NULL);
 }
@@ -241,7 +241,7 @@ void Three(KObj::OKO_Camera_* c, uint16_t width, uint16_t height) {
   //glViewport(0, 0, width, height);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(45.0f, ((GLfloat) width) / ((GLfloat) height), 0.1f, 100.0f);
+  gluPerspective(45.0f, ((GLfloat) width) / ((GLfloat) height), 0.1f, 200.0f);
   c->prespective();  // gluLookAt
   glMatrixMode(GL_MODELVIEW);
   //glLoadIdentity();
@@ -295,44 +295,62 @@ void DebugText(const std::string& text) {
   float spacing = 6.0f;
   float cwidth = width / divx;
   float cheight = height / divy;
-  
-  // Dark background to make it visible
-  glColor4f(0.0f, 0.0f, 0.0f, 0.6f);
-  glBegin(GL_QUADS);
-  glNormal3f(0.0f, 0.0f, 1.0f);
-  glVertex3f(0.0f, 9.0f, 0.0f);
-  glNormal3f(0.0f, 0.0f, 1.0f);
-  glVertex3f(-6.0f * text.length() - 1.0f, 9.0f, 0.0f);
-  glNormal3f(0.0f, 0.0f, 1.0f);
-  glVertex3f(-6.0f * text.length() - 1.0f, -1.0f, 0.0f);
-  glNormal3f(0.0f, 0.0f, 1.0f);
-  glVertex3f(0.0f, -1.0f, 0.0f);
-  glEnd();
-  glColor4f(1.0f, 1.0f, 0.8f, 1.0f);
-  
-  glBindTexture(GL_TEXTURE_2D, Resources::KTexture::textures[1]->textureId);
-  
-  glBegin(GL_QUADS);
-  float cx, cy;
-  
-  for (uint16_t i = 0; i < text.length(); i ++) {
-    uint8_t c = 255 - uint8_t(text[i]);
-    cx = cwidth * (divx - float(c % uint8_t(divx)));
-    cy = cheight * int(c / divy); 
-    glTexCoord2f(cx, cy + cheight);
-    glNormal3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(-6.0f - i * spacing, 8.0f, 0.0f);
-    glTexCoord2f(cx - cwidth, cy + cheight);
-    glNormal3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(-1.0f - i * spacing, 8.0f, 0.0f);
-    glTexCoord2f(cx - cwidth, cy);
-    glNormal3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(-1.0f - i * spacing, 0.0f, 0.0f);
-    glTexCoord2f(cx, cy);
-    glNormal3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(-6.0f - i * spacing, 0.0f, 0.0f);
+
+  uint32_t lastIndent = 0;
+  uint16_t indentCount = 0;
+
+  for (uint32_t i = 0; i < text.length(); i ++) {
+
+    if (text[i] == '\n' || i == (text.length() - 1)) {
+
+      // Dark background to make it visible
+      glColor4f(0.0f, 0.0f, 0.0f, 0.6f);
+      glBegin(GL_QUADS);
+      glNormal3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(0.0f, 9.0f, 0.0f);
+      glNormal3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(-6.0f * (i + 1 - lastIndent) - 1.0f, 9.0f, 0.0f);
+      glNormal3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(-6.0f * (i + 1 - lastIndent) - 1.0f, -1.0f, 0.0f);
+      glNormal3f(0.0f, 0.0f, 1.0f);
+      glVertex3f(0.0f, -1.0f, 0.0f);
+      glEnd();
+      glColor4f(1.0f, 1.0f, 0.8f, 1.0f);
+      
+      glBindTexture(GL_TEXTURE_2D, Resources::KTexture::textures[1]->textureId);
+      
+      glBegin(GL_QUADS);
+      float cx, cy;
+      
+      for (uint16_t j = lastIndent; j < i + 1; j ++) {
+        uint8_t c = 255 - uint8_t(text[j]);
+        cx = cwidth * (divx - float(c % uint8_t(divx)));
+        cy = cheight * int(c / divy); 
+        glTexCoord2f(cx, cy + cheight);
+        glNormal3f(0.0f, 0.0f, 1.0f);
+        glVertex3f(-6.0f - (j - lastIndent) * spacing, 8.0f, 0.0f);
+        glTexCoord2f(cx - cwidth, cy + cheight);
+        glNormal3f(0.0f, 0.0f, 1.0f);
+        glVertex3f(-1.0f - (j - lastIndent) * spacing, 8.0f, 0.0f);
+        glTexCoord2f(cx - cwidth, cy);
+        glNormal3f(0.0f, 0.0f, 1.0f);
+        glVertex3f(-1.0f - (j - lastIndent) * spacing, 0.0f, 0.0f);
+        glTexCoord2f(cx, cy);
+        glNormal3f(0.0f, 0.0f, 1.0f);
+        glVertex3f(-6.0f - (j - lastIndent) * spacing, 0.0f, 0.0f);
+      }
+      glEnd();
+
+      lastIndent = i + 1;
+      indentCount ++;
+      glTranslatef(0.0, -10.0, 0.0f);
+    }
+
   }
-  glEnd();
+
+  glTranslatef(0.0, 10.0 * indentCount, 0.0f);
+
+
   //glPopMatrix();
 
 }
