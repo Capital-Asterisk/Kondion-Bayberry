@@ -114,14 +114,21 @@ void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
     ci.spotA.y = Math::magnet(ci.spotA.y, 0.0f, 0.01f);
     ci.spotA.z = Math::magnet(ci.spotA.z, 0.0f, 0.01f);
 
+    printf("magX: %f\n", glm::length(a.offset[0]));
+    printf("magY: %f\n", glm::length(a.offset[1]));
+    printf("magZ: %f\n", glm::length(a.offset[2]));
+    //float scale = glm::length(ci.spotA);
+
     ci.spotA = -glm::sign(ci.spotA);  // i didn't know this can be done
+    ci.spotA *= glm::vec3(glm::length(a.offset[0]), glm::length(a.offset[1]), glm::length(a.offset[2]));
+    //ci.spotA *= scale;
 
     // ci.spotA = ci.spotA * glm::mat3(a.parent->orientation * a.offset);
     ci.spotA /= 2;
 
     ci.spotA += glm::vec3(a.offset[3]);
 
-    ci.spotA = ci.spotA * glm::inverse(glm::mat3(a.parent->transform));
+    ci.spotA = ci.spotA * glm::inverse(glm::mat3(a.parent->orientation));
 
     // printf("CORNER: %4.2f (%4.2f, %4.2f, %4.2f)\n",
     //        glm::length(ci.spotA), ci.spotA.x, ci.spotA.y, ci.spotA.z);
@@ -278,7 +285,7 @@ void PhysicsUpdate() {
                     ent->orientation[3].z += ci.normB.z * -ci.sink;
 
                     float elasticity = 0.2f;
-                    float frictionMew = 0.5f;
+                    float frictionMew = 1.5f;
                     
                     // Temporary stuff, remove soon
                     glm::vec3 temp =

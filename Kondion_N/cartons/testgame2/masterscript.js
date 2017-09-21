@@ -70,6 +70,8 @@ kdion.initialize(function() {
   e.translate(0.0, 1.0, 0.0);
   e.setName("Cube_Base");
   e.setParent(kdion.World);
+  mat4.fromScaling(tm, vec3.fromValues(0.2, 1.0, 0.2)); 
+  cubeA.setMatrix(tm);
   e.addComponent(cubeA);
   kdion.e = e;
   
@@ -79,7 +81,7 @@ kdion.initialize(function() {
   //left.setParent(e);
   mat4.fromTranslation(tm, [-1.0, 1.0, 0.0]);
   cubeB.setMatrix(tm);
-  e.addComponent(cubeB);
+  //e.addComponent(cubeB);
   
   var top = new KObj_Entity();
   top.translate(1.0, 2.0, 0.0);
@@ -149,11 +151,13 @@ kdion.globalUpdate(function() {
       vec2.fromValues(bar[0], bar[2]));
   //kdion.log("foo: " + dist);
   
+  var height = -kdion.input.MOUSE_Y / 100;
+  
   if (dist > 12 || true) {
     //kdion.camera.setPosition(vec3.add(bar, unit));
     // raise foo, doesn't actually raise the cube, only this vector.
     // this makes the camera move towards a point above the cube
-    foo[1] += 4.6;
+    foo[1] += height;
     // get a direction between the two objects
     var unit = vec3.sub(vec3.fromValues(0, 0, 0), bar, foo);
     unit[1] = 0;
