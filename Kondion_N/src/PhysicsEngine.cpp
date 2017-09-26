@@ -143,11 +143,87 @@ void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
     // ||
   }
 }
+
+// Detect collision between a sphere and infinite plane
+void SphereVsInfPlane(Component::CPN_Sphere& a, Component::CPN_InfinitePlane& b,
+                    Physics::CollisionInfo& ci) {
+  // printf("PAR: %s\n", a.parent->name.c_str());
+
+  tmat4[0] = glm::inverse(b.parent->orientation * b.offset);
+  // multiply by transform and store result in temp4
+  tmat4[1] = tmat4[0] * (a.parent->orientation * a.offset);
+  // use x as some variable
+  tvec3[0].x = -0.5f - tmat4[1][3][2];
+
+  // printf("Eggs: %i %f\n", tvec3[0].x < 0, tvec3[0].x);
+
+  if (tvec3[0].x <= 0) {
+    // Collision detected
+    // a.parent->velocity.y = Kondion::Delta() * 9;
+    ci.collided = true;
+    ci.normB = -b.offset[2];
+    // ci.normB.x = -b.offset[2][0];
+    // ci.normB.y = -b.offset[2][1];
+    // ci.normB.z = -b.offset[2][2];
+
+    // printf("NormB: (%f, %f, %f)\n", ci.normB.x, ci.normB.y, ci.normB.z);
+
+    // TODO which surface of the cube was hit?
+
+    // Calculate displacement
+    // y = tvec3[0]
+    // x =
+
+    // t = (-v +- sqrt(v^2 + 2ad)/a) calculates time
+    // derived from d = vt + 1/2at^2 using quadratic formula
+    // I don't really know if this works... seems so?
+
+    // all we need is the velocity of the cube relative to the plane
+    // use the same calculations, but with velocity instead
+    // TODO, maybe calculate only z
+    tvec3[1] = glm::mat3(tmat4[0]) * a.parent->velocity;
+    tvec3[2] = glm::mat3(tmat4[0]) * a.parent->acceleration;
+
+    // z is used for the equation... and yeah this is big... just look above.
+    ci.collideTime =
+        (-tvec3[1].z + glm::sqrt(double(tvec3[1].z * tvec3[1].z +
+                                        2 * tvec3[2].z * -tvec3[0].x))) /
+        tvec3[2].z;
+    // printf("Collide Time: %f, (%f), e: %f a:%f \n", ci.collideTime,
+    // tvec3[1].z * tvec3[1].z
+    //       + 2 * tvec3[2].z * -tvec3[0].x, tvec3[2].z);
+
+    ci.sink = tvec3[0].x;
+
+    // Calculate point of collision on cube
+    // 1. multiply B's normal [ci.normB] by A's inverse 3x3
+    // 2. do rounding thing
+    // 3. multiply back
+
+    ci.spotA = glm::vec4(-ci.normB * glm::mat3(a.parent->orientation), 1.0f);
+    ci.spotA /= 2;
+    ci.spotA += glm::vec3(a.offset[3]);
+    ci.spotA = ci.spotA * glm::inverse(glm::mat3(a.parent->orientation));
+
+    // printf("CORNER: %4.2f (%4.2f, %4.2f, %4.2f)\n",
+    //        glm::length(ci.spotA), ci.spotA.x, ci.spotA.y, ci.spotA.z);
+    // ||
+    // ||||
+    // |||||
+    // ||||||
+    // |||||||
+    // ||||||
+    // |||||
+    // ||||
+    // ||
+  }
+}
 }
 
 namespace Component {
 
 void CPN_Cube::testCollision(KComponent& comp, Physics::CollisionInfo& ci) {
+  // If infinite plane
   if (comp.getClass() == CPN_InfinitePlane::myClass) {
     // colliding with infinite plane
     Physics::CubeVsInfPlane(*this, dynamic_cast<CPN_InfinitePlane&>(comp), ci);
@@ -158,6 +234,15 @@ void CPN_InfinitePlane::testCollision(KComponent& comp,
                                       Physics::CollisionInfo& ci) {
   if (comp.getClass() == CPN_InfinitePlane::myClass) {
     // colliding with cube
+  }
+}
+
+void CPN_Sphere::testCollision(KComponent& comp,
+                                      Physics::CollisionInfo& ci) {
+  // If infinite plane
+  if (comp.getClass() == CPN_InfinitePlane::myClass) {
+    // colliding with infinite plane
+    Physics::SphereVsInfPlane(*this, dynamic_cast<CPN_InfinitePlane&>(comp), ci);
   }
 }
 }
@@ -285,7 +370,7 @@ void PhysicsUpdate() {
                     ent->orientation[3].z += ci.normB.z * -ci.sink;
 
                     float elasticity = 0.4f;
-                    float frictionMew = 0.5f;
+                    float frictionMew = 5.5f;
 
                     // Temporary stuff, remove soon
                     glm::vec3 temp =

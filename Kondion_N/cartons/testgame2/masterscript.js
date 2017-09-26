@@ -7,7 +7,7 @@ var matman, ripmat, flrmat;
 
 function quickMakeACube(name, pos, velo) {
   var ent = new KObj_Entity();
-  var woot = new KCompnent("cube");
+  var woot = new KCompnent("sphere");
   ent.setName(name);
   ent.addComponent(woot);
   ent.setMaterial(ripmat);
@@ -29,7 +29,7 @@ kdion.initialize(function() {
   var wall = new KCompnent("infplane");
   var celi = new KCompnent("infplane");
   var cubeA = new KCompnent("cube");
-  var cubeB = new KCompnent("cube");
+  var cubeB = new KCompnent("sphere");
   var cubeC = new KCompnent("cube");
   
   matman = new KMaterial("defmat");
@@ -39,11 +39,12 @@ kdion.initialize(function() {
   skymat = new KMaterial("sky");
   
   var tm = mat4.create();
-  mat4.rotateX(tm, tm, Math.PI / 2);
+  mat4.rotateY(tm, tm, Math.PI / 4 * 4);
+  mat4.rotateX(tm, tm, Math.PI / 4 * 2.8);
   flat.setMatrix(tm);
   mat4.identity(tm);
   mat4.rotateY(tm, tm, Math.PI / 4 * 4);
-  mat4.rotateX(tm, tm, Math.PI / 4 * 9.7);
+  mat4.rotateX(tm, tm, Math.PI / 4 * 9.2);
   wall.setMatrix(tm);
   mat4.identity(tm);
   mat4.rotateX(tm, tm, -Math.PI / 2);
@@ -73,14 +74,14 @@ kdion.initialize(function() {
   mat4.fromScaling(tm, vec3.fromValues(0.1, 2.0, 0.1));
   mat4.translate(tm, tm, vec3.fromValues(0.0, -0.5, 0.0)); 
   cubeA.setMatrix(tm);
-  e.addComponent(cubeA);
+  //e.addComponent(cubeA);
   kdion.e = e;
   
   //var left = new KObj_Entity();
   //left.translate(-1.0, 1.0, 0.0);
   //left.setName("Cube_Left");
   //left.setParent(e);
-  mat4.fromTranslation(tm, [0.0, 0.5, 0.0]);
+  mat4.fromTranslation(tm, [0.0, 0.0, 0.0]);
   cubeB.setMatrix(tm);
   e.addComponent(cubeB);
   

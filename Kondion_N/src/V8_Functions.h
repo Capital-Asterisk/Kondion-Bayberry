@@ -96,7 +96,9 @@ void Callback_Component(const FunctionCallbackInfo<Value>& args) {
     std::string arg = std::string(*String::Utf8Value(args[0]));
     if (arg == "infplane") {
       o = new Component::CPN_InfinitePlane;
-    } else {
+    } else if (arg == "sphere") {
+      o = new Component::CPN_Sphere;
+    } else  {
       o = new Component::CPN_Cube;
     }
     o->jsObject = new Persistent<Object,

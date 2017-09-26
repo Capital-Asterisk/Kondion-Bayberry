@@ -55,6 +55,7 @@ const char* KObj::RKO_Sky::myClass = "sky";
 const char* KComponent::myClass = "how did this get here?";
 const char* Component::CPN_Cube::myClass = "cube";
 const char* Component::CPN_InfinitePlane::myClass = "infplane";
+const char* Component::CPN_Sphere::myClass = "cube";
 
 KObj_Node::KObj_Node() {
   jsObject = NULL;
