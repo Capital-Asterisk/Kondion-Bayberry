@@ -459,6 +459,16 @@ class CPN_InfinitePlane : public KComponent {
   void render();
   void testCollision(KComponent& comp, Kondion::Physics::CollisionInfo& ci);
 };
+
+class CPN_Sphere : public KComponent {
+ public:
+  static const char* myClass;
+  const char* getClass() {
+    return myClass;
+  }
+  void render();
+  void testCollision(KComponent& comp, Kondion::Physics::CollisionInfo& ci);
+};
 }
 
 double Delta();

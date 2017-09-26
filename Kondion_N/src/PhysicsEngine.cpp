@@ -114,9 +114,9 @@ void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
     ci.spotA.y = Math::magnet(ci.spotA.y, 0.0f, 0.01f);
     ci.spotA.z = Math::magnet(ci.spotA.z, 0.0f, 0.01f);
 
-    printf("magX: %f\n", glm::length(a.offset[0]));
-    printf("magY: %f\n", glm::length(a.offset[1]));
-    printf("magZ: %f\n", glm::length(a.offset[2]));
+    //printf("magX: %f\n", glm::length(a.offset[0]));
+    //printf("magY: %f\n", glm::length(a.offset[1]));
+    //printf("magZ: %f\n", glm::length(a.offset[2]));
     //float scale = glm::length(ci.spotA);
 
     ci.spotA = -glm::sign(ci.spotA);  // i didn't know this can be done
@@ -284,9 +284,9 @@ void PhysicsUpdate() {
                     ent->orientation[3].y += ci.normB.y * -ci.sink;
                     ent->orientation[3].z += ci.normB.z * -ci.sink;
 
-                    float elasticity = 0.2f;
-                    float frictionMew = 1.5f;
-                    
+                    float elasticity = 0.4f;
+                    float frictionMew = 0.5f;
+
                     // Temporary stuff, remove soon
                     glm::vec3 temp =
                         glm::vec3(ent->orientation
@@ -312,7 +312,7 @@ void PhysicsUpdate() {
                               ent->radialMass) *
                          (elasticity + 1));
 
-                    // Force needed to stop the point
+                    // Force needed to stop the point (momentum)
                     glm::vec3 pointForce =
                         glm::normalize(ent->velocity + tanVel)
                         * glm::length(ent->velocity * ent->mass
@@ -348,13 +348,13 @@ void PhysicsUpdate() {
 
                     static_cast<KObj_Entity*>(KObj_Node::all[5])
                         ->orientation[3]
-                        .x = ci.spotA.x + ent->orientation[3].x + frictionB.x;
+                        .x = ci.spotA.x + ent->orientation[3].x - frictionB.x;
                     static_cast<KObj_Entity*>(KObj_Node::all[5])
                         ->orientation[3]
-                        .y = ci.spotA.y + ent->orientation[3].y + frictionB.y;
+                        .y = ci.spotA.y + ent->orientation[3].y - frictionB.y;
                     static_cast<KObj_Entity*>(KObj_Node::all[5])
                         ->orientation[3]
-                        .z = ci.spotA.z + ent->orientation[3].z + frictionB.z;
+                        .z = ci.spotA.z + ent->orientation[3].z - frictionB.z;
 
                     static_cast<KObj_Entity*>(KObj_Node::all[6])
                         ->orientation[3]

@@ -70,7 +70,8 @@ kdion.initialize(function() {
   e.translate(0.0, 1.0, 0.0);
   e.setName("Cube_Base");
   e.setParent(kdion.World);
-  mat4.fromScaling(tm, vec3.fromValues(0.2, 1.0, 0.2)); 
+  mat4.fromScaling(tm, vec3.fromValues(0.1, 2.0, 0.1));
+  mat4.translate(tm, tm, vec3.fromValues(0.0, -0.5, 0.0)); 
   cubeA.setMatrix(tm);
   e.addComponent(cubeA);
   kdion.e = e;
@@ -79,12 +80,12 @@ kdion.initialize(function() {
   //left.translate(-1.0, 1.0, 0.0);
   //left.setName("Cube_Left");
   //left.setParent(e);
-  mat4.fromTranslation(tm, [-1.0, 1.0, 0.0]);
+  mat4.fromTranslation(tm, [0.0, 0.5, 0.0]);
   cubeB.setMatrix(tm);
-  //e.addComponent(cubeB);
+  e.addComponent(cubeB);
   
   var top = new KObj_Entity();
-  top.translate(1.0, 2.0, 0.0);
+  top.translate(2.0, 3.0, 0.0);
   top.setName("Cube_Top");
   top.addComponent(cubeC);
   top.setParent(e);
@@ -222,7 +223,7 @@ kdion.globalUpdate(function() {
   kdion.e.getVelocity(foo)
   kdion.debug.MOUSE_XD = kdion.inputd.MOUSE_X - kdion.input.MOUSE_X;
   kdion.debug.MOUSE_X = kdion.inputd.MOUSE_X - kdion.input.MOUSE_X;
-  kdion.debug.velocity = vec3.str(foo);
+  kdion.debug["+ACCELERATION"] = (kdion.input["DEBUGA"]) ? "SPIN FAST!" : "OFF";
 
   // CUBE SPAM!
   if (kdion.input["DEBUGB"]) {
