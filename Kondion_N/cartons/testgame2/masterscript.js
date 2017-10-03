@@ -29,7 +29,7 @@ kdion.initialize(function() {
   var wall = new KCompnent("infplane");
   var celi = new KCompnent("infplane");
   var cubeA = new KCompnent("cube");
-  var cubeB = new KCompnent("sphere");
+  var cubeB = new KCompnent("cube");
   var cubeC = new KCompnent("cube");
   
   matman = new KMaterial("defmat");
@@ -40,21 +40,22 @@ kdion.initialize(function() {
   
   var tm = mat4.create();
   mat4.rotateY(tm, tm, Math.PI / 4 * 4);
-  mat4.rotateX(tm, tm, Math.PI / 4 * 2.8);
+  mat4.rotateX(tm, tm, Math.PI / 4 * 3.0);
   flat.setMatrix(tm);
   mat4.identity(tm);
   mat4.rotateY(tm, tm, Math.PI / 4 * 4);
-  mat4.rotateX(tm, tm, Math.PI / 4 * 9.2);
+  mat4.rotateX(tm, tm, Math.PI / 4 * 9.0);
   wall.setMatrix(tm);
   mat4.identity(tm);
   mat4.rotateX(tm, tm, -Math.PI / 2);
+  mat4.rotateY(tm, tm, -Math.PI / 36);
   mat4.translate(tm, tm, [0, 0, 8]);
   celi.setMatrix(tm);
   //wall.setMatrix();
   //mat4.fromScaling(tm, [4, 4, 4]);
   ground.addComponent(flat);
   ground.addComponent(wall);
-  //ground.addComponent(celi);
+  ground.addComponent(celi);
   ground.translate(0.0, -9.0, 0.0);
   ground.setName("Ground");
   ground.setParent(kdion.World);
@@ -71,7 +72,7 @@ kdion.initialize(function() {
   e.translate(0.0, 1.0, 0.0);
   e.setName("Cube_Base");
   e.setParent(kdion.World);
-  mat4.fromScaling(tm, vec3.fromValues(0.1, 2.0, 0.1));
+  mat4.fromScaling(tm, vec3.fromValues(0.1, 6.0, 0.1));
   mat4.translate(tm, tm, vec3.fromValues(0.0, -0.5, 0.0)); 
   cubeA.setMatrix(tm);
   //e.addComponent(cubeA);
@@ -82,6 +83,7 @@ kdion.initialize(function() {
   //left.setName("Cube_Left");
   //left.setParent(e);
   mat4.fromTranslation(tm, [0.0, 0.0, 0.0]);
+  mat4.fromScaling(tm, vec3.fromValues(8.5, 0.5, 0.5));
   cubeB.setMatrix(tm);
   e.addComponent(cubeB);
   
@@ -206,7 +208,7 @@ kdion.globalUpdate(function() {
           10.0,
           0.0,
           0.0],
-          [0.0, 0.0, 10.0]);
+          [0.0, 10.0, 0.0]);
   // Space to jump
   if (kdion.input["DEBUGC"])
     kdion.e.thrustN([
@@ -219,7 +221,7 @@ kdion.globalUpdate(function() {
   //kdion.log(foo[0] + " " + foo[1] + " " + foo[2]);
   
   // Then translate, change this to something else soon
-  kdion.e.thrustN([0.0, 0.0, 0.0], [foo[0] / 100.0, 0.0, foo[2] / 100.0]);
+  kdion.e.thrustN([0.0, 0.0, 0.0], [foo[0] / 50.0, 0.0, foo[2] / 50.0]);
 
   kdion.e.getVelocity(foo)
   kdion.debug.MOUSE_XD = kdion.inputd.MOUSE_X - kdion.input.MOUSE_X;

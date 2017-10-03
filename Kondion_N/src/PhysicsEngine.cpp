@@ -18,6 +18,17 @@ glm::vec4 tvec4[2];
 glm::vec3 tvec3[3];
 
 void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
+
+  // When an object gets hit on the side, some momentum goes into linear motion
+  // and some go into rotation.
+  // % of momentum that goes into rotation can be approximated with:
+  //   r / (i / 2 + r) * (1 - |f dot x|)
+  // r = distance from center
+  // i = moment of inertia
+  // f = force applied
+  // x = point of impact
+  // I don't really know the true answer, i thought veritasium could answer that
+
   // magnitude of force
   float mag = glm::length(force);
 
@@ -28,7 +39,7 @@ void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
   // how much the force is pointed towards the center
   float dot =
       1 - glm::abs(glm::dot(glm::normalize(force), glm::normalize(position)));
-  // the sigmoid thing that calculates how much percent of energy goes into
+  // the sigmoid thing that calculates how much percent of stuff goes into
   // angular stuff
   float amt = (dist == 0.0f) ? 0.0f : dist / (ent->radialMass / 2.0 + dist) * dot;
 
@@ -36,10 +47,13 @@ void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
   // sqrt(f/0.5i) = v
   float angVel = (amt * mag) / ent->radialMass / glm::pi<float>();
 
+  // This mess calculates angular velocity added using mainly cross product
+  // Reverse of the tangential velocity calculations
   glm::quat bird = glm::angleAxis(
       angVel * (1.0f - amt) / 32.0f,
       glm::cross(glm::normalize(position), glm::normalize(force)) *
           glm::mat3(ent->transform));
+
   if (amt != 0.0f) {
     ent->rotVelocity *= bird;
   }
@@ -51,45 +65,37 @@ void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
                     Physics::CollisionInfo& ci) {
   // printf("PAR: %s\n", a.parent->name.c_str());
 
+  // Inverse of total transformation
   tmat4[0] = glm::inverse(b.parent->orientation * b.offset);
+  
   // multiply by transform and store result in temp4
   tmat4[1] = tmat4[0] * (a.parent->orientation * a.offset);
-  // use x as some variable
+  
+  // tvec3.x is only used as a single variable, not a vector.
+  // This calculates the lowest point on the cube from the matrix.
   tvec3[0].x = -(glm::abs(tmat4[1][0][2]) + glm::abs(tmat4[1][1][2]) +
                  glm::abs(tmat4[1][2][2])) /
                    2 -
                tmat4[1][3][2];
 
-  // printf("Eggs: %i %f\n", tvec3[0].x < 0, tvec3[0].x);
-
+  // If the cube is inside the ground
   if (tvec3[0].x <= 0) {
     // Collision detected
-    // a.parent->velocity.y = Kondion::Delta() * 9;
+
     ci.collided = true;
     ci.normB = -b.offset[2];
-    // ci.normB.x = -b.offset[2][0];
-    // ci.normB.y = -b.offset[2][1];
-    // ci.normB.z = -b.offset[2][2];
-
-    // printf("NormB: (%f, %f, %f)\n", ci.normB.x, ci.normB.y, ci.normB.z);
-
-    // TODO which surface of the cube was hit?
-
-    // Calculate displacement
-    // y = tvec3[0]
-    // x =
 
     // t = (-v +- sqrt(v^2 + 2ad)/a) calculates time
     // derived from d = vt + 1/2at^2 using quadratic formula
     // I don't really know if this works... seems so?
-
     // all we need is the velocity of the cube relative to the plane
     // use the same calculations, but with velocity instead
     // TODO, maybe calculate only z
-    tvec3[1] = glm::mat3(tmat4[0]) * a.parent->velocity;
-    tvec3[2] = glm::mat3(tmat4[0]) * a.parent->acceleration;
+    //tvec3[1] = glm::mat3(tmat4[0]) * a.parent->velocity;
+    //tvec3[2] = glm::mat3(tmat4[0]) * a.parent->acceleration;
 
-    // z is used for the equation... and yeah this is big... just look above.
+    // z is used as a single variable.
+    // This part likely doesn't work, t = (-v +- sqrt(v^2 + 2ad)/a)
     ci.collideTime =
         (-tvec3[1].z + glm::sqrt(double(tvec3[1].z * tvec3[1].z +
                                         2 * tvec3[2].z * -tvec3[0].x))) /
@@ -130,8 +136,6 @@ void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
 
     ci.spotA = ci.spotA * glm::inverse(glm::mat3(a.parent->orientation));
 
-    // printf("CORNER: %4.2f (%4.2f, %4.2f, %4.2f)\n",
-    //        glm::length(ci.spotA), ci.spotA.x, ci.spotA.y, ci.spotA.z);
     // ||
     // ||||
     // |||||
@@ -141,6 +145,8 @@ void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
     // |||||
     // ||||
     // ||
+
+    // OwO what's this
   }
 }
 
@@ -369,8 +375,9 @@ void PhysicsUpdate() {
                     ent->orientation[3].y += ci.normB.y * -ci.sink;
                     ent->orientation[3].z += ci.normB.z * -ci.sink;
 
-                    float elasticity = 0.4f;
-                    float frictionMew = 5.5f;
+                    float elasticity = 0.0f;
+                    float frictionMew = 0.0f;
+                    
 
                     // Temporary stuff, remove soon
                     glm::vec3 temp =
