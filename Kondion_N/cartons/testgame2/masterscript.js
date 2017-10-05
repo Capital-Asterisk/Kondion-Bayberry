@@ -28,9 +28,9 @@ kdion.initialize(function() {
   var flat = new KCompnent("infplane");
   var wall = new KCompnent("infplane");
   var celi = new KCompnent("infplane");
-  var cubeA = new KCompnent("cube");
-  var cubeB = new KCompnent("cube");
-  var cubeC = new KCompnent("cube");
+  var cubeA = new KCompnent("sphere");
+  var cubeB = new KCompnent("sphere");
+  var cubeC = new KCompnent("sphere");
   
   matman = new KMaterial("defmat");
   flrmat = new KMaterial("ground");
@@ -55,7 +55,7 @@ kdion.initialize(function() {
   //mat4.fromScaling(tm, [4, 4, 4]);
   ground.addComponent(flat);
   ground.addComponent(wall);
-  ground.addComponent(celi);
+  //ground.addComponent(celi);
   ground.translate(0.0, -9.0, 0.0);
   ground.setName("Ground");
   ground.setParent(kdion.World);
@@ -83,7 +83,7 @@ kdion.initialize(function() {
   //left.setName("Cube_Left");
   //left.setParent(e);
   mat4.fromTranslation(tm, [0.0, 0.0, 0.0]);
-  mat4.fromScaling(tm, vec3.fromValues(8.5, 0.5, 0.5));
+  mat4.fromScaling(tm, vec3.fromValues(2.0, 2.0, 2.0));
   cubeB.setMatrix(tm);
   e.addComponent(cubeB);
   
@@ -230,7 +230,7 @@ kdion.globalUpdate(function() {
 
   // CUBE SPAM!
   if (kdion.input["DEBUGB"]) {
-    quickMakeACube("asdf" + Math.random(), [0.0, 2.0, 5.0], [
+    quickMakeACube("asdf" + Math.random(), [0.0, 20.0 * Math.random(), 5.0], [
           Math.random() * 24.0 - 12.0,
           -Math.random() * 10.0,
           Math.random() * 24.0 - 12.0]);

@@ -42,7 +42,7 @@ std::vector<KObj_Node *> KObj_Node::all;
 std::vector<KMaterial *> Kondion::KMaterial::materials;
 KObj::GKO_World* KObj_Node::worldObject;
 
-const char* KObj_Node::myClass = "error_node";
+const char* KObj_Node::myClass = "Hex Editor, oh yeah!";
 const char* KObj_Oriented::myClass = "error_oriented";
 const char* KObj_Renderable::myClass = "error_renderable";
 const char* KObj_Entity::myClass = "entity";
@@ -55,7 +55,7 @@ const char* KObj::RKO_Sky::myClass = "sky";
 const char* KComponent::myClass = "how did this get here?";
 const char* Component::CPN_Cube::myClass = "cube";
 const char* Component::CPN_InfinitePlane::myClass = "infplane";
-const char* Component::CPN_Sphere::myClass = "cube";
+const char* Component::CPN_Sphere::myClass = "sphere";
 
 KObj_Node::KObj_Node() {
   jsObject = NULL;
@@ -127,9 +127,11 @@ void KObj_Node::setParent(KObj_Node* node) {
     world->world.insert(world->world.begin() + index - 1, allIndex);
 
     if (entity) {
-      // I am terrain
-      if (static_cast<KObj_Entity*>(this)->physics == 0)
-        world->terrain.push_back(allIndex);
+      // I am entity
+      //if (static_cast<KObj_Entity*>(this)->physics == 0)
+      world->terrain.push_back(allIndex);
+      //else
+      //  world->terrain
     } else if (getClass() == KObj::OKO_Force::myClass) {
       // i am a force, add to forces
       world->forces.push_back(allIndex);
@@ -166,7 +168,7 @@ void KObj_Entity::updateA() {
           glm::quat(glm::vec3(0.0, 0.0, 0.0)),
           rotVelocity, float(delta) * 32));
   if (physics != 0) {
-    mass = 0.4f;
+    mass = 1.4f;
     radialMass = mass / 12.0f; // moment of inertia for a 1x1 cube
   }
 }
