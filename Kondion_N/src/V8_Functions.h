@@ -489,10 +489,12 @@ void Callback_Kdion_Require(const FunctionCallbackInfo<Value>& args) {
     return;
   printf("[JS] Running script: %s\n", *String::Utf8Value(args[0]));
   Resources::Raw* f = Resources::Get(std::string(*String::Utf8Value(args[0])));
-  std::ostringstream ostring;
-  ostring << f->stream->rdbuf();
-  Kondion::JS::Eval(ostring.str());
-
+  //std::ostringstream ostring;
+  //ostring << f->stream->rdbuf();
+  std::string s;
+  f->stringy(s);
+  Kondion::JS::Eval(s);
+  delete f;
 }
 
 

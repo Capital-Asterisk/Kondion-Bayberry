@@ -48,7 +48,7 @@ void CPN_InfinitePlane::render() {
       //		-size * amt / 2 - size / 2 + size * j))
       //		< 2) {
 
-      Kondion::Renderer::RenderQuad(size, size);
+      Kondion::Renderer::RenderQuad(size, -size);
       //}
 
     }

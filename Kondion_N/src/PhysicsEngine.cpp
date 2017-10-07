@@ -359,7 +359,7 @@ void PhysicsUpdate() {
                       ent->orientation[3].y += ci.normB.y * -ci.sink;
                       ent->orientation[3].z += ci.normB.z * -ci.sink;
 
-                      float elasticity = 0.2f;
+                      float elasticity = 0.7f;
                       float frictionMew = 2.3f;
                       
 

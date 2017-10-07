@@ -16,6 +16,7 @@
 #include <fstream>
 #include <iostream>
 #include <istream>
+#include <sstream>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,6 +39,7 @@ class KMaterial;
 struct KCurve;
 
 namespace Resources {
+class KMesh;
 class KShader;
 class KTexture;
 }
@@ -710,27 +712,52 @@ class KTexture {
   void Bind();
 };
 
+
 class Raw {
+ private:
+  uint32_t size;
+
  public:
   std::istream* stream;
   std::filebuf* fb;
   std::string filepath;
   uint8_t carton;
+  
   Raw(const std::string& file) {
     fb = new std::filebuf;
     carton = 1;  // CARTON_FOLDER
     filepath = file;
     fb->open(file.c_str(), std::ios::in);
+
+    size = fb->pubseekoff(0, std::ios::end);
+    fb->pubseekpos(0);
+    printf("File Size: %u\n", size);
+
     stream = new std::istream(fb);
   }
-  ;
   ~Raw() {
     //printf("raw deleted\n");
     fb->close();
     delete stream;
     delete fb;
   }
-  ;
+
+  void stringy(std::string& s) {
+    // I dom't know how efficient this solution is
+    //std::ostringstream ostring;
+    //ostring << stream->rdbuf();
+    //s.assign(ostring);
+    s.assign(size, 0);
+    for (uint32_t i = 0; i < size; i ++) {
+      s[i] = stream->get();
+    }
+    
+    //stream->get(static_cast<char*>(s.c_str()), size);
+  }
+
+  uint32_t fileSize() {
+    return size;
+  }
 };
 
 void AddCarton(const std::string& path);
