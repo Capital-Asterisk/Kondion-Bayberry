@@ -88,7 +88,7 @@ void GL_Shader::Load(bool a) {
         for (uint16_t i = 0; i < KMaterial::materials.size(); i++) {
           if (shaders[KMaterial::materials[i]->shader] == this) {
             //printf("HEY LOOK I FOUND MYSELF WOOT NOW SPAM YEAH\n");
-            prepareMaterial(KMaterial::materials[i]);
+            PrepareMaterial(KMaterial::materials[i]);
           }
         }
 
@@ -113,7 +113,7 @@ void GL_Shader::Load(bool a) {
   }
 }
 
-void GL_Shader::prepareMaterial(KMaterial* material) {
+void GL_Shader::PrepareMaterial(KMaterial* material) {
   if (loaded) {
     material->uniforms = new void*[uniformCount];
     for (uint8_t i = 0; i < uniformCount; i ++) {

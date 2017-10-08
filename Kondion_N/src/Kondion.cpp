@@ -32,7 +32,7 @@ namespace Kondion {
 
 namespace {
 char* dir;
-uint64_t timeNow;
+//uint64_t timeNow;
 uint64_t startTime;
 int64_t timeCurrent;
 double delta;

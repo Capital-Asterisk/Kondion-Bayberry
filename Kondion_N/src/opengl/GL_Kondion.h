@@ -53,6 +53,17 @@ class GLRenderPass : public RenderPass {
 
 namespace Resources {
 
+class GL_Mesh : public KMesh {
+ public:
+
+  void Load(bool a);
+
+ protected:
+  ~GL_Mesh() {
+    printf("rip mesh\n");
+  }
+};
+
 class GL_Shader : public KShader {
  public:
   static GLuint vertId;
@@ -63,7 +74,7 @@ class GL_Shader : public KShader {
   
   void Load(bool a);
   void Utilize(Renderer::RenderPass* pass, KMaterial* material);
-  void prepareMaterial(KMaterial* material);
+  void PrepareMaterial(KMaterial* material);
   //void New(const std::string& src);
   ~GL_Shader() {
     delete[] uniformsLocations;

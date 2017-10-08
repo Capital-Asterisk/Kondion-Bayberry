@@ -656,6 +656,45 @@ inline float magnet(float a, float b, float c) {
 
 namespace Resources {
 
+struct BufferAccessor {
+  // count: How many values are there
+  // offset: Starting byte of first value
+  // stride: How far apart each value is (from first byte)
+  // type: What kind, and how large each value is
+  uint32_t count, offset, stride, type;
+};
+
+class KMesh {
+ public:
+  static std::vector<KMesh *> meshs;
+
+  std::string source, identifier;
+
+  // Index part is optional
+  BufferAccessor dataIndex;
+  BufferAccessor dataNormal;
+  BufferAccessor dataVertex;
+
+  void SetData(char* pointer, uint32_t length) {
+    data = pointer;
+    size = length;
+  }
+
+  // Load -- put binary data into opengl or something
+  virtual void Load(bool a) = 0;
+ protected:
+  uint32_t size;
+  char* data;
+
+  KMesh() {
+  }
+  virtual ~KMesh() {
+    // TODO: delete only if no other meshes use this data
+    // i don't know if a size should be specified here
+    delete[] data;
+  }
+};
+
 class KShader {
  public:
 
@@ -677,7 +716,7 @@ class KShader {
   //GLuint vert;
   //GLuint frag;
 
-  virtual void prepareMaterial(KMaterial* material) = 0;
+  virtual void PrepareMaterial(KMaterial* material) = 0;
   virtual void Load(bool a) = 0;
   virtual void Utilize(Renderer::RenderPass* pass, KMaterial* material) = 0;
 

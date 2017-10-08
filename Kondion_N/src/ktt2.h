@@ -5,7 +5,7 @@ pixel[2] = ((((data[2] - 33) & 0x3) << 6) | ((data[3] - 33))); \
 data += 4; \
 }
 
-static char* ktt2_data =
+static char const* ktt2_data =
     "'BI;'BI;``%!``%!'BI;'BI;``%!``%!'BI;'BI;``%!``%!'BI;'BI;``%!``%!"
     "'BI;'BI;``%!``%!'BI;'BI;``%!``%!'BI;'BI;``%!``%!'BI;'BI;``%!``%!"
     "'BI;'BI;$Q]0$Q]0'BI;'BI;$Q]0$Q]0'BI;'BI;$Q]0$Q]0'BI;'BI;$Q]0$Q]0"
@@ -73,7 +73,7 @@ static char* ktt2_data =
     "";
 
 // Can be fed directly into gltex2d, but takes more space
-static char* kondismol_data =
+static char const* kondismol_data =
     "\x71\xe3\x3c\xfa\x2f\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x8a\x24"
     "\x22\x22\x48\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x82\x24\x22\x22"
     "\x88\x80\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xf9\xef\x3c\x23\xc8\x80"
