@@ -40,6 +40,7 @@ Persistent<Object, CopyablePersistentTraits<Object>> p_inputd;
 
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_component;
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_material;
+Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_rawsource;
 
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_kobj_node;
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_oko_camera;
@@ -240,8 +241,18 @@ void Callback_Material_SetUniform(const FunctionCallbackInfo<Value>& args) {
   
 }
 
+void Callback_Raw(const FunctionCallbackInfo<Value>& args) {
+  //if (args.Length() < 1) return;
+  HandleScope handle_scope(isolate);
 
+  if (args.IsConstructCall()) {
 
+    Resources::Raw* o = Resources::Get(std::string(*String::Utf8Value(args[0])));
+
+    args.This()->SetInternalField(0, External::New(isolate, o));
+    args.GetReturnValue().Set(args.This());
+  }
+}
 
 void Callback_KObj_Entity(const FunctionCallbackInfo<Value>& args) {
   HandleScope handle_scope(isolate);

@@ -774,6 +774,13 @@ class Raw {
 
     stream = new std::istream(fb);
   }
+  Raw() {
+    fb = NULL;
+    stream = NULL;
+    carton = 255;  // CARTON_FOLDER
+    filepath = "invalid";
+    size = 0;
+  }
   ~Raw() {
     //printf("raw deleted\n");
     fb->close();

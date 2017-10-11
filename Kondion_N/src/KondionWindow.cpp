@@ -27,17 +27,71 @@ int Initialize() {
   return 0;
 }
 
+// debug stuff
+bool terminalMode = false;
+
 void KeyCallback(GLFWwindow* linuxisbetter, int k, int sc, int a, int m) {
-  if (a == GLFW_PRESS) {
+  if (a == GLFW_PRESS || a == GLFW_REPEAT) {
+    //cout << "Typed: " << char(c) << "\n";
+    // Toggle terminal mode if tide is pressed
 
-    // interpert key typed
-    //cout << "Key press: " << char(k) << "(" << k << ")" << "\n";
-
+    if (terminalMode) {
+      switch (k) {
+        case GLFW_KEY_BACKSPACE:
+          if (m && GLFW_MOD_SHIFT)
+            JS::Eval(std::string("kdion.debug[\">\"] = \"\";"));
+          else
+            JS::Eval(std::string("kdion.debug[\">\"] = kdion.debug[\">\"].slice(0,-1);"));
+          break;
+        case GLFW_KEY_ENTER:
+          if (m && GLFW_MOD_SHIFT)
+            JS::Eval(std::string("kdion.debug[\">\"] += \"\\n\";"));
+          else
+            // Evalception
+            JS::Eval(std::string("eval(kdion.debug[\">\"]);"));
+          break;
+        case GLFW_KEY_V: // paste
+          if (m && GLFW_MOD_CONTROL) {
+            std::string clipboard = std::string(glfwGetClipboardString(w));
+            // Add escape characters to some chars
+            for (uint16_t i = 0; i < clipboard.length(); i ++) {
+              if (clipboard[i] == '\n') {
+                clipboard[i] = 'n';
+                clipboard.insert(i, 1, '\\');
+                i ++; // this seems bad
+              } else if (clipboard[i] == '"' || clipboard[i] == '\\') {
+                clipboard.insert(i, 1, '\\');
+                i ++; // this too
+              }
+            }
+            JS::Eval(std::string("kdion.debug[\">\"] += \"" + clipboard + '"'));
+          }
+          break;
+      }
+    }
   }
 }
 
 void CharCallback(GLFWwindow* linuxisbetter, uint32_t c) {
-  //cout << "Typed: " << char(c) << "\n";
+  if (terminalMode && (char(c) != '~')) {
+    if (char(c) == '"') // run with escape character
+      JS::Eval(std::string("kdion.debug[\">\"] += \"\\") + char(c) + '"');
+    else
+      JS::Eval(std::string("kdion.debug[\">\"] += \"") + char(c) + '"');
+  }
+  
+  // Toggle terminal mode the cool way
+  terminalMode = (char(c) == '~') ^ terminalMode;
+
+  // which is useless considering this
+  if (terminalMode)
+    JS::Eval(std::string("kdion.debug.e = \"------"
+                         "\\nYou can now type into the box above"
+                         "\\n[Enter] to Evaluate"
+                         "\\n[Shift + Backspace] to clear all"
+                         "\\n[Shift + Enter] to Indent\";"));
+  else
+    JS::Eval(std::string("kdion.debug.e = \"Press Shift + [`] to enter command mode\";"));
 }
 
 int CreateWindow(uint16_t width, uint16_t height) {

@@ -420,5 +420,6 @@ kdion.unLoad = function(object) {
   }
 }
 
-kdion.debug = {e: "hey there"}
+kdion.debug = {">": "kdion.log(\"Not hello world\")",
+               e: "Press Shift + [`] to enter command mode"}
 kdion.log("-> Done!");
