@@ -782,7 +782,7 @@ class Raw {
     size = 0;
   }
   ~Raw() {
-    //printf("raw deleted\n");
+    printf("Raw deleted\n");
     fb->close();
     delete stream;
     delete fb;
@@ -826,7 +826,7 @@ void Setup();
 void Start();
 void UpdateInput();
 
-std::string* ParseShader(std::string* in, Resources::KShader& mat);
+std::string* ParseShader(const std::string& in, Resources::KShader& mat);
 
 namespace ON {
 size_t Parse(const std::string& s);

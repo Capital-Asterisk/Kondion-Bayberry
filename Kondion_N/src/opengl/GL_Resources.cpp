@@ -30,11 +30,10 @@ void GL_Shader::Load(bool a) {
       return;
     }
 
-    // TODO make this more efficient
-    std::ostringstream* ostring = new std::ostringstream;
-    *ostring << r->stream->rdbuf();
-    std::string* s = new std::string(ostring->str());
-    std::string* frag = JS::ParseShader(s, *this);
+    //std::ostringstream* ostring = new std::ostringstream;
+    //*ostring << r->stream->rdbuf();
+    //std::string* s = new std::string(ostring->str());
+    std::string* frag = JS::ParseShader(source, *this);
 
     if (frag[0] != "E") {
 
@@ -103,8 +102,6 @@ void GL_Shader::Load(bool a) {
     }
 
     delete r;
-    delete ostring;
-    delete s;
 
   } else {
     // Unload shader

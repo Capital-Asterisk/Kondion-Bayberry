@@ -254,6 +254,17 @@ void Callback_Raw(const FunctionCallbackInfo<Value>& args) {
   }
 }
 
+void Callback_Raw_Str(const FunctionCallbackInfo<Value>& args) {
+  //if (args.Length() < 1) return;
+  Resources::Raw* o = static_cast<Resources::Raw*>(Local<External>::Cast(
+                        args.This()->GetInternalField(0))->Value());
+  if (o->fileSize() == 0 || args.IsConstructCall())
+    return;
+  std::string s;
+  o->stringy(s);
+  args.GetReturnValue().Set(String::NewFromUtf8(isolate, s.c_str()));
+}
+
 void Callback_KObj_Entity(const FunctionCallbackInfo<Value>& args) {
   HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {
@@ -413,11 +424,24 @@ void Callback_Bird_SetIntegrity(Local<String> property, Local<Value> value,
   static_cast<Bird*>(pointer)->integrity = value->Int32Value();
 }
 
+// Kdion object
+
+void Callback_Kdion_ByteBird(const FunctionCallbackInfo<Value>& args) {
+  if (args.Length() < 1)
+    return;
+  HandleScope handle_scope(isolate);
+  Local<ArrayBuffer> ab = Local<ArrayBuffer>::Cast(args[0]);
+  ArrayBuffer::Contents c = ab->Externalize();
+  for (uint32_t i = 0; i < c.ByteLength(); i ++) {
+    printf("%u", static_cast<uint8_t*>(c.Data())[i]);
+  }
+  printf("\n");
+}
+
 void Callback_Kdion_Delta(Local<String> property,
                                    const PropertyCallbackInfo<Value>& info) {
   info.GetReturnValue().Set(Number::New(isolate, Kondion::Delta()));
 }
-
 
 void Callback_Kdion_GlobalUpdate(
     const FunctionCallbackInfo<Value>& args) {

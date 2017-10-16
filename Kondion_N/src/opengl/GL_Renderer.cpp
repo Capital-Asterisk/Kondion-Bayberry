@@ -68,7 +68,7 @@ void Composite() {
   //DebugText("THE QUICK BROWN FOX JUMPPED OVER THE LAZY DOG");
   //glTranslatef(0.0, -10.0, 0.0f);
   DebugText("Not Hello World, silly bird, 1234567890+-[|]><_?!@#$%^&*(){}\\/ \";:.,~`\"");
-  glTranslatef(0.0, -10.0, 0.0f);
+  glTranslatef(0.0, -15.0, 0.0f);
   JS::DebugObjPrint(NULL);
 }
 

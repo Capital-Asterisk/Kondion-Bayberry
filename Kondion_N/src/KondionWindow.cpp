@@ -48,7 +48,7 @@ void KeyCallback(GLFWwindow* linuxisbetter, int k, int sc, int a, int m) {
             JS::Eval(std::string("kdion.debug[\">\"] += \"\\n\";"));
           else
             // Evalception
-            JS::Eval(std::string("eval(kdion.debug[\">\"]);"));
+            JS::Eval(std::string("try {kdion.debug.out = eval(kdion.debug[\">\"]);} catch (e) {kdion.debug.out = + e.name + \": \" + e.message;}"));
           break;
         case GLFW_KEY_V: // paste
           if (m && GLFW_MOD_CONTROL) {
@@ -85,11 +85,13 @@ void CharCallback(GLFWwindow* linuxisbetter, uint32_t c) {
 
   // which is useless considering this
   if (terminalMode)
-    JS::Eval(std::string("kdion.debug.e = \"------"
-                         "\\nYou can now type into the box above"
+    JS::Eval(std::string("kdion.debug.e = \""
+                         "\\nYou can now type into the box below"
                          "\\n[Enter] to Evaluate"
                          "\\n[Shift + Backspace] to clear all"
-                         "\\n[Shift + Enter] to Indent\";"));
+                         "\\n[Shift + Enter] to Indent\\n"
+                         "-----------------------------------------------------"
+                         "\";"));
   else
     JS::Eval(std::string("kdion.debug.e = \"Press Shift + [`] to enter command mode\";"));
 }

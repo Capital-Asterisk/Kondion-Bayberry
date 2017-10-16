@@ -64,14 +64,14 @@ kdion.materialParser = function(code) {
   var mode = 0;
   var name = "";
   var stack = "";
-  
+
   var meta = {};
   var final = {
     version: "bayberry",
     language: "GLSL 120",
     result: "#version 120"
   };
-  
+
   // get headers and shit
   if (code.startsWith("TWMh")) {
     // oh yeah man
@@ -83,7 +83,14 @@ kdion.materialParser = function(code) {
     // TODO: check for TWM binary, make it eventually
     //kdion.err("");
     //kdion.log("Not a TWMh file");
-    return "e: Not a TWNh, or TWM binary not yet supported";
+    //return "e: Not a TWNh, or TWM binary not yet supported";
+    var isfilepath = true;
+    if (isfilepath) {
+      var r = new Raw(code);
+      code = r.str();
+    } else {
+      return "e: Not a TWNh, or TWM binary not yet supported";
+    }
   }
     
   // Maybe shorten everything down to 1 loop
@@ -402,7 +409,7 @@ kdion.queueLoad = function(loadme, level) {
 }
 
 kdion.doLoad = function(object) {
-  if (typeof object == "number") {
+if (typeof object == "number") {
     // Load everything in this level
     kdion.doLoad(kdion.loadQueue[object]);
   } else {
@@ -420,6 +427,8 @@ kdion.unLoad = function(object) {
   }
 }
 
-kdion.debug = {">": "kdion.log(\"Not hello world\")",
-               e: "Press Shift + [`] to enter command mode"}
+kdion.debug = {
+               e: "Press Shift + [`] to enter command mode",
+               ">": "kdion.log(\"Not hello world\")",
+               "divider": "--------------------------------------------"};
 kdion.log("-> Done!");

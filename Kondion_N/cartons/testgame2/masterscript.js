@@ -1,4 +1,4 @@
-2/**
+/**
  * @file Masterscript, this script is run first
  * @author Neal Nicdao (Capital_Asterisk)
  */

@@ -396,8 +396,11 @@ void Setup() {
   kdion->Set(String::NewFromUtf8(isolate, "initialize"),
              FunctionTemplate::New(isolate, Callback_Kdion_Initialize));
   kdion->Set(String::NewFromUtf8(isolate, "globalUpdate"),
-
              FunctionTemplate::New(isolate, Callback_Kdion_GlobalUpdate));
+
+  kdion->Set(String::NewFromUtf8(isolate, "byteBird"),
+           FunctionTemplate::New(isolate, Callback_Kdion_ByteBird));
+
   kdion->SetAccessor(
         String::NewFromUtf8(isolate, "camera"), Callback_KObj_World_GetCamera,
         Callback_KObj_World_SetCamera);
@@ -446,6 +449,9 @@ void Setup() {
   Local<FunctionTemplate> rawsource = FunctionTemplate::New(
       isolate, Callback_Raw);
   rawsource->InstanceTemplate()->SetInternalFieldCount(1);
+  rawsource->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "str"),
+      FunctionTemplate::New(isolate, Callback_Raw_Str));
 
 
   // *** KObj constructors
@@ -515,7 +521,7 @@ void Setup() {
       String::NewFromUtf8(isolate, "physLevel"),
       FunctionTemplate::New(isolate, Callback_Entity_PhysLevel));
 
-      
+
   // Physics stuff
   //kobj_entity->PrototypeTemplate()->Set(
   //    String::NewFromUtf8(isolate, "thrust"),
@@ -718,7 +724,7 @@ void UpdateInput() {
 
 }
 
-std::string* ParseShader(std::string* in, Resources::KShader& mat) {
+std::string* ParseShader(const std::string& in, Resources::KShader& mat) {
   // again, fancy V8 things
   Isolate::Scope isolate_scope(isolate);
   HandleScope handle_scope(isolate);
@@ -741,7 +747,7 @@ std::string* ParseShader(std::string* in, Resources::KShader& mat) {
 
   Local<Value> value;
   // TODO: use external string resource if not lazy
-  Local<Value> args[1] = { String::NewFromUtf8(isolate, in->c_str()) };
+  Local<Value> args[1] = { String::NewFromUtf8(isolate, in.c_str()) };
   value = Local<Function>::Cast(parserB)->Call(context, context->Global(), 1, args)
         .ToLocalChecked();
 

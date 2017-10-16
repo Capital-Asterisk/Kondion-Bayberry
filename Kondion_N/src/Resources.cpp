@@ -378,7 +378,7 @@ Raw* Get(const std::string& url) {
 
   printf("[RES]: Unable to open resource: %s\n", url.c_str());
   printf("[RES]: %s\n", cartonFound ? "Unable to locate file" : "Missing carton, or invalid resource Id.");
-  return NULL;
+  return new Raw();
 }
 
 // For internal textures
