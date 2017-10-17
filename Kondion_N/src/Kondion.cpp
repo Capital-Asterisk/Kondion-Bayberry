@@ -424,7 +424,7 @@ int main(int argc, const char* argv[]) {
     Kondion::Resources::KTexture::textures.push_back(NULL);
     
     // Add default material
-    Kondion::Resources::KShader::New("defmat", "kdefault:shaders/defmat");
+    Kondion::Resources::KShader::New("defmat", "kdefault:shaders/defmat.twm");
 
     // Load cartons, goal: loading screen asap
     unsigned char mode = 1;  // 0: none, 1: carton

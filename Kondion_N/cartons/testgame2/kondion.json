@@ -13,11 +13,11 @@
 		
 	},
 	"Graphics": {
-		"tiles_diff": ["graphics/tiles", "+traitnamehere"],
-		"tiles_norm": ["graphics/tiles_norm", "+normalmap"]
+		"tiles_diff": ["graphics/tiles.png", "+traitnamehere"],
+		"tiles_norm": ["graphics/tiles_norm.png", "+normalmap"]
 	},
-	"OBJ": {
-		
+	"Meshes": {
+
 	},
 	"Audio": {
 	
@@ -26,8 +26,8 @@
 		"monkeyR": ["random", "monkey0", "monkey1"]
 	},
 	"Materials": {
-		"ground": ["materials/ground"],
-		"sky": ["materials/sky"],
-		"test": ["materials/testcube"]
+		"ground": ["materials/ground.twm"],
+		"sky": ["materials/sky.twm"],
+		"test": ["materials/testcube.twm"]
 	}
 }

@@ -14,8 +14,8 @@
 	},
 	"Graphics": {
 	},
-	"OBJ": {
-		
+	"Meshes": {
+		"thing": ["stock/untitled.gltf", "0"]
 	},
 	"Audio": {
 	
@@ -23,6 +23,6 @@
 	"SAudio": {
 	},
 	"Materials": {
-		"normals": ["shaders/normals"]
+		"normals": ["shaders/normals.twm"]
 	}
 }

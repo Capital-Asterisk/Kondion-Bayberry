@@ -266,7 +266,7 @@ void Setup() {
   Raw* f;
 
   for (uint16_t i = 0; i < Carton::cartons.size(); i ++) {
-    f = Get(Carton::cartons[i]->id + ":masterscript");
+    f = Get(Carton::cartons[i]->id + ":masterscript.js");
     std::ostringstream ostring;
     ostring << f->stream->rdbuf();
     Kondion::JS::Eval(ostring.str());
@@ -335,8 +335,9 @@ Raw* Get(const std::string& url) {
               //if (file.is_reg) // i think this would support
               // symlinks and fancy things
               // get the name of the current file and remove the file extension
+              // file extension is no longer removed
               std::string name(file.name);
-              name = name.substr(0, name.find('.'));
+              //name = name.substr(0, name.find('.'));
 
               // now the name can be compared with the one in the current path.
               if (name == current) {
@@ -344,6 +345,9 @@ Raw* Get(const std::string& url) {
                 //printf("Resource found: %s\n", file.path);
                 return new Raw(std::string(file.path));
               }
+              
+              
+              
             }
           } else {
             // we're looking for a directory

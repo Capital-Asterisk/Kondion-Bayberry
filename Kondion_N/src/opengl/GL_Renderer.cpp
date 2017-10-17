@@ -128,7 +128,7 @@ void Setup() {
     "}";
 
 
-  Resources::Raw* av = Resources::Get("kdefault:shaders/solid_col");
+  Resources::Raw* av = Resources::Get("kdefault:shaders/solid_col.vert");
   std::ostringstream aaostring;
   aaostring << av->stream->rdbuf();
   //delete av;

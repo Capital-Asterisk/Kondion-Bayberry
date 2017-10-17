@@ -2,7 +2,7 @@ kdion.error = kdion.log;
 
 kdion.log("Loading Kondion Bayberry default JS carton");
 kdion.log("-> glmatrix...");
-kdion.require("kdefault:glmatrix/gl-matrix-min");
+kdion.require("kdefault:glmatrix/gl-matrix-min.js");
 
 kdion.loadQueue = [];
 
