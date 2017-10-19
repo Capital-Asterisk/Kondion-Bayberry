@@ -668,17 +668,23 @@ class KMesh {
  public:
   static std::vector<KMesh *> meshes;
 
-  std::string source, identifier;
+  static KMesh* New(const std::string& name, const std::string& src,
+                     const std::string& params);
+
+  std::string source, identifier, specific;
+
+  bool loaded;
+  uint16_t id;
 
   // Index part is optional
   BufferAccessor dataIndex;
   BufferAccessor dataNormal;
   BufferAccessor dataVertex;
 
-  void SetData(char* pointer, uint32_t length) {
-    data = pointer;
-    size = length;
-  }
+  //void SetData(char* pointer, uint32_t length) {
+  //  data = pointer;
+  //  size = length;
+  //}
 
   // Load -- put binary data into opengl or something
   virtual void Load(bool a) = 0;
@@ -688,6 +694,7 @@ class KMesh {
 
   KMesh() {
   }
+
   virtual ~KMesh() {
     // TODO: delete only if no other meshes use this data
     // i don't know if a size should be specified here

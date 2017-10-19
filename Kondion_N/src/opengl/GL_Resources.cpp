@@ -18,6 +18,12 @@ namespace Resources {
 
 GLuint GL_Shader::vertId;
 
+void GL_Mesh::Load(bool a) {
+  if (a) {
+    printf("[RES]: Loading Mesh: %s\n", identifier.c_str());
+  }
+}
+
 void GL_Shader::Load(bool a) {
   if (a) {
     // Load material
@@ -188,6 +194,8 @@ void GL_Shader::Utilize(Renderer::RenderPass* pass, KMaterial* material) {
   }
 }
 
+// TODO multiple backend support
+
 KShader* KShader::New(const std::string& name, const std::string& src) {
   //printf("New KShader\n");
   GL_Shader* mat = new GL_Shader;
@@ -197,6 +205,18 @@ KShader* KShader::New(const std::string& name, const std::string& src) {
   mat->internal = (src == "i");
   shaders.push_back(mat);
   return mat;
+}
+
+KMesh* KMesh::New(const std::string& name, const std::string& src,
+                     const std::string& params) {
+  //printf("New KShader\n");
+  KMesh* mesh = new GL_Mesh;
+  mesh->loaded = false;
+  mesh->identifier = name;
+  mesh->source = src;
+  mesh->specific = params;
+  meshes.push_back(mesh);
+  return mesh;
 }
 
 }

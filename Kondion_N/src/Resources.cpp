@@ -138,8 +138,9 @@ void AddCarton(const std::string& path) {
       // Start registering meshes
       for (uint16_t i = 0; i < entry.size(); i ++) {
         JS::ON::GetStringArray(meshes, entry[i], elements);
-        printf("MESH REGISTER: %s\n", entry[i].c_str());
-        //Resources::KShader::New(entry[i], c->id + ":" + elements[0]);
+        printf("MESH REGISTER: %s %s %s\n", entry[i].c_str(), elements[0].c_str(),
+                                         elements[1].c_str());
+        Resources::KMesh::New(entry[i], c->id + ":" + elements[0], elements[1]);
         //elements.clear();
       }
       JS::ON::Dispose(meshes);

@@ -508,6 +508,26 @@ void Callback_Kdion_Load(const FunctionCallbackInfo<Value>& args) {
     }
   }
 
+  // Start meshes (if any)
+  if (a->HasOwnProperty(String::NewFromUtf8(isolate, "meshes"))) {
+    Local<Value> b = a->Get(String::NewFromUtf8(isolate, "meshes"));
+    if (b->IsArray()) {
+      Local<Array> c = Local<Array>::Cast(b);
+      //printf("JS: start texture queue\n");
+      bool loaded = false;
+      for (uint16_t i = 0; i < c->Length(); i++) {
+        std::string s(*String::Utf8Value(c->Get(i)));
+        for (uint16_t i = 0; i < Resources::KMesh::meshes.size() && !loaded; i ++) {
+          if (Resources::KMesh::meshes[i]->identifier == s) {
+            printf("MATCH: %s\n", Resources::KMesh::meshes[i]->identifier.c_str());
+            Resources::KMesh::meshes[i]->Load(true);
+            loaded = false;
+          }
+        }
+      }
+    }
+  }
+
   //printf("%s\n", *String::Utf8Value(args[0]));
 }
 
