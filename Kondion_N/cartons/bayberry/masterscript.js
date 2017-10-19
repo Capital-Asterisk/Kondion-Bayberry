@@ -48,8 +48,21 @@ Array.prototype.twoDimRegex = function(regex, limit) {
   return ret;
 };
 
+kdion.parseMesh = function(path, traits) {
+  kdion.log("WOOOOOOT");
+
+  return {
+    buffer: "arraybuffergoeshere",
+    index: {},
+    normal: {},
+    tangent: {},
+    vertex: {},
+  }
+}
+
 // Called on by native code
-kdion.materialParser = function(code) {
+// argument can be either resource path or twm text data
+kdion.parseShader = function(code) {
   //kdion.log("EEEEEEEE" + code);
 
   // TODO: redo this entire thing to be more like actual javascript

@@ -36,6 +36,7 @@ const unsigned char CARTON_KCA = 0, CARTON_FOLDER = 1, CARTON_ZIP = 2;
 
 std::vector<KTexture *> KTexture::textures;
 std::vector<KShader *> KShader::shaders;
+std::vector<KMesh *> KMesh::meshes;
 //std::vector<uint16_t> KShader::indices;
 //std::vector<uint16_t> KTexture::loadMe;
 
@@ -96,57 +97,52 @@ void AddCarton(const std::string& path) {
       c->desc = JS::ON::GetString(json, "Description");
       c->version = JS::ON::GetString(json, "Version");
 
-      // Enter the graphics section of the json
-      uint16_t graphics = JS::ON::Enter(json, "Graphics");
-
       // Put all arrays in here
       std::vector<std::string> entry;
       std::vector<std::string> elements;
 
+      // Enter the graphics section of the json
+      uint16_t graphics = JS::ON::Enter(json, "Graphics");
+
       // Get all the keys in Graphics, these are texture names
       JS::ON::GetKeys(graphics, entry);
-
-      //printf("Graphics: %i\n", graphics);
-
       // Start registering textures
       for (uint16_t i = 0; i < entry.size(); i ++) {
-
-        //printf("Texture to load %s\n", dummy[i].c_str());
         JS::ON::GetStringArray(graphics, entry[i], elements);
-
         // TODO parse traits
         new KTexture(entry[i], c->id + ":" + elements[0], 0);
-
-        // This is only for printing
-        //for (uint8_t j = 0; j < elements.size(); j ++) {
-        //  printf("Param %s\n", elements[j].c_str());
-        //}
-
         // The elements array is reused for the next texture entry
         elements.clear();
       }
-      
       // dispose of graphics becuase we don't need it anymore.
       // if not, then memory leak
       // Now, enter materials, do the same procedure as textures
       JS::ON::Dispose(graphics);
-      uint16_t materials = JS::ON::Enter(json, "Materials");
 
+      uint16_t materials = JS::ON::Enter(json, "Materials");
       // Clear entry, now use it for materials
       entry.clear();
       JS::ON::GetKeys(materials, entry);
-      
       // Register materials like textures
       for (uint16_t i = 0; i < entry.size(); i ++) {
         JS::ON::GetStringArray(materials, entry[i], elements);
         Resources::KShader::New(entry[i], c->id + ":" + elements[0]);
-        
-        //for (uint8_t j = 0; j < elements.size(); j ++) {
-        //  printf("Param %s\n", elements[j].c_str());
-        //}
-
         elements.clear();
       }
+      JS::ON::Dispose(materials);
+
+      uint16_t meshes = JS::ON::Enter(json, "Meshes");
+      // Clear entry, now use it for meshes
+      entry.clear();
+      JS::ON::GetKeys(meshes, entry);
+      // Start registering meshes
+      for (uint16_t i = 0; i < entry.size(); i ++) {
+        JS::ON::GetStringArray(meshes, entry[i], elements);
+        printf("MESH REGISTER: %s\n", entry[i].c_str());
+        //Resources::KShader::New(entry[i], c->id + ":" + elements[0]);
+        //elements.clear();
+      }
+      JS::ON::Dispose(meshes);
 
       // Don't mind this
       if (c->isGame) {

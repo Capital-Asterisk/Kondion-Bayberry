@@ -666,7 +666,7 @@ struct BufferAccessor {
 
 class KMesh {
  public:
-  static std::vector<KMesh *> meshs;
+  static std::vector<KMesh *> meshes;
 
   std::string source, identifier;
 
@@ -825,6 +825,10 @@ void GlobalUpdate();
 void Setup();
 void Start();
 void UpdateInput();
+
+std::string* ParseMesh(const std::string& path,
+                       const std::string& which,
+                       Resources::KMesh& mesh);
 
 std::string* ParseShader(const std::string& in, Resources::KShader& mat);
 

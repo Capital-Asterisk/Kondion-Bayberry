@@ -724,6 +724,35 @@ void UpdateInput() {
 
 }
 
+std::string* ParseMesh(const std::string& path,
+                       const std::string& which,
+                       Resources::KMesh& mesh) {
+  Isolate::Scope isolate_scope(isolate);
+  HandleScope handle_scope(isolate);
+  Local<Context> context = Local<Context>::New(isolate, p_context);
+  Context::Scope context_scope(context);
+
+  MaybeLocal<Value> parserA = context->Global()->Get(context, String::NewFromUtf8(isolate, "kdion"))
+        .ToLocalChecked()->ToObject()->Get(context, String::NewFromUtf8(isolate, "parseMesh"));
+
+  if (parserA.IsEmpty()) {
+    printf("[JS/RES]: Mesh Parser function not found.\n");
+    return NULL;
+  }
+
+  Local<Value> parserB = parserA.ToLocalChecked();
+  if (!parserB->IsFunction()) {
+     printf("[JS/RES]: Invalid Mesh Parser, must be a function.\n");
+     return NULL;
+  }
+
+  Local<Value> value;
+  Local<Value> args[2] = { String::NewFromUtf8(isolate, path.c_str()),
+                           String::NewFromUtf8(isolate, which.c_str()) };
+  value = Local<Function>::Cast(parserB)->Call(context, context->Global(), 1, args)
+        .ToLocalChecked();
+}
+
 std::string* ParseShader(const std::string& in, Resources::KShader& mat) {
   // again, fancy V8 things
   Isolate::Scope isolate_scope(isolate);
@@ -732,16 +761,16 @@ std::string* ParseShader(const std::string& in, Resources::KShader& mat) {
   Context::Scope context_scope(context);
 
   MaybeLocal<Value> parserA = context->Global()->Get(context, String::NewFromUtf8(isolate, "kdion"))
-        .ToLocalChecked()->ToObject()->Get(context, String::NewFromUtf8(isolate, "materialParser"));
+        .ToLocalChecked()->ToObject()->Get(context, String::NewFromUtf8(isolate, "parseShader"));
 
   if (parserA.IsEmpty()) {
-    printf("[JS/TWM]: Material parser function not found.\n");
+    printf("[JS/RES]: Shader Parser function not found.\n");
     return NULL;
   }
 
   Local<Value> parserB = parserA.ToLocalChecked();
   if (!parserB->IsFunction()) {
-     printf("[JS/TWM]: Invalid material parser, must be a function.\n");
+     printf("[JS/RES]: Invalid Shader Parser, must be a function.\n");
      return NULL;
   }
 
