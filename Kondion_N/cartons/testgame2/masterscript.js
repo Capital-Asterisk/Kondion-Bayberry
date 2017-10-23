@@ -117,7 +117,8 @@ kdion.initialize(function() {
   debugB.physLevel(0);
   
   kdion.queueLoad({textures: ["tiles_diff", "tiles_norm"],
-                   materials: ["test", "ground", "normals", "sky"]}, 2);
+                   materials: ["test", "ground", "normals", "sky"],
+                   meshes: ["thing"]}, 2);
   kdion.camera = camera;
   
   var sky = new RKO_Sky();

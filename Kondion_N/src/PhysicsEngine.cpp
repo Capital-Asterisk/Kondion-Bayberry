@@ -42,7 +42,7 @@ void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
 
   // the sigmoid thing that calculates how much percent of stuff goes into
   // angular stuff
-  float amt = (dist == 0.0f) ? 0.0f : dist / (ent->radialMass / 2.0 + dist) * dot;
+  float amt = (dist == 0.0f) ? 0.0f : dist / (ent->radialMass + dist) * dot;
 
   // amount of rotation
   // sqrt(f/0.5i) = v
@@ -136,6 +136,8 @@ void CubeVsInfPlane(Component::CPN_Cube& a, Component::CPN_InfinitePlane& b,
     ci.spotA += glm::vec3(a.offset[3]);
 
     ci.spotA = ci.spotA * glm::inverse(glm::mat3(a.parent->orientation));
+
+    //ci.spotA = glm::vec3(0.0f, -0.5f, 0.0f);
 
     // ||
     // ||||
@@ -359,9 +361,8 @@ void PhysicsUpdate() {
                       ent->orientation[3].y += ci.normB.y * -ci.sink;
                       ent->orientation[3].z += ci.normB.z * -ci.sink;
 
-                      float elasticity = 0.7f;
+                      float elasticity = 0.4f;
                       float frictionMew = 2.3f;
-                      
 
                       // Temporary stuff, remove soon
                       //glm::vec3 temp =
@@ -382,11 +383,23 @@ void PhysicsUpdate() {
 
                       // Normal force from normal, what else?
                       glm::vec3 normalForce =
-                          ci.normB *
-                          ((-glm::dot(ci.normB, ent->velocity) * ent->mass +
-                            glm::max(-glm::dot(ci.normB, tanVel), 0.0f) *
-                                ent->radialMass) *
-                           (elasticity + 1));
+                          ci.normB;// *
+                          //((-glm::dot(ci.normB, ent->velocity) * ent->mass +
+                          //  glm::max(-glm::dot(ci.normB, tanVel), 0.0f) *
+                          //      ent->radialMass) *
+                          // (elasticity + 1));
+
+                      normalForce *= glm::dot(-(1 + elasticity)
+                                                * (ent->velocity + tanVel),
+                                              ci.normB)
+                                     / (1.0f / ent->mass +
+                                         glm::dot((1.0f / ent->radialMass)
+                                                  * glm::cross(
+                                                      glm::cross(ci.spotA,
+                                                                 ci.normB),
+                                                      ci.spotA), ci.normB));
+                      //glm::dot((1.0f / ent->radialMass) *
+                      //((ci.spotA * ci.normB) * ci.spotA), ci.normB));
 
                       // Force needed to stop the point (momentum)
                       glm::vec3 pointForce =

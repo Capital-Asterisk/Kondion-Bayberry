@@ -49,7 +49,7 @@ Array.prototype.twoDimRegex = function(regex, limit) {
 };
 
 kdion.parseMesh = function(path, traits) {
-  kdion.log("WOOOOOOT");
+  kdion.log("WOOOOOOT: " + path + " " + traits);
 
   return {
     buffer: "arraybuffergoeshere",

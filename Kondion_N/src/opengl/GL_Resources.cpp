@@ -21,12 +21,13 @@ GLuint GL_Shader::vertId;
 void GL_Mesh::Load(bool a) {
   if (a) {
     printf("[RES]: Loading Mesh: %s\n", identifier.c_str());
+    std::string* e = JS::ParseMesh(source, specific, *this);
   }
 }
 
 void GL_Shader::Load(bool a) {
   if (a) {
-    // Load material
+    // Load material	
     if (loaded && internal)
       return;
     Raw* r = Resources::Get(source);
