@@ -46,12 +46,12 @@ void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
 
   // amount of rotation
   // sqrt(f/0.5i) = v
-  float angVel = (amt * mag) / ent->radialMass / glm::pi<float>();
+  float angVel = mag / ent->radialMass / glm::pi<float>() * amt;
 
   // This mess calculates angular velocity added using mainly cross product
   // Reverse of the tangential velocity calculations
   glm::quat bird = glm::angleAxis(
-      angVel * (1.0f - amt) / 32.0f,
+      angVel / 32.0f,
       glm::cross(glm::normalize(position), glm::normalize(force)) *
           glm::mat3(ent->transform));
 
@@ -461,6 +461,7 @@ void PhysicsUpdate() {
 
                       Physics::ApplyForce(ent, ci.spotA,
                                           normalForce + frictionForce);
+
                       // Physics::ApplyForce(ent, ci.spotA, ci.normB);
                     }
                   }

@@ -10,6 +10,31 @@ kdion.loadQueue = [];
 //  log: kondion.log
 //};
 
+Array.prototype.withPropertyEquals = function(propertyName, value) {
+  for (var i = 0; i < this.length; i ++) {
+    if (this[i][propertyName] == value) {
+      return this[i];
+    }
+  }
+  return undefined;
+};
+
+Array.prototype.twoDimRegex = function(regex, limit) {
+  var ret = [];
+  for (var i = 0; i < this.length; i ++) {
+    if (this[i].constructor == Array) {
+      var l = (!limit) ? this[i].length : Math.min(limit, this[i].length);
+      for (var j = 0; j < l; j ++) {
+        if (regex.test("" + this[i][j])) {
+          ret.push(i);
+          ret.push(j);
+        }
+      }
+    }
+  }
+  return ret;
+};
+
 String.prototype.between = function(index, start, cregex) {
   var i = start , j = 0, k = 0;
   while (i < this.length) {
@@ -32,24 +57,14 @@ String.prototype.midCut = function(a, b) {
   return this.slice(0, a) + this.substr(b);
 };
 
-Array.prototype.twoDimRegex = function(regex, limit) {
-  var ret = [];
-  for (var i = 0; i < this.length; i ++) {
-    if (this[i].constructor == Array) {
-      var l = (!limit) ? this[i].length : Math.min(limit, this[i].length);
-      for (var j = 0; j < l; j ++) {
-        if (regex.test("" + this[i][j])) {
-          ret.push(i);
-          ret.push(j);
-        }
-      }
-    }
-  }
-  return ret;
-};
-
 kdion.parseMesh = function(path, traits) {
-  kdion.log("WOOOOOOT: " + path + " " + traits);
+  //kdion.log("WOOOOOOT: " + path + " " + traits);
+  // Assume gltf
+  var file = new Raw(path);
+  var json = JSON.parse(file.str());
+  kdion.debug.h = json.meshes.withPropertyEquals("name", "Icosphere").name;
+  //var buffer = new ArrayBuffer(4);
+  //var view = new Float32Array(buffer);
 
   return {
     buffer: "arraybuffergoeshere",
