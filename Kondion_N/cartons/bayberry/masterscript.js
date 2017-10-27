@@ -59,20 +59,43 @@ String.prototype.midCut = function(a, b) {
 
 kdion.parseMesh = function(path, traits) {
   //kdion.log("WOOOOOOT: " + path + " " + traits);
-  // Assume gltf
+
+  // Thing to return at the end
+  var fish = {
+    buffers: [],
+    index: false,
+    normal: false,
+    vertex: false,
+    tangts: false,
+    coords: false
+  } 
+
+  // Load from file and 
   var file = new Raw(path);
+
+  // Assume gltf
+  // if (fileIsGltf) theRestOfTheStuffBelow(); else doSomethingElse();
+
+  // Load gltf JSON
   var json = JSON.parse(file.str());
-  kdion.debug.h = json.meshes.withPropertyEquals("name", "Icosphere").name;
+
+  var target = json.meshes.withPropertyEquals("name", "Icosphere");
+  var a;
+
+  for (var i = 0; i < target.primitives.length; i ++) {
+    a = target.primitives[i];
+    
+    if (a.attributes["POSITION"]) {
+      // do somethinga;
+    }
+    
+  }
+
+  //kdion.debug.h = json.meshes.withPropertyEquals("name", "Icosphere").name;
   //var buffer = new ArrayBuffer(4);
   //var view = new Float32Array(buffer);
 
-  return {
-    buffer: "arraybuffergoeshere",
-    index: {},
-    normal: {},
-    tangent: {},
-    vertex: {},
-  }
+  return 
 }
 
 // Called on by native code
