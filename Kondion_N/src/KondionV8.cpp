@@ -452,7 +452,9 @@ void Setup() {
   rawsource->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "str"),
       FunctionTemplate::New(isolate, Callback_Raw_Str));
-
+  rawsource->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "arrayBuff"),
+      FunctionTemplate::New(isolate, Callback_Raw_ArrayBuff));
 
   // *** KObj constructors
 

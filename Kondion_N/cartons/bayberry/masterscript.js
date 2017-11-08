@@ -60,42 +60,67 @@ String.prototype.midCut = function(a, b) {
 kdion.parseMesh = function(path, traits) {
   //kdion.log("WOOOOOOT: " + path + " " + traits);
 
-  // Thing to return at the end
-  var fish = {
-    buffers: [],
-    index: false,
-    normal: false,
-    vertex: false,
-    tangts: false,
-    coords: false
-  } 
+  try {
 
-  // Load from file and 
-  var file = new Raw(path);
-
-  // Assume gltf
-  // if (fileIsGltf) theRestOfTheStuffBelow(); else doSomethingElse();
-
-  // Load gltf JSON
-  var json = JSON.parse(file.str());
-
-  var target = json.meshes.withPropertyEquals("name", "Icosphere");
-  var a;
-
-  for (var i = 0; i < target.primitives.length; i ++) {
-    a = target.primitives[i];
-    
-    if (a.attributes["POSITION"]) {
-      // do somethinga;
+    // Thing to return at the end
+    var fish = {
+      buffers: [],
+      index: false,
+      normal: false,
+      vertex: false,
+      tangts: false,
+      coords: false
     }
+    //count, offset, size, stride, type
+
+    // Load from file and 
+    var file = new Raw(path);
+
+    // Assume gltf
+    // if (fileIsGltf) theRestOfTheStuffBelow(); else doSomethingElse();
+
+    // Load gltf JSON
+    var json = JSON.parse(file.str());
+
+    var target = json.meshes.withPropertyEquals("name", "Icosphere");
+    var a;
+    var loadBuffers = [];
+
+    for (var i = 0; i < target.primitives.length; i ++) {
+      a = target.primitives[i];
+      
+      if (a.attributes["POSITION"]) {
+        // do somethinga;
+        var accessor = json.accessors[a.attributes.POSITION];
+        var view = json.bufferViews[accessor.bufferView];
+        loadBuffers[view.buffer] = true;
+        kdion.log(view.byteLength);
+        //if (fish.buffers)
+      }
+      
+    }
+
+    // Load required buffers
+    for (var i = 0; i < json.buffers.length; i ++) {
+      if (loadBuffers[i]) {
+        var buffPath = path.slice(0, path.lastIndexOf("/") + 1)
+                   + json.buffers[i].uri;
+        var raw = new Raw(buffPath);
+        var ab = raw.arrayBuff();
+        var view = new Float32Array(ab);
+        kdion.log(ab + " " + view[0] + " " + view[32] + " " + view[24]);
+      }
+    }
+
+    //kdion.debug.h = json.meshes.withPropertyEquals("name", "Icosphere").name;
+    //var buffer = new ArrayBuffer(4);
+    //var view = new Float32Array(buffer);
     
+  } catch (e) {
+    kdion.log("Mesh parser got an error: " + e);
   }
 
-  //kdion.debug.h = json.meshes.withPropertyEquals("name", "Icosphere").name;
-  //var buffer = new ArrayBuffer(4);
-  //var view = new Float32Array(buffer);
-
-  return 
+  return;
 }
 
 // Called on by native code
@@ -104,7 +129,7 @@ kdion.parseShader = function(code) {
   //kdion.log("EEEEEEEE" + code);
 
   // TODO: redo this entire thing to be more like actual javascript
-  //     : add new string functions to help with parsing
+  //     : add new string functions to help with www
   // this code is really bad
 
   var whitespace = /\s/;

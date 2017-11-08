@@ -265,6 +265,19 @@ void Callback_Raw_Str(const FunctionCallbackInfo<Value>& args) {
   args.GetReturnValue().Set(String::NewFromUtf8(isolate, s.c_str()));
 }
 
+void Callback_Raw_ArrayBuff(const FunctionCallbackInfo<Value>& args) {
+  //if (args.Length() < 1) return; 
+  Resources::Raw* o = static_cast<Resources::Raw*>(Local<External>::Cast(
+                        args.This()->GetInternalField(0))->Value());
+  if (o->fileSize() == 0 || args.IsConstructCall())
+    return;
+
+  Local<ArrayBuffer> buff = ArrayBuffer::New(args.GetIsolate(), o->fileSize());
+  o->read(static_cast<char*>(buff->GetContents().Data()), o->fileSize());
+
+  args.GetReturnValue().Set(buff);
+}
+
 void Callback_KObj_Entity(const FunctionCallbackInfo<Value>& args) {
   HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {

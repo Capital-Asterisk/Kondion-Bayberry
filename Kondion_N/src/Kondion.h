@@ -659,8 +659,9 @@ namespace Resources {
 struct BufferAccessor {
   // count: How many values are there
   // offset: Starting byte of first value
+  // size: how much bytes each section takes (entire vector)
   // stride: How far apart each value is (from first byte)
-  // type: What kind, and how large each value is
+  // type: What kind, and how large each value is (single value)
   uint32_t count, offset, stride, type;
 };
 
@@ -793,6 +794,10 @@ class Raw {
     fb->close();
     delete stream;
     delete fb;
+  }
+
+  void read(char* buf, uint32_t size) {
+    stream->read(buf, size);
   }
 
   void stringy(std::string& s) {
