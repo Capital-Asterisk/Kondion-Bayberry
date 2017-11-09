@@ -662,7 +662,7 @@ struct BufferAccessor {
   // size: how much bytes each section takes (entire vector)
   // stride: How far apart each value is (from first byte)
   // type: What kind, and how large each value is (single value)
-  uint32_t count, offset, stride, type;
+  uint32_t count, offset, size, stride, type;
 };
 
 class KMesh {

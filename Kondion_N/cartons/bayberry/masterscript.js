@@ -65,11 +65,11 @@ kdion.parseMesh = function(path, traits) {
     // Thing to return at the end
     var fish = {
       buffers: [],
-      index: false,
-      normal: false,
-      vertex: false,
-      tangts: false,
-      coords: false
+      //index: false,
+      //normal: false,
+      //vertex: false,
+      //tangts: false,
+      //coords: false
     }
     //count, offset, size, stride, type
 
@@ -93,29 +93,67 @@ kdion.parseMesh = function(path, traits) {
         // do somethinga;
         var accessor = json.accessors[a.attributes.POSITION];
         var view = json.bufferViews[accessor.bufferView];
-        loadBuffers[view.buffer] = true;
-        kdion.log(view.byteLength);
+        var size = (accessor.type.toLowerCase() == "SCALAR") ? 1 :
+                      parseInt(accessor.type[accessor.type.length - 1]);
+        kdion.log("Position: " + size + " " + view.byteOffset)
+        // count, offset, size, stride, type
+        // Float is 4 bytes
+        fish.vertex = [accessor.count, view.byteOffset, size, size * 4, "float"];
+        //kdion.log(view.byteLength);
         //if (fish.buffers)
       }
-      
+
+      if (a.attributes["NORMAL"]) {
+        // do somethinga;
+        var accessor = json.accessors[a.attributes.NORMAL];
+        var view = json.bufferViews[accessor.bufferView];
+        var size = (accessor.type.toLowerCase() == "SCALAR") ? 1 :
+                      parseInt(accessor.type[accessor.type.length - 1]);
+        kdion.log("Normals: " + size + " " + view.byteOffset)
+        // count, offset, size, stride, type
+        // Float is 4 bytes
+        fish.normal = [accessor.count, view.byteOffset, size, size * 4, "float"];
+        //kdion.log(view.byteLength);
+        //if (fish.buffers)
+      }
+
+      if (a.attributes["TEXCOORD_0"]) {
+        // do somethinga;
+        var accessor = json.accessors[a.attributes.TEXCOORD_0];
+        var view = json.bufferViews[accessor.bufferView];
+        var size = (accessor.type.toLowerCase() == "SCALAR") ? 1 :
+                      parseInt(accessor.type[accessor.type.length - 1]);
+        kdion.log("normals: " + size + " " + view.byteOffset)
+        // count, offset, size, stride, type
+        // Float is 4 bytes
+        fish.coords = [accessor.count, view.byteOffset, size, size * 4, "float"];
+        //kdion.log(view.byteLength);
+        //if (fish.buffers)
+      }
+
     }
 
     // Load required buffers
     for (var i = 0; i < json.buffers.length; i ++) {
       if (loadBuffers[i]) {
+        // Path to buffer
         var buffPath = path.slice(0, path.lastIndexOf("/") + 1)
                    + json.buffers[i].uri;
+        // Load into an array buffer
         var raw = new Raw(buffPath);
         var ab = raw.arrayBuff();
-        var view = new Float32Array(ab);
-        kdion.log(ab + " " + view[0] + " " + view[32] + " " + view[24]);
+        //var view = new Float32Array(ab);
+        //kdion.log(ab + " " + view[0] + " " + view[32] + " " + view[24]);
+        fish.buffers[i] = ab;
       }
     }
 
     //kdion.debug.h = json.meshes.withPropertyEquals("name", "Icosphere").name;
     //var buffer = new ArrayBuffer(4);
     //var view = new Float32Array(buffer);
-    
+
+    return fish;
+
   } catch (e) {
     kdion.log("Mesh parser got an error: " + e);
   }
