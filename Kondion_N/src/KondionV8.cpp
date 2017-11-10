@@ -748,11 +748,28 @@ std::string* ParseMesh(const std::string& path,
      return NULL;
   }
 
-  Local<Value> value;
+
   Local<Value> args[2] = { String::NewFromUtf8(isolate, path.c_str()),
                            String::NewFromUtf8(isolate, which.c_str()) };
-  value = Local<Function>::Cast(parserB)->Call(context, context->Global(), 1, args)
-        .ToLocalChecked();
+  Local<Object> returned = Local<Function>::Cast(parserB)->Call(context, context->Global(), 1, args)
+        .ToLocalChecked()->ToObject();
+
+  // Put things into mesh
+  //Externalize
+  Local<Array> buffers = Local<Array>::Cast(returned->Get(context, String::NewFromUtf8(isolate, "buffers")).ToLocalChecked());
+  printf("AAAAAAAAAAAAAAAAAAAA %i\n", buffers->Length());
+  mesh.buffers = new void*[buffers->Length()];
+  for (uint16_t i = 0; i < buffers->Length(); i ++) {
+    // TODO: null check
+    Local<ArrayBuffer> ab = Local<ArrayBuffer>::Cast(buffers->Get(i));
+    mesh.buffers[i] = ab->Externalize().Data();
+    float* fi = static_cast<float*>(mesh.buffers[i]);
+    printf("ARLIOOVE %p\n", mesh.buffers[i]);
+    printf("ARLIOOV3 %p\n", NULL);
+  }
+  
+
+  return NULL;
 }
 
 std::string* ParseShader(const std::string& in, Resources::KShader& mat) {

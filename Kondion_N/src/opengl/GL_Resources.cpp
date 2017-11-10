@@ -22,6 +22,14 @@ void GL_Mesh::Load(bool a) {
   if (a) {
     printf("[RES]: Loading Mesh: %s\n", identifier.c_str());
     std::string* e = JS::ParseMesh(source, specific, *this);
+
+    if (e != NULL) {
+      
+      
+    } else {
+      // Error goes here
+    }
+
   }
 }
 

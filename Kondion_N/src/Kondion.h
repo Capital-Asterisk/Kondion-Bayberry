@@ -662,6 +662,7 @@ struct BufferAccessor {
   // size: how much bytes each section takes (entire vector)
   // stride: How far apart each value is (from first byte)
   // type: What kind, and how large each value is (single value)
+  bool active;
   uint32_t count, offset, size, stride, type;
 };
 
@@ -676,6 +677,8 @@ class KMesh {
 
   bool loaded;
   uint16_t id;
+
+  void** buffers;
 
   // Index part is optional
   BufferAccessor dataIndex;

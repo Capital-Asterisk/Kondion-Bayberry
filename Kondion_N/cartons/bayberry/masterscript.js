@@ -100,7 +100,7 @@ kdion.parseMesh = function(path, traits) {
         // Float is 4 bytes
         fish.vertex = [accessor.count, view.byteOffset, size, size * 4, "float"];
         //kdion.log(view.byteLength);
-        //if (fish.buffers)
+        fish.buffers[i] = true;
       }
 
       if (a.attributes["NORMAL"]) {
@@ -114,7 +114,7 @@ kdion.parseMesh = function(path, traits) {
         // Float is 4 bytes
         fish.normal = [accessor.count, view.byteOffset, size, size * 4, "float"];
         //kdion.log(view.byteLength);
-        //if (fish.buffers)
+        fish.buffers[i] = true;
       }
 
       if (a.attributes["TEXCOORD_0"]) {
@@ -123,12 +123,12 @@ kdion.parseMesh = function(path, traits) {
         var view = json.bufferViews[accessor.bufferView];
         var size = (accessor.type.toLowerCase() == "SCALAR") ? 1 :
                       parseInt(accessor.type[accessor.type.length - 1]);
-        kdion.log("normals: " + size + " " + view.byteOffset)
+        kdion.log("Texcoords: " + size + " " + view.byteOffset)
         // count, offset, size, stride, type
         // Float is 4 bytes
         fish.coords = [accessor.count, view.byteOffset, size, size * 4, "float"];
         //kdion.log(view.byteLength);
-        //if (fish.buffers)
+        fish.buffers[i] = true;
       }
 
     }
@@ -143,7 +143,7 @@ kdion.parseMesh = function(path, traits) {
         var raw = new Raw(buffPath);
         var ab = raw.arrayBuff();
         //var view = new Float32Array(ab);
-        //kdion.log(ab + " " + view[0] + " " + view[32] + " " + view[24]);
+        kdion.log("EE" + ab + " " + view[0] + " " + view[32] + " " + view[24]);
         fish.buffers[i] = ab;
       }
     }
