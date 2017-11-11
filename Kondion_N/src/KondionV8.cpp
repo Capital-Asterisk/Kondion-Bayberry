@@ -754,20 +754,42 @@ std::string* ParseMesh(const std::string& path,
   Local<Object> returned = Local<Function>::Cast(parserB)->Call(context, context->Global(), 1, args)
         .ToLocalChecked()->ToObject();
 
-  // Put things into mesh
-  //Externalize
+  // Put things into mesh class
+
+  Local<Array> vertex = Local<Array>::Cast(returned->Get(jstr("vertex")));
+  if (!vertex.IsEmpty()) {
+    // count, offset, size, stride, type, which buffer
+    // uint32_t count, offset, size, stride, type, which;
+    mesh.dataVertex.active  = true;
+    mesh.dataVertex.count   = vertex->Get(0)->NumberValue();
+    mesh.dataVertex.offset  = vertex->Get(1)->NumberValue();
+    mesh.dataVertex.size    = vertex->Get(2)->NumberValue();
+    mesh.dataVertex.stride  = vertex->Get(3)->NumberValue();
+    //mesh.dataVertex.type    = vertex->Get(4)->NumberValue();
+    mesh.dataVertex.which   = vertex->Get(5)->NumberValue();
+  }
+
+  Local<Array> normal = Local<Array>::Cast(returned->Get(jstr("normal")));
+  if (!vertex.IsEmpty()) {
+    // count, offset, size, stride, type, which buffer
+    // uint32_t count, offset, size, stride, type, which;
+    mesh.dataNormal.active  = true;
+    mesh.dataNormal.count   = normal->Get(0)->NumberValue();
+    mesh.dataNormal.offset  = normal->Get(1)->NumberValue();
+    mesh.dataNormal.size    = normal->Get(2)->NumberValue();
+    mesh.dataNormal.stride  = normal->Get(3)->NumberValue();
+    //mesh.dataNormal.type    = normal->Get(4)->NumberValue();
+    mesh.dataNormal.which   = normal->Get(5)->NumberValue();
+  }
+
+  // Externalize buffers and put into mesh
   Local<Array> buffers = Local<Array>::Cast(returned->Get(context, String::NewFromUtf8(isolate, "buffers")).ToLocalChecked());
-  printf("AAAAAAAAAAAAAAAAAAAA %i\n", buffers->Length());
   mesh.buffers = new void*[buffers->Length()];
   for (uint16_t i = 0; i < buffers->Length(); i ++) {
     // TODO: null check
     Local<ArrayBuffer> ab = Local<ArrayBuffer>::Cast(buffers->Get(i));
     mesh.buffers[i] = ab->Externalize().Data();
-    float* fi = static_cast<float*>(mesh.buffers[i]);
-    printf("ARLIOOVE %p\n", mesh.buffers[i]);
-    printf("ARLIOOV3 %p\n", NULL);
   }
-  
 
   return NULL;
 }

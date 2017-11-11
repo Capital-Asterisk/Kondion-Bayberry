@@ -67,6 +67,10 @@ class ArrayBufferAllocator : public ArrayBuffer::Allocator {
   }
 };
 
+inline Local<String> jstr(char* d) {
+  return String::NewFromUtf8(isolate, d);
+}
+
 class Bird {
  public:
   uint32_t integrity = 0;
