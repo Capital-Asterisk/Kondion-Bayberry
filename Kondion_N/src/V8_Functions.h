@@ -67,7 +67,7 @@ class ArrayBufferAllocator : public ArrayBuffer::Allocator {
   }
 };
 
-inline Local<String> jstr(char* d) {
+inline Local<String> jstr(const char* d) {
   return String::NewFromUtf8(isolate, d);
 }
 

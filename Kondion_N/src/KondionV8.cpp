@@ -784,14 +784,23 @@ std::string* ParseMesh(const std::string& path,
 
   // Externalize buffers and put into mesh
   Local<Array> buffers = Local<Array>::Cast(returned->Get(context, String::NewFromUtf8(isolate, "buffers")).ToLocalChecked());
-  mesh.buffers = new void*[buffers->Length()];
-  for (uint16_t i = 0; i < buffers->Length(); i ++) {
-    // TODO: null check
-    Local<ArrayBuffer> ab = Local<ArrayBuffer>::Cast(buffers->Get(i));
-    mesh.buffers[i] = ab->Externalize().Data();
+  //buffers->Length()
+  mesh.buffers = new void*[16];
+  for (uint16_t i = 0; i < 16; i ++) {
+    
+    Local<Value> f = buffers->Get(i);
+    if (f->IsUndefined()) {
+      mesh.buffers[i] = NULL;
+    } else {
+      Local<ArrayBuffer> ab = Local<ArrayBuffer>::Cast(f);
+      //printf("PIGS: %u\n", i);
+      ArrayBuffer::Contents c = ab->Externalize();
+      mesh.buffers[i] = c.Data();
+      mesh.bufferSizes[i] = c.ByteLength();
+    }
   }
 
-  return NULL;
+  return new std::string("memory leak");
 }
 
 std::string* ParseShader(const std::string& in, Resources::KShader& mat) {

@@ -20,12 +20,28 @@ GLuint GL_Shader::vertId;
 
 void GL_Mesh::Load(bool a) {
   if (a) {
+    
     printf("[RES]: Loading Mesh: %s\n", identifier.c_str());
+    
+    // Magical stuff happen here. Load file into memory. info goes into self.
     std::string* e = JS::ParseMesh(source, specific, *this);
-
+    
     if (e != NULL) {
-      
-      
+      // Load buffers into OpenGL
+      // maybe use genbuffers array?
+      for (uint8_t i = 0; i < 16; i ++) {
+        if (buffers[i] != NULL) {
+          glGenBuffers(1, &glBuffers[i]);
+          printf("[KGL] Generated Buffer Id: %u\n", glBuffers[i]);
+          glBindBuffer(GL_ARRAY_BUFFER, glBuffers[i]);
+          glBufferData(GL_ARRAY_BUFFER, bufferSizes[i], (char*)(buffers[i]),
+                       GL_STATIC_DRAW);
+          glBindBuffer(GL_ARRAY_BUFFER, 0);
+          
+          delete buffers[i];
+        }
+      }
+      loaded = true;
     } else {
       // Error goes here
     }
@@ -220,6 +236,7 @@ KMesh* KMesh::New(const std::string& name, const std::string& src,
                      const std::string& params) {
   //printf("New KShader\n");
   KMesh* mesh = new GL_Mesh;
+  mesh->bufferSizes = new uint32_t[16];
   mesh->loaded = false;
   mesh->identifier = name;
   mesh->source = src;

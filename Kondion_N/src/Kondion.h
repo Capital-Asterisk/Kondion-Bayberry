@@ -679,6 +679,7 @@ class KMesh {
   bool loaded;
   uint16_t id;
 
+  uint32_t* bufferSizes;
   void** buffers;
 
   // Index part is optional

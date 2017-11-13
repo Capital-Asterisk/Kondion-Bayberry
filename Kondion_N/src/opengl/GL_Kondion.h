@@ -56,6 +56,8 @@ namespace Resources {
 class GL_Mesh : public KMesh {
  public:
 
+  GLuint glBuffers[16];
+
   void Load(bool a);
 
  protected:
