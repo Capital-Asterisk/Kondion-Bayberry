@@ -43,7 +43,7 @@ void GL_Mesh::Load(bool a) {
       }
       loaded = true;
     } else {
-      // Error goes here
+      // Error goes herex
     }
 
   }

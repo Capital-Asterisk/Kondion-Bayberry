@@ -56,6 +56,7 @@ const char* KComponent::myClass = "how did this get here?";
 const char* Component::CPN_Cube::myClass = "cube";
 const char* Component::CPN_InfinitePlane::myClass = "infplane";
 const char* Component::CPN_Sphere::myClass = "sphere";
+const char* Component::CPN_Mesh::myClass = "mesh";
 
 KObj_Node::KObj_Node() {
   jsObject = NULL;
@@ -272,7 +273,8 @@ void GameLoop() {
   
   Resources::KShader::shaders[0]->Load(true);
 
-  Input::MouseLock(true);
+  //Input::MouseLock(true);
+  KObj_Entity* moist = static_cast<KObj_Entity*>(KObj_Node::all[KObj::GKO_World::worldObject->world[4]]);
 
   glfwSetTime(15.0);
 
