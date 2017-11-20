@@ -274,7 +274,8 @@ void GameLoop() {
   Resources::KShader::shaders[0]->Load(true);
 
   //Input::MouseLock(true);
-  KObj_Entity* moist = static_cast<KObj_Entity*>(KObj_Node::all[KObj::GKO_World::worldObject->world[4]]);
+  KObj_Entity* moist = static_cast<KObj_Entity*>(KObj_Node::all[KObj::GKO_World::worldObject->world[2]]);
+  moist->components.push_back(new Component::CPN_Mesh);
 
   glfwSetTime(15.0);
 

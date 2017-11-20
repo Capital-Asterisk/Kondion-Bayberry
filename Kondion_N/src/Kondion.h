@@ -475,6 +475,7 @@ class CPN_Sphere : public KComponent {
 class CPN_Mesh : public KComponent {
  public:
   static const char* myClass;
+  uint32_t mesh = 0;
   const char* getClass() {
     return myClass;
   }
@@ -697,6 +698,7 @@ class KMesh {
   BufferAccessor dataIndex;
   BufferAccessor dataNormal;
   BufferAccessor dataVertex;
+  BufferAccessor dataCoords;
 
   //void SetData(char* pointer, uint32_t length) {
   //  data = pointer;

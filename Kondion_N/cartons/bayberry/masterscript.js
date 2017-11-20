@@ -150,6 +150,7 @@ kdion.parseMesh = function(path, traits) {
     //var buffer = new ArrayBuffer(4);
     //var view = new Float32Array(buffer);
 
+    kdion.debug.h = fish;
     return fish;
 
   } catch (e) {

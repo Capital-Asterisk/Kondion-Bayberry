@@ -9,6 +9,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "../Kondion.h"
+#include "../opengl/GL_Kondion.h"
 
 namespace Kondion {
 
@@ -77,12 +78,38 @@ void CPN_Mesh::render() {
   glPushMatrix();
   glMultMatrixf(glm::value_ptr(offset));
   Kondion::Renderer::RenderCube(1.0f);
-  //parent->material = 1;
+
+  Resources::GL_Mesh* meal = static_cast<Resources::GL_Mesh*>(
+                                Resources::KMesh::meshes[0]);
+
+  // count: How many values are there
+  // offset: Starting byte of first value
+  // size: how much bytes each section takes (entire vector)
+  // stride: How far apart each value is (from first byte)
+  // type: What kind, and how large each value is (single value)
+  // which: which buffer
+  //data(Normal,Vertex,Coords)
+
+  glBindBuffer(GL_ARRAY_BUFFER, meal->glBuffers[meal->dataVertex.which]);
+  glVertexPointer(meal->dataVertex.size, GL_FLOAT, meal->dataVertex.stride,
+                  (char *) NULL + meal->dataVertex.offset);
+  //glNormalPointer(GL_FLOAT, 32, ((char *) NULL + (12)));
+  //glTexCoordPointer(2, GL_FLOAT, 32, ((char *) NULL + (24)));
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+  //glEnableClientState(GL_NORMAL_ARRAY);
+  //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+  // System.out.print("EGGUS");
+  glDrawArrays(GL_TRIANGLES, 0, meal->dataVertex.count);
+
+  glDisableClientState(GL_VERTEX_ARRAY);
+  //glDisableClientState(GL_NORMAL_ARRAY);
+  //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   
-  //glTranslatef(0, -1, 0);
-  //Kondion::Renderer::RenderQuad(20, 20);
+  
   glPopMatrix();
-  //std::cout << "meat\n";
 }
 
 }  // namespace Components
