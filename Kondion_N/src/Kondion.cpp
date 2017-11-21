@@ -186,6 +186,8 @@ void KObj_Entity::render() {
   for (unsigned short i; i < components.size(); i++) {
     if (components[i]->renderable) {
       components[i]->render();
+    } else {
+      // do something
     }
 
   }
@@ -275,15 +277,15 @@ void GameLoop() {
 
   //Input::MouseLock(true);
   KObj_Entity* moist = static_cast<KObj_Entity*>(KObj_Node::all[KObj::GKO_World::worldObject->world[2]]);
-  moist->components.push_back(new Component::CPN_Mesh);
+  Component::CPN_Mesh* meshy = new Component::CPN_Mesh;
+  printf("MESHYMCMESHMESHMESHMEASDASDASDSHSDFHSDFGDFGDFSG: %p %i\n", meshy, meshy->renderable);
+  moist->components.push_back(meshy);
 
   glfwSetTime(15.0);
 
   double lastTime = glfwGetTime();
   double currentTime = 0;
 
-  //float yaw = 0.0f;
-  //float pitch = 0.0f
   while (Window::Active()) {
 
     // egg timing
@@ -307,39 +309,10 @@ void GameLoop() {
       
     }
 
-    //printf("Time: (%u)(%f)\n", TimeMs() / 1000, KObj_Node::worldObject->sceneTime);
-
-    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     Input::Update();
     JS::UpdateInput();
-    
-    //Input::DebugPrint();
 
-    //player->offset = glm::translate(
-    //    player->offset,
-    //    glm::vec3(0.0f, 0.0f,
-    //              Input::Get(Input::ControlIndex("MOVE_Y"))->x * -0.1f));
-    //player->offset = glm::rotate(
-    //    player->offset,
-    //    (Input::Get(Input::ControlIndex("MOUSE_X"))->delta()) * 0.001f,
-    //    glm::vec3(0.0f, 1.0f, -0.000000f));
-
-    //glm::vec3 trans = glm::vec3(a->offset[3]);
-    //a->offset = glm::mat4x4();
-    //a->offset = glm::translate(a->offset, trans);
-    //a->offset = glm::rotate(
-    //    a->offset, Input::Get(Input::ControlIndex("MOUSE_X"))->x * -0.001f,
-    //    glm::vec3(0.0f, 1.0f, 0.0f));
-    //a->offset = glm::rotate(
-    //    a->offset, Input::Get(Input::ControlIndex("MOUSE_Y"))->x * -0.001f,
-    //    glm::vec3(1.0f, -0.0f, -0.0f));
-
-    //glm::value_ptr(a->offset)[13] = 0.7f;
-    //a->offset = glm::translate(
-    //    a->offset,
-    //    glm::vec3(0, 0, -Input::Value(Input::ControlIndex("MOVE_Y")) * 0.4));
-    //b->offset = glm::rotate(b->offset, 0.01f, glm::vec3(1.0f, 0.0f, 0.0f));
     JS::GlobalUpdate();
 
     for (size_t i = 0; i < KObj_Node::worldObject->children.size(); i++) {
@@ -356,25 +329,12 @@ void GameLoop() {
       }
     }
 
-    //if (Input::Get(Input::ControlIndex("DEBUGC"))->x) {
-      // Temp jump
-    //  static_cast<KObj_Entity*>(KObj_Node::all[3])->velocity.y += 0.9;
-    //}
-
-    // do collisions here
-    // DoCollisions
-
-    //for (size_t i = 0; i < world.size(); i ++) {
-    //	world[i]->updateB();
-    //}
-
     PhysicsUpdate();
 
     //printf("directions: %f %f\n", f->x, f->y);
 
     // temporary compositor
     Renderer::Composite();
-    //Renderer::Three(800, 600);
 
     glLoadIdentity();
     Window::Update();
@@ -397,14 +357,6 @@ void GameLoop() {
 
 int main(int argc, const char* argv[]) {
 
-  // this is an experiment
-  //uint32_t a = 2147483648;
-  //uint32_t b = 2;
-  //uint32_t c = a * b;
-  //printf("Unsigned 2147483648 * 2 = %i\n", c);
-  // aparrently 2 non-zero numbers can multiply to zero
-
-  //new Kondion::Resources::KMaterial();
   Kondion::startTime = std::chrono::duration_cast < std::chrono::milliseconds
       > (std::chrono::system_clock::now().time_since_epoch()).count();
 

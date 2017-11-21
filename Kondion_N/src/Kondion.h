@@ -258,7 +258,8 @@ class KComponent {
   virtual void testCollision(KComponent& comp, Physics::CollisionInfo& ci) {
 
   }
-  virtual ~KComponent() {
+  KComponent() {
+    //printf("Component constructor\n");
     offset = glm::mat4x4(1);
     collide = true;
     renderable = true;

@@ -93,20 +93,21 @@ void CPN_Mesh::render() {
   glBindBuffer(GL_ARRAY_BUFFER, meal->glBuffers[meal->dataVertex.which]);
   glVertexPointer(meal->dataVertex.size, GL_FLOAT, meal->dataVertex.stride,
                   (char *) NULL + meal->dataVertex.offset);
-  //glNormalPointer(GL_FLOAT, 32, ((char *) NULL + (12)));
-  //glTexCoordPointer(2, GL_FLOAT, 32, ((char *) NULL + (24)));
+  glNormalPointer(GL_FLOAT, meal->dataNormal.stride,
+                  (char *) NULL + meal->dataNormal.offset);
+  glTexCoordPointer(meal->dataCoords.size, GL_FLOAT, meal->dataCoords.stride,
+                  (char *) NULL + meal->dataCoords.offset);
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   glEnableClientState(GL_VERTEX_ARRAY);
-  //glEnableClientState(GL_NORMAL_ARRAY);
-  //glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  glEnableClientState(GL_NORMAL_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-  // System.out.print("EGGUS");
   glDrawArrays(GL_TRIANGLES, 0, meal->dataVertex.count);
 
   glDisableClientState(GL_VERTEX_ARRAY);
-  //glDisableClientState(GL_NORMAL_ARRAY);
-  //glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  glDisableClientState(GL_NORMAL_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
   
   
   glPopMatrix();

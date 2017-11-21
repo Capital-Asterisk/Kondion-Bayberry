@@ -782,6 +782,19 @@ std::string* ParseMesh(const std::string& path,
     mesh.dataNormal.which   = normal->Get(5)->NumberValue();
   }
 
+  Local<Array> coords = Local<Array>::Cast(returned->Get(jstr("coords")));
+  if (!coords.IsEmpty()) {
+    // count, offset, size, stride, type, which buffer
+    // uint32_t count, offset, size, stride, type, which;
+    mesh.dataCoords.active  = true;
+    mesh.dataCoords.count   = coords->Get(0)->NumberValue();
+    mesh.dataCoords.offset  = coords->Get(1)->NumberValue();
+    mesh.dataCoords.size    = coords->Get(2)->NumberValue();
+    mesh.dataCoords.stride  = coords->Get(3)->NumberValue();
+    //mesh.dataCoords.type    = coords->Get(4)->NumberValue();
+    mesh.dataCoords.which   = coords->Get(5)->NumberValue();
+  }
+
   // Externalize buffers and put into mesh
   Local<Array> buffers = Local<Array>::Cast(returned->Get(context, String::NewFromUtf8(isolate, "buffers")).ToLocalChecked());
   //buffers->Length()
