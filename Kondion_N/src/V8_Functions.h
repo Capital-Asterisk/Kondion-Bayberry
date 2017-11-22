@@ -103,7 +103,9 @@ void Callback_Component(const FunctionCallbackInfo<Value>& args) {
       o = new Component::CPN_InfinitePlane;
     } else if (arg == "sphere") {
       o = new Component::CPN_Sphere;
-    } else  {
+    } else if (arg == "mesh") {
+      o = new Component::CPN_Mesh;
+    } else {
       o = new Component::CPN_Cube;
     }
     o->jsObject = new Persistent<Object,
@@ -118,17 +120,38 @@ void Callback_Component_GetMatrix(const FunctionCallbackInfo<Value>& args) {
   if (args.IsConstructCall() || args.Length() == 0
       || !(args[0]->IsFloat32Array() || args[0]->IsArray()))
     return;
-  KComponent* pointer_this =
+  KComponent* pointerThis =
           static_cast<KComponent*>(Local<External>::Cast(
               args.This()->GetInternalField(0))->Value());
-  Debug::printMatrix(pointer_this->offset);
+  Debug::printMatrix(pointerThis->offset);
 
   Local<Float32Array> a = Local<Float32Array>::Cast(args[0]);
-  a->Set(0, Number::New(isolate, pointer_this->offset[3][0]));
-  a->Set(1, Number::New(isolate, pointer_this->offset[3][1]));
-  a->Set(2, Number::New(isolate, pointer_this->offset[3][2]));
-  //pointer_this->offset[0][0];
+  a->Set(0, Number::New(isolate, pointerThis->offset[3][0]));
+  a->Set(1, Number::New(isolate, pointerThis->offset[3][1]));
+  a->Set(2, Number::New(isolate, pointerThis->offset[3][2]));
+  //pointerThis->offset[0][0];
   //static_cast<Bird*>(pointer)->integrity = value->Int32Value();
+}
+
+void Callback_Component_SetData(const FunctionCallbackInfo<Value>& args) {
+  if (args.IsConstructCall() || args.Length() == 0)
+    return;
+
+  KComponent* pointerThis =
+          static_cast<KComponent*>(Local<External>::Cast(
+              args.This()->GetInternalField(0))->Value());
+
+  if (pointerThis->getClass() == Component::CPN_Mesh::myClass) {
+    // IsA mesh
+    Component::CPN_Mesh* thisMesh = static_cast<Component::CPN_Mesh*>(pointerThis);
+    std::string arg = std::string(*String::Utf8Value(args[0]));
+    thisMesh-> mesh = 0;
+    for (uint32_t i = 1; i < Resources::KMesh::meshes.size(); i ++) {
+      if (Resources::KMesh::meshes[i]->identifier == arg) {
+        thisMesh->mesh = i;
+      }
+    }
+  }
 }
 
 void Callback_Component_SetMatrix(const FunctionCallbackInfo<Value>& args) {
@@ -136,40 +159,40 @@ void Callback_Component_SetMatrix(const FunctionCallbackInfo<Value>& args) {
       || !(args[0]->IsFloat32Array() || args[0]->IsArray()))
     return;
 
-  KComponent* pointer_this =
+  KComponent* pointerThis =
           static_cast<KComponent*>(Local<External>::Cast(
               args.This()->GetInternalField(0))->Value());
 
   Local<Float32Array> a = Local<Float32Array>::Cast(args[0]);
 
-  //const float* b = glm::value_ptr(pointer_this->offset);
+  //const float* b = glm::value_ptr(pointerThis->offset);
   //for (uint8_t i = 0; i < 16; i ++)
   //  b[i] = a->Get(i)->NumberValue();
 
   // TODO: make this more efficient or something
 
-  pointer_this->offset[0][0] = a->Get(0)->NumberValue();
-  pointer_this->offset[0][1] = a->Get(1)->NumberValue();
-  pointer_this->offset[0][2] = a->Get(2)->NumberValue();
-  pointer_this->offset[0][3] = a->Get(3)->NumberValue();
+  pointerThis->offset[0][0] = a->Get(0)->NumberValue();
+  pointerThis->offset[0][1] = a->Get(1)->NumberValue();
+  pointerThis->offset[0][2] = a->Get(2)->NumberValue();
+  pointerThis->offset[0][3] = a->Get(3)->NumberValue();
 
-  pointer_this->offset[1][0] = a->Get(4)->NumberValue();
-  pointer_this->offset[1][1] = a->Get(5)->NumberValue();
-  pointer_this->offset[1][2] = a->Get(6)->NumberValue();
-  pointer_this->offset[1][3] = a->Get(7)->NumberValue();
+  pointerThis->offset[1][0] = a->Get(4)->NumberValue();
+  pointerThis->offset[1][1] = a->Get(5)->NumberValue();
+  pointerThis->offset[1][2] = a->Get(6)->NumberValue();
+  pointerThis->offset[1][3] = a->Get(7)->NumberValue();
 
-  pointer_this->offset[2][0] = a->Get(8)->NumberValue();
-  pointer_this->offset[2][1] = a->Get(9)->NumberValue();
-  pointer_this->offset[2][2] = a->Get(10)->NumberValue();
-  pointer_this->offset[2][3] = a->Get(11)->NumberValue();
+  pointerThis->offset[2][0] = a->Get(8)->NumberValue();
+  pointerThis->offset[2][1] = a->Get(9)->NumberValue();
+  pointerThis->offset[2][2] = a->Get(10)->NumberValue();
+  pointerThis->offset[2][3] = a->Get(11)->NumberValue();
 
-  pointer_this->offset[3][0] = a->Get(12)->NumberValue();
-  pointer_this->offset[3][1] = a->Get(13)->NumberValue();
-  pointer_this->offset[3][2] = a->Get(14)->NumberValue();
-  pointer_this->offset[3][3] = a->Get(15)->NumberValue();
+  pointerThis->offset[3][0] = a->Get(12)->NumberValue();
+  pointerThis->offset[3][1] = a->Get(13)->NumberValue();
+  pointerThis->offset[3][2] = a->Get(14)->NumberValue();
+  pointerThis->offset[3][3] = a->Get(15)->NumberValue();
 
   //printf("New matrix: \n");
-  //Debug::printMatrix(pointer_this->offset);
+  //Debug::printMatrix(pointerThis->offset);
   //static_cast<Bird*>(pointer)->integrity = value->Int32Value();
 }
 
@@ -307,10 +330,10 @@ void Callback_Kdion_Blank(const FunctionCallbackInfo<Value>& args) {
 }
 
 void Callback_KObj_SetName(const FunctionCallbackInfo<Value>& args) {
-  KObj_Oriented* pointer_this =
+  KObj_Oriented* pointerThis =
           static_cast<KObj_Oriented*>(Local<External>::Cast(
               args.This()->GetInternalField(0))->Value());
-  pointer_this->name = std::string(*String::Utf8Value(args[0]));
+  pointerThis->name = std::string(*String::Utf8Value(args[0]));
   //static_cast<Bird*>(pointer)->integrity = value->Int32Value();
 }
 
@@ -359,12 +382,12 @@ void Callback_KObj_SetParent(const FunctionCallbackInfo<Value>& args) {
 
   if (!f->HasInstance(args[0]))
     return;
-  KObj_Node* pointer_this = static_cast<KObj_Node*>(Local<External>::Cast(
+  KObj_Node* pointerThis = static_cast<KObj_Node*>(Local<External>::Cast(
       args.This()->GetInternalField(0))->Value());
   KObj_Node* pointer_arg0 = static_cast<KObj_Node*>(Local<External>::Cast(
       Local<Object>::Cast(args[0])->GetInternalField(0))->Value());
 
-  pointer_this->setParent(pointer_arg0);
+  pointerThis->setParent(pointer_arg0);
 }
 
 void Callback_GKO_World(const FunctionCallbackInfo<Value>& args) {
@@ -535,12 +558,15 @@ void Callback_Kdion_Load(const FunctionCallbackInfo<Value>& args) {
       for (uint16_t i = 0; i < c->Length(); i++) {
         std::string s(*String::Utf8Value(c->Get(i)));
         for (uint16_t i = 0; i < Resources::KMesh::meshes.size() && !loaded; i ++) {
-          if (Resources::KMesh::meshes[i]->identifier == s) {
-            printf("MATCH: %s\n", Resources::KMesh::meshes[i]->identifier.c_str());
-            Resources::KMesh::meshes[i]->Load(true);
-            loaded = false;
+          if (Resources::KMesh::meshes[i] != NULL) {
+            if (Resources::KMesh::meshes[i]->identifier == s) {
+              printf("MATCH: %s\n", Resources::KMesh::meshes[i]->identifier.c_str());
+              Resources::KMesh::meshes[i]->Load(true);
+              loaded = false;
+            }
           }
         }
+        
       }
     }
   }

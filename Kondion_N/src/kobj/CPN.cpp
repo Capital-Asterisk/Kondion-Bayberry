@@ -64,7 +64,7 @@ void CPN_Sphere::render() {
   //glBindTexture(GL_TEXTURE_2D, 7);
   glPushMatrix();
   glMultMatrixf(glm::value_ptr(offset));
-  Kondion::Renderer::RenderCube(1.0f);
+  Kondion::Renderer::RenderCube(0.57735f);
   //parent->material = 1;
   
   //glTranslatef(0, -1, 0);
@@ -75,12 +75,16 @@ void CPN_Sphere::render() {
 
 void CPN_Mesh::render() {
   //glBindTexture(GL_TEXTURE_2D, 7);
+
+  if (Resources::KMesh::meshes[mesh] == NULL)
+    return;
+  printf("%i\n", mesh);
+  Resources::GL_Mesh* meal = static_cast<Resources::GL_Mesh*>(
+                                Resources::KMesh::meshes[mesh]);
+
   glPushMatrix();
   glMultMatrixf(glm::value_ptr(offset));
   Kondion::Renderer::RenderCube(1.0f);
-
-  Resources::GL_Mesh* meal = static_cast<Resources::GL_Mesh*>(
-                                Resources::KMesh::meshes[0]);
 
   // count: How many values are there
   // offset: Starting byte of first value

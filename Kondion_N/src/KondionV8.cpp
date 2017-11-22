@@ -433,7 +433,11 @@ void Setup() {
   kcomponent->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "setMatrix"),
       FunctionTemplate::New(isolate, Callback_Component_SetMatrix));
-      
+
+  kcomponent->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "setData"),
+      FunctionTemplate::New(isolate, Callback_Component_SetData));
+
   // KMaterial
   
   Local<FunctionTemplate> kmaterial = FunctionTemplate::New(

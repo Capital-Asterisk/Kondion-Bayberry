@@ -275,11 +275,11 @@ void GameLoop() {
   
   Resources::KShader::shaders[0]->Load(true);
 
-  //Input::MouseLock(true);
-  KObj_Entity* moist = static_cast<KObj_Entity*>(KObj_Node::all[KObj::GKO_World::worldObject->world[2]]);
-  Component::CPN_Mesh* meshy = new Component::CPN_Mesh;
-  printf("MESHYMCMESHMESHMESHMEASDASDASDSHSDFHSDFGDFGDFSG: %p %i\n", meshy, meshy->renderable);
-  moist->components.push_back(meshy);
+  Input::MouseLock(true);
+  //KObj_Entity* moist = static_cast<KObj_Entity*>(KObj_Node::all[KObj::GKO_World::worldObject->world[2]]);
+  //Component::CPN_Mesh* meshy = new Component::CPN_Mesh;
+  //printf("MESHYMCMESHMESHMESHMEASDASDASDSHSDFHSDFGDFGDFSG: %p %i\n", meshy, meshy->renderable);
+  //moist->components.push_back(meshy);
 
   glfwSetTime(15.0);
 
@@ -377,6 +377,7 @@ int main(int argc, const char* argv[]) {
     //for (uint8_t i = 0; i < 2; i++)
     Kondion::Resources::KTexture::textures.push_back(NULL);
     Kondion::Resources::KTexture::textures.push_back(NULL);
+    Kondion::Resources::KMesh::meshes.push_back(NULL);
     
     // Add default material
     Kondion::Resources::KShader::New("defmat", "kdefault:shaders/defmat.twm");
