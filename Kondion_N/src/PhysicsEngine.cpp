@@ -38,11 +38,11 @@ void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
   float dist = glm::length(position);
   // how much the force is pointed towards the center
   float dot =
-      1 - glm::abs(glm::dot(glm::normalize(force), glm::normalize(position)));
+      1.0f - glm::abs(glm::dot(glm::normalize(force), glm::normalize(position)));
 
   // the sigmoid thing that calculates how much percent of stuff goes into
   // angular stuff
-  float amt = (dist == 0.0f) ? 0.0f : dist / (ent->radialMass + dist) * dot;
+  float amt = (dist == 0.0f) ? 0.0f : dist * 2 / (ent->radialMass + dist * 2) * dot;
 
   // amount of rotation
   // sqrt(f/0.5i) = v
@@ -361,8 +361,8 @@ void PhysicsUpdate() {
                       ent->orientation[3].y += ci.normB.y * -ci.sink;
                       ent->orientation[3].z += ci.normB.z * -ci.sink;
 
-                      float elasticity = 0.4f;
-                      float frictionMew = 2.3f;
+                      float elasticity = 0.0f;
+                      float frictionMew = 0.0f;
 
                       // Temporary stuff, remove soon
                       //glm::vec3 temp =
@@ -376,7 +376,7 @@ void PhysicsUpdate() {
 
                       // Tangental velocity at the spot
                       glm::vec3 tanVel =
-                          glm::cross((glm::mat3(ent->orientation)
+                          glm::cross((glm::mat3(ent->orientation)  
                                         * glm::axis(ent->rotVelocity))
                                      * glm::angle(ent->rotVelocity) * 32.0f,
                                      ci.spotA);
@@ -422,28 +422,29 @@ void PhysicsUpdate() {
 
                       // TODO Limit friction force somehow
                       // This is temporary solution
-                      if (glm::length(frictionA) - glm::length(frictionB) < 0.0f)
+                      //if (glm::length(frictionA) - glm::length(frictionB) < 0.0f)
                         //printf("EEEEEEE%f\n",
                         //       glm::length(frictionA) - glm::length(frictionB));
-                        frictionForce = frictionA;
+                      //  frictionForce *= 0;
 
                       //printf("thing: %4.2f (%4.2f, %4.2f, %4.2f)\n",
                       //       glm::length(tanVel), tanVel.x, tanVel.y, tanVel.z);
 
                       // Move the debug object(s) to something
+                      //printf("%f\n", glm::length(frictionB));
 
-                      frictionB = -(tanVel - ent->velocity) +
-                          (ci.normB * glm::dot(ci.normB, (tanVel - ent->velocity)));
+                      //frictionB = -(tanVel - ent->velocity) +
+                      //    (ci.normB * glm::dot(ci.normB, (tanVel - ent->velocity)));
 
                       static_cast<KObj_Entity*>(KObj_Node::all[5])
                           ->orientation[3]
-                          .x = ci.spotA.x + ent->orientation[3].x - frictionB.x;
+                          .x = ci.spotA.x + ent->orientation[3].x + frictionB.x * 40;
                       static_cast<KObj_Entity*>(KObj_Node::all[5])
                           ->orientation[3]
-                          .y = ci.spotA.y + ent->orientation[3].y - frictionB.y;
+                          .y = ci.spotA.y + ent->orientation[3].y + frictionB.y * 40;
                       static_cast<KObj_Entity*>(KObj_Node::all[5])
                           ->orientation[3]
-                          .z = ci.spotA.z + ent->orientation[3].z - frictionB.z;
+                          .z = ci.spotA.z + ent->orientation[3].z + frictionB.z * 40;
 
                       static_cast<KObj_Entity*>(KObj_Node::all[6])
                           ->orientation[3]

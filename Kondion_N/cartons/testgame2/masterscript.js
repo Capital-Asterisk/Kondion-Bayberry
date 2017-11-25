@@ -29,7 +29,7 @@ kdion.initialize(function() {
   var wall = new KCompnent("infplane");
   var celi = new KCompnent("infplane");
   var cubeA = new KCompnent("mesh");
-  var cubeB = new KCompnent("sphere");
+  var cubeB = new KCompnent("cube");
   var cubeC = new KCompnent("cube");
   
   matman = new KMaterial("defmat");
@@ -76,7 +76,7 @@ kdion.initialize(function() {
   //mat4.translate(tm, tm, vec3.fromValues(0.0, -0.5, 0.0)); 
   cubeA.setMatrix(tm);
   cubeA.setData("thing"); // Connect it to the "thing" mesh
-  e.addComponent(cubeA);
+  //e.addComponent(cubeA);
   kdion.e = e;
   
   //var left = new KObj_Entity();
@@ -84,7 +84,7 @@ kdion.initialize(function() {
   //left.setName("Cube_Left");
   //left.setParent(e);
   mat4.fromTranslation(tm, [0.0, 0.0, 0.0]);
-  mat4.fromScaling(tm, vec3.fromValues(2.0, 2.0, 2.0));
+  mat4.fromScaling(tm, vec3.fromValues(0.1, 0.1, 0.1));
   cubeB.setMatrix(tm);
   e.addComponent(cubeB);
   
@@ -223,12 +223,13 @@ kdion.globalUpdate(function() {
   //kdion.log(foo[0] + " " + foo[1] + " " + foo[2]);
   
   // Then translate, change this to something else soon
-  kdion.e.thrustN([0.0, 4.0, 0.0], [foo[0] / 50.0, 0.0, foo[2] / 50.0]);
+  kdion.e.thrustN([0.0, 0.0, 0.0], [foo[0] / 150.0, 0.0, foo[2] / 150.0]);
 
   kdion.e.getVelocity(foo)
   kdion.debug.MOUSE_XD = kdion.inputd.MOUSE_X - kdion.input.MOUSE_X;
   kdion.debug.MOUSE_X = kdion.inputd.MOUSE_X - kdion.input.MOUSE_X;
   kdion.debug["+ACCELERATION"] = (kdion.input["DEBUGA"]) ? "SPIN FAST!" : "OFF";
+  kdion.debug.speed = (Math.floor(vec3.length(foo) * 1000) / 1000) + "m/s";
 
   // CUBE SPAM!
   if (kdion.input["DEBUGB"]) {
