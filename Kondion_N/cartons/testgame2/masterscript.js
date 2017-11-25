@@ -75,6 +75,7 @@ kdion.initialize(function() {
   mat4.fromScaling(tm, vec3.fromValues(1.0, 1.0, 1.0));
   //mat4.translate(tm, tm, vec3.fromValues(0.0, -0.5, 0.0)); 
   cubeA.setMatrix(tm);
+  cubeA.setData("thing"); // Connect it to the "thing" mesh
   e.addComponent(cubeA);
   kdion.e = e;
   
@@ -222,7 +223,7 @@ kdion.globalUpdate(function() {
   //kdion.log(foo[0] + " " + foo[1] + " " + foo[2]);
   
   // Then translate, change this to something else soon
-  kdion.e.thrustN([0.0, 0.0, 0.0], [foo[0] / 50.0, 0.0, foo[2] / 50.0]);
+  kdion.e.thrustN([0.0, 4.0, 0.0], [foo[0] / 50.0, 0.0, foo[2] / 50.0]);
 
   kdion.e.getVelocity(foo)
   kdion.debug.MOUSE_XD = kdion.inputd.MOUSE_X - kdion.input.MOUSE_X;

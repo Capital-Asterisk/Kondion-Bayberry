@@ -93,7 +93,7 @@ void Setup() {
     "varying mat4 cuteMatrix;"
 
     "void main() {"
-    "  gl_FragData[0] = vec4(texCoord.xy, float(type) / 255.0, 1.0);"
+    "  gl_FragData[0] = vec4(texCoord.xy, float(type) / 65536.0, 1.0);"
     "  gl_FragData[1] = vec4((normalize(mat3(gl_ModelViewMatrix) * normal)"
     "                        + 1.0) / 2, 1.0);"
     "}";
@@ -122,7 +122,7 @@ void Setup() {
     "           (gl_FragCoord.y) / 800 - 0.5,"
     "           1.0,"
     "           1.0)));"
-    "  gl_FragData[0] = vec4((atan2(norm.z, norm.x) + PI) / (PI * 2), acos(norm.y) / PI, float(type) / 255.0, 1.0);"
+    "  gl_FragData[0] = vec4((atan2(norm.z, norm.x) + PI) / (PI * 2), acos(norm.y) / PI, float(type) / 65536.0, 1.0);"
     "  gl_FragData[1] = vec4((norm + 1.0) / 2, 1.0);"
     "  gl_FragData[2] = vec4((norm + 1.0) / 2, 1.0);"
     "}";
@@ -522,14 +522,14 @@ void GLRenderPass::generate() {
   //printf("Framebuffer status: %u\n", glCheckFramebufferStatus(GL_FRAMEBUFFER));
   //printf("complete: %u\n", GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT);
 
-  // Depth`
+  // Depth
   neat(ids + 1, width, height, GL_DEPTH_COMPONENT32, GL_DEPTH_COMPONENT,
        GL_FLOAT);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D,
                          ids[1], 0);
 
   // Coords (RG), Materials (B)
-  neat(ids + 2, width, height, GL_RGB, GL_RGB, GL_UNSIGNED_SHORT);
+  neat(ids + 2, width, height, GL_RGB16, GL_RGB, GL_FLOAT);
   glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
                          ids[2], 0);
 

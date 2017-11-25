@@ -78,7 +78,7 @@ void CPN_Mesh::render() {
 
   if (Resources::KMesh::meshes[mesh] == NULL)
     return;
-  printf("%i\n", mesh);
+  //printf("%i\n", mesh);
   Resources::GL_Mesh* meal = static_cast<Resources::GL_Mesh*>(
                                 Resources::KMesh::meshes[mesh]);
 

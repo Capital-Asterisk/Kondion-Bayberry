@@ -179,7 +179,7 @@ void SphereVsInfPlane(Component::CPN_Sphere& a, Component::CPN_InfinitePlane& b,
     ci.sink = tvec3[0].x;
 
     ci.spotA = glm::vec4(-ci.normB * glm::mat3(a.parent->orientation), 1.0f);
-    ci.spotA /= 2;
+    ci.spotA *= 0.5 * tvec3[0].y;
     ci.spotA += glm::vec3(a.offset[3]);
     ci.spotA = ci.spotA * glm::inverse(glm::mat3(a.parent->orientation));
 

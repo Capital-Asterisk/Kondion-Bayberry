@@ -360,7 +360,7 @@ kdion.parseShader = function(code) {
       "bright": function(args) {return "texture2D(bright, texCoord.st).rgb";},
       "screen": function(args) {return "texCoord.st";},
       
-      "texture": function(args) {return "texture2D(" + args[0] + "," + args[1] + ").rgb";},
+      "texture": function(args) {return "texture2D(" + args[0] + " ," + args[1] + ").rgb";},
       "normap": function(args) {return "(" + args[2] + ")";}, // TODO
       "fresnel": function(args) {return "(0.5)";}, // TODO
       
@@ -460,7 +460,7 @@ kdion.parseShader = function(code) {
       + "\nvec3 hsv(float a, float b, float c) {return hsv(vec3(a, b, c));}"
       
       + "\nvoid main() {"
-      + "\nif (floor(texture2D(coormats, texCoord.st).b * 255.0) != id) discard;"
+      + "\nif (floor(texture2D(coormats, texCoord.st).b * 65536.0) != id) discard;"
       + "\nif (normalmode) {"
       + "\n//normalvars"
       + "\n//normalout;"
