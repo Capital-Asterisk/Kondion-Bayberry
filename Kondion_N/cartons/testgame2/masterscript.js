@@ -41,6 +41,7 @@ kdion.initialize(function() {
   var tm = mat4.create();
   mat4.rotateY(tm, tm, Math.PI / 4 * 2);
   mat4.rotateX(tm, tm, Math.PI / 4 * 2.0);
+  mat4.translate(tm, tm, vec3.fromValues(0.0, 0.0, -3.0))
   flat.setMatrix(tm);
   mat4.identity(tm);
   mat4.rotateY(tm, tm, Math.PI / 4 * 4);
@@ -84,7 +85,7 @@ kdion.initialize(function() {
   //left.setName("Cube_Left");
   //left.setParent(e);
   mat4.fromTranslation(tm, [0.0, 0.0, 0.0]);
-  mat4.fromScaling(tm, vec3.fromValues(0.1, 0.1, 0.1));
+  mat4.fromScaling(tm, vec3.fromValues(1.0, 1.0, 1.0));
   cubeB.setMatrix(tm);
   e.addComponent(cubeB);
   

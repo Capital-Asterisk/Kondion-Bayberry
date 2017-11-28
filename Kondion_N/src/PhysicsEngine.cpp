@@ -42,7 +42,7 @@ void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
 
   // the sigmoid thing that calculates how much percent of stuff goes into
   // angular stuff
-  float amt = (dist == 0.0f) ? 0.0f : dist * 2 / (ent->radialMass + dist * 2) * dot;
+  float amt = (dist == 0.0f) ? 0.0f : (dist / ent->radialMass) / (ent->radialMass + dist / ent->radialMass) * dot;
 
   // amount of rotation
   // sqrt(f/0.5i) = v
@@ -362,7 +362,7 @@ void PhysicsUpdate() {
                       ent->orientation[3].z += ci.normB.z * -ci.sink;
 
                       float elasticity = 0.0f;
-                      float frictionMew = 0.0f;
+                      float frictionMew = 0.3f;
 
                       // Temporary stuff, remove soon
                       //glm::vec3 temp =
@@ -417,12 +417,13 @@ void PhysicsUpdate() {
                                             frictionMew;
                       glm::vec3 frictionForce = frictionB;
 
-                      if (glm::length(frictionA) == 0)
-                        frictionForce = glm::vec3(0.0f);
+                      //if (glm::length(frictionA) == 0)
+                      //  frictionForce = glm::vec3(0.0f);
 
                       // TODO Limit friction force somehow
                       // This is temporary solution
-                      //if (glm::length(frictionA) - glm::length(frictionB) < 0.0f)
+                      if (glm::length(frictionA) - glm::length(frictionB) < 0.0f)
+                        frictionForce = frictionA;
                         //printf("EEEEEEE%f\n",
                         //       glm::length(frictionA) - glm::length(frictionB));
                       //  frictionForce *= 0;
@@ -430,7 +431,6 @@ void PhysicsUpdate() {
                       //printf("thing: %4.2f (%4.2f, %4.2f, %4.2f)\n",
                       //       glm::length(tanVel), tanVel.x, tanVel.y, tanVel.z);
 
-                      // Move the debug object(s) to something
                       //printf("%f\n", glm::length(frictionB));
 
                       //frictionB = -(tanVel - ent->velocity) +
@@ -438,13 +438,13 @@ void PhysicsUpdate() {
 
                       static_cast<KObj_Entity*>(KObj_Node::all[5])
                           ->orientation[3]
-                          .x = ci.spotA.x + ent->orientation[3].x + frictionB.x * 40;
+                          .x = ci.spotA.x + ent->orientation[3].x + pointForce.x * 2;
                       static_cast<KObj_Entity*>(KObj_Node::all[5])
                           ->orientation[3]
-                          .y = ci.spotA.y + ent->orientation[3].y + frictionB.y * 40;
+                          .y = ci.spotA.y + ent->orientation[3].y + pointForce.y * 2;
                       static_cast<KObj_Entity*>(KObj_Node::all[5])
                           ->orientation[3]
-                          .z = ci.spotA.z + ent->orientation[3].z + frictionB.z * 40;
+                          .z = ci.spotA.z + ent->orientation[3].z + pointForce.z * 2;
 
                       static_cast<KObj_Entity*>(KObj_Node::all[6])
                           ->orientation[3]

@@ -163,7 +163,7 @@ void KObj_Oriented::parentTransform() {
 }
 
 void KObj_Entity::updateA() {
-
+  rotVelocity.w *= 1.02f;
   rotVelocity = glm::normalize(rotVelocity);
   orientation = orientation * glm::toMat4(glm::mix(
           glm::quat(glm::vec3(0.0, 0.0, 0.0)),
@@ -372,7 +372,7 @@ int main(int argc, const char* argv[]) {
     // Setup V8
     Kondion::JS::Setup();
 
-    // make space for the default texture
+    // make space for the default texture 
     //Kondion::Resources::KTexture::textures.reserve(12);
     //for (uint8_t i = 0; i < 2; i++)
     Kondion::Resources::KTexture::textures.push_back(NULL);
