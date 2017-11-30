@@ -312,6 +312,9 @@ void Callback_KObj_Entity(const FunctionCallbackInfo<Value>& args) {
     KObj_Entity* o = new KObj_Entity();
     o->jsObject = new Persistent<Object,
         CopyablePersistentTraits<Object>>(isolate, args.This());
+    Local<Array> a = Array::New(isolate);
+    o->jsHidden = new Persistent<Object,
+        CopyablePersistentTraits<Object>>(isolate, a);
     //Kondion::world.push_back(o);
     args.This()->SetInternalField(0, External::New(isolate, o));
     args.GetReturnValue().Set(args.This());

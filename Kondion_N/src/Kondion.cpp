@@ -60,6 +60,7 @@ const char* Component::CPN_Mesh::myClass = "mesh";
 
 KObj_Node::KObj_Node() {
   jsObject = NULL;
+  jsHidden = NULL;
   parent = NULL;
   depth = 0;
   myIndex = 0;

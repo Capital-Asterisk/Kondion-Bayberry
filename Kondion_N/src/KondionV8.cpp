@@ -185,7 +185,7 @@ void GetKeys(size_t id, std::vector<std::string> &in) {
 }
 
 size_t Enter(size_t id, const std::string& key) {
-
+  
   // TODO make the other functions look nice like this.
 
   // Check if the Id is valid
@@ -464,7 +464,6 @@ void Setup() {
 
   // ** Node
   Local<FunctionTemplate> kobj_node = FunctionTemplate::New(isolate);
-  kobj_node->InstanceTemplate()->SetInternalFieldCount(1);
   kobj_node->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "setName"),
       FunctionTemplate::New(isolate, Callback_KObj_SetName));
@@ -474,6 +473,10 @@ void Setup() {
   kobj_node->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "setParent"),
       FunctionTemplate::New(isolate, Callback_KObj_SetParent));
+  kobj_node->InstanceTemplate()->SetInternalFieldCount(1);
+  kobj_node->InstanceTemplate()->SetAccessor(
+      String::NewFromUtf8(isolate, "onupdate"), Callback_KObj_Node_GetOnupdate,
+      Callback_KObj_Node_SetOnupdate);
   //kobj_node->HasInstance(object)
 
   // ** Oriented
@@ -566,8 +569,6 @@ void Setup() {
                                                             Callback_RKO_Sky);
   rko_sky->InstanceTemplate()->SetInternalFieldCount(1);
   rko_sky->Inherit(kobj_renderable);
-
-  //bird->InstanceTemplate()->SetAccessor(String::NewFromUtf8(isolate, "integrity"), Callback_Bird_GetIntegrity, Callback_Bird_SetIntegrity);
 
   // Add everything together
 
@@ -755,7 +756,8 @@ std::string* ParseMesh(const std::string& path,
 
   Local<Value> args[2] = { String::NewFromUtf8(isolate, path.c_str()),
                            String::NewFromUtf8(isolate, which.c_str()) };
-  Local<Object> returned = Local<Function>::Cast(parserB)->Call(context, context->Global(), 1, args)
+  Local<Object> returned = Local<Function>::Cast(parserB)->
+                           Call(context, context->Global(), 1, args)
         .ToLocalChecked()->ToObject();
 
   // Put things into mesh class

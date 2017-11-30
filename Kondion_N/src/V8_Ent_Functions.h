@@ -147,6 +147,33 @@ void Callback_Entity_PhysLevel(const FunctionCallbackInfo<Value>& args) {
 
 }
 
+void Callback_KObj_Node_GetOnupdate(Local<String> property,
+                                   const PropertyCallbackInfo<Value>& info) {
+  //Local<External> wrap = Local<External>::Cast(
+  //      info.Holder()->GetInternalField(0));
+  //void* pointer = wrap->Value();
+  if (Renderer::currentCamera == NULL)
+    return;
+  Persistent<Object, CopyablePersistentTraits<Object>>* p =
+      static_cast<Persistent<Object, CopyablePersistentTraits<Object>>*>(
+          Renderer::currentCamera->jsObject);
+  Local<Object> o = Local<Object>::New(isolate, *p);
+  info.GetReturnValue().Set(o);
+}
+
+void Callback_KObj_Node_SetOnupdate(Local<String> property, Local<Value> value,
+                                   const PropertyCallbackInfo<void>& info) {
+
+  KObj_Node* pointerThis = static_cast<KObj_Node*>(Local<External>::Cast(
+      info.Holder()->GetInternalField(0))->Value());
+  
+  Persistent<Array, CopyablePersistentTraits<Array>>* p;
+  p = static_cast<Persistent<Array, CopyablePersistentTraits<Array>>*>
+        (pointerThis->jsObject);
+  Local<Array> a = Local<Array>::New(isolate, *p);
+  
+}
+
 }
 }
 
