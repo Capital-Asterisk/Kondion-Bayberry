@@ -300,9 +300,11 @@ class GKO_World : public KObj_Node {
  public:
   static const char* myClass;
   float timescale = 0;
-  std::vector<uint16_t> world;
-  std::vector<uint16_t> terrain;
+
   std::vector<uint16_t> forces;
+  std::vector<uint16_t> jsUpdate;
+  std::vector<uint16_t> terrain;
+  std::vector<uint16_t> world;
 
   //std::vector<uint16_t> frictionA;
   //std::vector<uint16_t> frictionB;

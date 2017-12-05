@@ -164,14 +164,19 @@ void Callback_KObj_Node_GetOnupdate(Local<String> property,
 void Callback_KObj_Node_SetOnupdate(Local<String> property, Local<Value> value,
                                    const PropertyCallbackInfo<void>& info) {
 
+  if (!value->IsFunction())
+    return;
+
   KObj_Node* pointerThis = static_cast<KObj_Node*>(Local<External>::Cast(
       info.Holder()->GetInternalField(0))->Value());
-  
+
   Persistent<Array, CopyablePersistentTraits<Array>>* p;
   p = static_cast<Persistent<Array, CopyablePersistentTraits<Array>>*>
-        (pointerThis->jsObject);
+        (pointerThis->jsHidden);
   Local<Array> a = Local<Array>::New(isolate, *p);
+  a->Set(0, value);
   
+  KObj_Node::worldObject->jsUpdate.push_back(pointerThis->allIndex);
 }
 
 }

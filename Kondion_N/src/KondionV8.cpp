@@ -356,6 +356,22 @@ void GlobalUpdate() {
   for (uint16_t i = 0; i < a->Length(); i++) {
     Local<Function>::Cast(a->Get(i))->Call(context, context->Global(), 0, NULL);
   }
+
+  for (uint16_t i = 0; i < KObj_Node::worldObject->jsUpdate.size(); i++) {
+    Local<Value> val = Local<Array>::New(isolate, *static_cast<
+        Persistent<Array, CopyablePersistentTraits<Array>>*>
+        (KObj_Node::all[KObj_Node::worldObject->jsUpdate[i]]->jsHidden))
+          ->Get(0);
+    if (!val.IsEmpty()) {
+      //printf("woot\n");
+      Local<Function> f = Local<Function>::Cast(val);
+      f->Call(context, Local<Object>::New(isolate,
+          *static_cast<Persistent<Object, CopyablePersistentTraits<Object>>*>
+          (KObj_Node::all[KObj_Node::worldObject->jsUpdate[i]]->jsObject)),
+          0, NULL);
+    }
+    
+  }
 }
 
 void Setup() {

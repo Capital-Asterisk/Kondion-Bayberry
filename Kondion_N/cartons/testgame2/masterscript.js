@@ -78,6 +78,9 @@ kdion.initialize(function() {
   cubeA.setMatrix(tm);
   cubeA.setData("thing"); // Connect it to the "thing" mesh
   //e.addComponent(cubeA);
+  e.onupdate = function() {
+    kdion.debug.thing = Math.random();
+  }
   kdion.e = e;
   
   //var left = new KObj_Entity();
