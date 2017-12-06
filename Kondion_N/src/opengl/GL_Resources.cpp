@@ -99,6 +99,7 @@ void GL_Shader::Load(bool a) {
         uniformsLocations[7] = glGetUniformLocation(programId, "mapmals");
         uniformsLocations[8] = glGetUniformLocation(programId, "bright");
         uniformsLocations[9] = glGetUniformLocation(programId, "specs");
+        uniformsLocations[10] = glGetUniformLocation(programId, "dimensions");
 
         for (uint8_t i = 0; i < uniformCount; i ++) {
           uniformsLocations[16 + i]
@@ -183,6 +184,7 @@ void GL_Shader::Utilize(Renderer::RenderPass* pass, KMaterial* material) {
     glUniform1f(uniformsLocations[2], KObj_Node::worldObject->sceneTime);
     glUniform1i(uniformsLocations[3], p->normalmode);
     //printf("COUNT: %u\n", uniformCount);
+    glUniform2f(uniformsLocations[10], pass->width, pass->height);
 
     if (!material->uniformSet)
       return;

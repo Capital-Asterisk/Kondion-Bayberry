@@ -491,6 +491,7 @@ class CPN_Mesh : public KComponent {
 }
 
 double Delta();
+double Fps();
 std::string Dir();
 void GameLoop();
 void Launch();

@@ -135,7 +135,7 @@ bool Active() {
 }
 
 void Update() {
-
+  glfwSwapInterval(0);
   glfwSwapBuffers(w);
   glfwPollEvents();
 }

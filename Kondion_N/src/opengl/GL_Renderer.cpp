@@ -35,6 +35,7 @@ GLuint progTexnormType;
 GLuint progSky;
 GLuint progSkyType;
 GLuint progSkyPresp;
+GLuint progSkyDim;
 
 // Pretty much render everything
 void Composite() {
@@ -50,16 +51,19 @@ void Composite() {
   
   // Bind the final layer of the first render pass
   glBindTexture(GL_TEXTURE_2D, RenderPass::passes[0]->id(5));
+  
+  float width = RenderPass::passes[0]->width;
+  float height = RenderPass::passes[0]->height;
 
   // Do some transformations to put it in the middle
-  glTranslatef(800 / 2, 600 / 2, 0.0f);
+  glTranslatef(width / 2, height / 2, 0.0f);
   //glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
   glScalef(-1.0f, -1.0f, 1.0f);
   	
   // Draw the thing
-  RenderQuad(800, 600);
+  RenderQuad(width, height);
   
-  glTranslatef(800 / 2, 600 / 2 - 10, 0.0f);
+  glTranslatef(width / 2, height / 2 - 10, 0.0f);
   glScalef(1.0f, 1.0f, 1.0f);
   //DebugText("Not Hello World, silly bird");
   //glTranslatef(0.0, -10.0, 0.0f);
@@ -67,7 +71,7 @@ void Composite() {
   //glTranslatef(0.0, -10.0, 0.0f);
   //DebugText("THE QUICK BROWN FOX JUMPPED OVER THE LAZY DOG");
   //glTranslatef(0.0, -10.0, 0.0f);
-  DebugText("Not Hello World, silly bird, 1234567890+-[|]><_?!@#$%^&*(){}\\/ \";:.,~`\"");
+  DebugText(std::to_string(Kondion::Fps()) + std::string("FPS, Not Hello World, silly bird, 1234567890+-[|]><_?!@#$%^&*(){}\\/ \";:.,~`\""));
   glTranslatef(0.0, -15.0, 0.0f);
   JS::DebugObjPrint(NULL);
 }
@@ -105,6 +109,7 @@ void Setup() {
     
     "uniform int type;"
     "uniform mat4 invPresp;"
+    "uniform vec2 dimensions;"
     
     "varying vec3 normal;"
     "varying vec4 texCoord;"
@@ -118,8 +123,8 @@ void Setup() {
 
     "void main() {"
     "  vec3 norm = normalize(vec3(invPresp * vec4( "
-    "           (800.0 - gl_FragCoord.x) / 800 - 0.5, "
-    "           (gl_FragCoord.y) / 800 - 0.5,"
+    "           (dimensions.x - gl_FragCoord.x) / dimensions.x - 0.5, "
+    "           (gl_FragCoord.y) / dimensions.y - 0.5,"
     "           1.0,"
     "           1.0)));"
     "  gl_FragData[0] = vec4((atan2(norm.z, norm.x) + PI) / (PI * 2), acos(norm.y) / PI, float(type) / 65536.0, 1.0);"
@@ -172,6 +177,7 @@ void Setup() {
   
   progSkyType = glGetUniformLocation(progSky, "type");
   progSkyPresp = glGetUniformLocation(progSky, "invPresp");
+  progSkyDim = glGetUniformLocation(progSky, "dimensions");
 
   //delete [] interlevedDataA;
 
@@ -253,7 +259,7 @@ void Three(KObj::OKO_Camera_* c, uint16_t width, uint16_t height) {
   glEnable(GL_POINT_SMOOTH);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glDepthFunc(GL_LEQUAL);
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
   glClearDepth(10.0f);
 
   fog += (Input::Get(Input::ControlIndex("DEBUGA"))->x
@@ -626,6 +632,7 @@ void GLRenderPass::render() {
     //printf("e %i\n", progSkyPresp);
     //Debug::printMatrix(presp);
     glUniformMatrix4fv(progSkyPresp, 1, GL_FALSE, &presp[0][0]);
+    glUniform2f(progSkyDim, width, height);
 
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);

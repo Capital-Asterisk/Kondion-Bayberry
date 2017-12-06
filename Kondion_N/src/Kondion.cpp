@@ -36,6 +36,7 @@ char* dir;
 uint64_t startTime;
 int64_t timeCurrent;
 double delta;
+double fps;
 }
 
 std::vector<KObj_Node *> KObj_Node::all;
@@ -202,11 +203,15 @@ std::string Dir() {
   return std::string(dir);
 }
 
+double Fps() {
+  return fps;
+}
+
 void Launch() {
   printf("Hello World\n");
 
   Window::Initialize();
-  Window::CreateWindow(800, 600);
+  Window::CreateWindow(1280, 720);
 
   //worldObject = new KObj::GKO_World;
 
@@ -286,17 +291,21 @@ void GameLoop() {
 
   double lastTime = glfwGetTime();
   double currentTime = 0;
+  fps = 10;
 
   while (Window::Active()) {
 
     // egg timing
     timeCurrent = std::chrono::duration_cast < std::chrono::milliseconds
         > (std::chrono::system_clock::now().time_since_epoch()).count();
-
+    //timeCurrent = glfwGetTime();
+    
     // delta timing
     currentTime = glfwGetTime();
     delta = currentTime - lastTime;
     lastTime = currentTime;
+
+    fps += ((1.0 / delta) - fps) / 20;
 
     //delta *= 0.5f;
     delta = 1.0 / 60.0;
