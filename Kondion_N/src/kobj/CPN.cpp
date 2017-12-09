@@ -84,7 +84,7 @@ void CPN_Mesh::render() {
 
   glPushMatrix();
   glMultMatrixf(glm::value_ptr(offset));
-  Kondion::Renderer::RenderCube(1.0f);
+  //Kondion::Renderer::RenderCube(1.0f);
 
   // count: How many values are there
   // offset: Starting byte of first value
@@ -94,6 +94,7 @@ void CPN_Mesh::render() {
   // which: which buffer
   //data(Normal,Vertex,Coords)
 
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, meal->glBuffers[meal->dataIndexs.which]);
   glBindBuffer(GL_ARRAY_BUFFER, meal->glBuffers[meal->dataVertex.which]);
   glVertexPointer(meal->dataVertex.size, GL_FLOAT, meal->dataVertex.stride,
                   (char *) NULL + meal->dataVertex.offset);
@@ -107,7 +108,10 @@ void CPN_Mesh::render() {
   glEnableClientState(GL_NORMAL_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-  glDrawArrays(GL_TRIANGLES, 0, meal->dataVertex.count);
+  //glDrawArrays(GL_TRIANGLES, 0, meal->dataVertex.count);
+  glDrawElements(GL_TRIANGLES, meal->dataIndexs.count, GL_UNSIGNED_SHORT,
+                  (char *) NULL + meal->dataIndexs.offset);
+  printf("%u\n", meal->dataIndexs.offset);
 
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);

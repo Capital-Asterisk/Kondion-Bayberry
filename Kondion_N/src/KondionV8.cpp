@@ -773,7 +773,7 @@ std::string* ParseMesh(const std::string& path,
   Local<Value> args[2] = { String::NewFromUtf8(isolate, path.c_str()),
                            String::NewFromUtf8(isolate, which.c_str()) };
   Local<Object> returned = Local<Function>::Cast(parserB)->
-                           Call(context, context->Global(), 1, args)
+                           Call(context, context->Global(), 2, args)
         .ToLocalChecked()->ToObject();
 
   // Put things into mesh class
@@ -815,6 +815,19 @@ std::string* ParseMesh(const std::string& path,
     mesh.dataCoords.stride  = coords->Get(3)->NumberValue();
     //mesh.dataCoords.type    = coords->Get(4)->NumberValue();
     mesh.dataCoords.which   = coords->Get(5)->NumberValue();
+  }
+
+  Local<Array> indicies = Local<Array>::Cast(returned->Get(jstr("indexs")));
+  if (!indicies.IsEmpty()) {
+    // count, offset, size, stride, type, which buffer
+    // uint32_t count, offset, size, stride, type, which;
+    mesh.dataIndexs.active  = true;
+    mesh.dataIndexs.count   = indicies->Get(0)->NumberValue();
+    mesh.dataIndexs.offset  = indicies->Get(1)->NumberValue();
+    mesh.dataIndexs.size    = indicies->Get(2)->NumberValue();
+    mesh.dataIndexs.stride  = indicies->Get(3)->NumberValue();
+    //mesh.dataCoords.type    = indicies->Get(4)->NumberValue();
+    mesh.dataIndexs.which   = indicies->Get(5)->NumberValue();
   }
 
   // Externalize buffers and put into mesh

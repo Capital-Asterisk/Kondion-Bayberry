@@ -73,11 +73,11 @@ kdion.initialize(function() {
   e.translate(0.0, 1.0, 0.0);
   e.setName("Cube_Base");
   e.setParent(kdion.World);
-  mat4.fromScaling(tm, vec3.fromValues(1.0, 1.0, 1.0));
+  mat4.fromScaling(tm, vec3.fromValues(2.0, 2.0, 2.0));
   //mat4.translate(tm, tm, vec3.fromValues(0.0, -0.5, 0.0)); 
   cubeA.setMatrix(tm);
-  cubeA.setData("thing"); // Connect it to the "thing" mesh
-  //e.addComponent(cubeA);
+  cubeA.setData("FanMain"); // Connect it to the "thing" mesh
+  e.addComponent(cubeA);
   e.onupdate = function() {
     kdion.debug.thing = Math.random();
   }
@@ -123,7 +123,7 @@ kdion.initialize(function() {
   
   kdion.queueLoad({textures: ["tiles_diff", "tiles_norm"],
                    materials: ["test", "ground", "normals", "sky"],
-                   meshes: ["thing"]}, 2);
+                   meshes: ["thing", "FanMain"]}, 2);
   kdion.camera = camera;
   
   var sky = new RKO_Sky();

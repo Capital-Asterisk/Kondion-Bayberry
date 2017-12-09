@@ -15,7 +15,7 @@
 	"Graphics": {
 	},
 	"Meshes": {
-		"thing": ["stock/untitled.gltf", "0"]
+		"thing": ["stock/untitled.gltf", "Icosphere"]
 	},
 	"Audio": {
 	

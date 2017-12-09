@@ -81,15 +81,16 @@ kdion.parseMesh = function(path, traits) {
 
     // Load gltf JSON
     var json = JSON.parse(file.str());
-
-    var target = json.meshes.withPropertyEquals("name", "Icosphere");
+    
+    //kdion.log(traits);
+    var target = json.meshes.withPropertyEquals("name", traits);
     var a;
     var loadBuffers = [];
 
     for (var i = 0; i < target.primitives.length; i ++) {
       a = target.primitives[i];
-      
-      if (a.attributes["POSITION"]) {
+
+      if (a.attributes.hasOwnProperty("POSITION")) {
         // do somethinga;
         var accessor = json.accessors[a.attributes.POSITION];
         var view = json.bufferViews[accessor.bufferView];
@@ -102,8 +103,7 @@ kdion.parseMesh = function(path, traits) {
         loadBuffers[view.buffer] = true;
       }
 
-      if (a.attributes["NORMAL"]) {
-        // do somethinga;
+      if (a.attributes.hasOwnProperty("NORMAL")) {
         var accessor = json.accessors[a.attributes.NORMAL];
         var view = json.bufferViews[accessor.bufferView];
         var size = (accessor.type.toLowerCase() == "SCALAR") ? 1 :
@@ -113,8 +113,7 @@ kdion.parseMesh = function(path, traits) {
         loadBuffers[view.buffer] = true;
       }
 
-      if (a.attributes["TEXCOORD_0"]) {
-        // do somethinga;
+      if (a.attributes.hasOwnProperty("TEXCOORD_0")) {
         var accessor = json.accessors[a.attributes.TEXCOORD_0];
         var view = json.bufferViews[accessor.bufferView];
         var size = (accessor.type.toLowerCase() == "SCALAR") ? 1 :
@@ -125,8 +124,16 @@ kdion.parseMesh = function(path, traits) {
         loadBuffers[view.buffer] = true;
       }
 
-    }
+      if (a.hasOwnProperty("indices")) {
+        var accessor = json.accessors[a.indices];
+        var view = json.bufferViews[accessor.bufferView];
+        var size = 1;
+        kdion.log("Indices: " + size + " " + view.byteOffset)
+        fish.indexs = [accessor.count, view.byteOffset, size, size * 4, "uint", view.buffer];
+        loadBuffers[view.buffer] = true;
+      }
 
+    }
     // Load required buffers
     for (var i = 0; i < json.buffers.length; i ++) {
       if (loadBuffers[i]) {
@@ -150,7 +157,8 @@ kdion.parseMesh = function(path, traits) {
     //var buffer = new ArrayBuffer(4);
     //var view = new Float32Array(buffer);
 
-    kdion.debug.h = fish;
+    kdion.debug.h = JSON.stringify(fish);
+
     return fish;
 
   } catch (e) {

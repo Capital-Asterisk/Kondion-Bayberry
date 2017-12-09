@@ -17,7 +17,7 @@
 		"tiles_norm": ["graphics/tiles_norm.png", "+normalmap"]
 	},
 	"Meshes": {
-
+		"FanMain": ["models/fanbot.gltf", "FanMain"]
 	},
 	"Audio": {
 	

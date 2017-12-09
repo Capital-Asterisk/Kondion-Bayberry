@@ -701,7 +701,7 @@ class KMesh {
   void** buffers;
 
   // Index part is optional
-  BufferAccessor dataIndex;
+  BufferAccessor dataIndexs;
   BufferAccessor dataNormal;
   BufferAccessor dataVertex;
   BufferAccessor dataCoords;
