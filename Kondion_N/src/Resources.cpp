@@ -141,7 +141,7 @@ void AddCarton(const std::string& path) {
         printf("MESH REGISTER: %s %s %s\n", entry[i].c_str(), elements[0].c_str(),
                                          elements[1].c_str());
         Resources::KMesh::New(entry[i], c->id + ":" + elements[0], elements[1]);
-        //elements.clear();
+        elements.clear();
       }
       JS::ON::Dispose(meshes);
 

@@ -17,6 +17,34 @@ function quickMakeACube(name, pos, velo) {
   return ent;
 }
 
+function quickMakeAFan(name, pos, velo) {
+  var ent = new KObj_Entity(),
+      collider = new KCompnent("cube"),
+      main = new KCompnent("mesh"),
+      head = new KCompnent("mesh"),
+      blade = new KCompnent("mesh");
+
+  var tm = mat4.create();
+  mat4.translate(tm, tm, [0.0, 3.02204, -0.34683]);
+
+  head.setMatrix(tm);
+
+  main.setData("FanMain");
+  head.setData("FanHead");
+  blade.setData("FanBlade");
+
+  ent.addComponent(collider);
+  ent.addComponent(main);
+  ent.addComponent(head);
+  ent.addComponent(blade);
+  
+  ent.translate(pos[0], pos[1], pos[2]);
+  ent.setParent(kdion.World);
+  ent.thrustN([0.0, 0.05, 0.0], velo);
+  ent.setMaterial(flrmat);
+  return ent;
+}
+
 kdion.initialize(function() {
   
   OKO_Camera_ = OKO_Camera;
@@ -73,10 +101,10 @@ kdion.initialize(function() {
   e.translate(0.0, 1.0, 0.0);
   e.setName("Cube_Base");
   e.setParent(kdion.World);
-  mat4.fromScaling(tm, vec3.fromValues(2.0, 2.0, 2.0));
+  mat4.fromScaling(tm, vec3.fromValues(1.0, 1.0, 1.0));
   //mat4.translate(tm, tm, vec3.fromValues(0.0, -0.5, 0.0)); 
   cubeA.setMatrix(tm);
-  cubeA.setData("FanMain"); // Connect it to the "thing" mesh
+  cubeA.setData("thing"); // Connect it to the "thing" mesh
   e.addComponent(cubeA);
   e.onupdate = function() {
     kdion.debug.thing = Math.random();
@@ -120,10 +148,12 @@ kdion.initialize(function() {
   debugB.setParent(kdion.World);
   debugB.translate(-4, 5, 0);
   debugB.physLevel(0);
-  
-  kdion.queueLoad({textures: ["tiles_diff", "tiles_norm"],
+
+  //quickMakeAFan().setParent(kdion.World);
+
+  kdion.queueLoad({textures: ["tiles_diff", "tiles_norm", "FanMain"],
                    materials: ["test", "ground", "normals", "sky"],
-                   meshes: ["thing", "FanMain"]}, 2);
+                   meshes: ["thing", "FanMain", "FanHead", "FanBlade"]}, 2);
   kdion.camera = camera;
   
   var sky = new RKO_Sky();
@@ -237,7 +267,7 @@ kdion.globalUpdate(function() {
 
   // CUBE SPAM!
   if (kdion.input["DEBUGB"]) {
-    quickMakeACube("asdf" + Math.random(), [0.0, 20.0 * Math.random(), 5.0], [
+    quickMakeAFan("asdf" + Math.random(), [0.0, 20.0 * Math.random(), 5.0], [
           Math.random() * 24.0 - 12.0,
           -Math.random() * 10.0,
           Math.random() * 24.0 - 12.0]);

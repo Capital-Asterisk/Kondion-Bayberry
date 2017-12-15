@@ -31,7 +31,7 @@ int Initialize() {
 bool terminalMode = false;
 
 void ErrorCallback(int error, const char* desc) {
-    printf("[GLFW] ERROR: %s\n", desc);
+  printf("[GLFW] ERROR: %s\n", desc);
 }
 
 void KeyCallback(GLFWwindow* linuxisbetter, int k, int sc, int a, int m) {
@@ -148,7 +148,7 @@ bool Active() {
 }
 
 void Update() {
-  glfwSwapInterval(0);
+  //glfwSwapInterval(0);
   glfwSwapBuffers(w);
   glfwPollEvents();
 }

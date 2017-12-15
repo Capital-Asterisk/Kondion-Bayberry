@@ -14,10 +14,13 @@
 	},
 	"Graphics": {
 		"tiles_diff": ["graphics/tiles.png", "+traitnamehere"],
-		"tiles_norm": ["graphics/tiles_norm.png", "+normalmap"]
+		"tiles_norm": ["graphics/tiles_norm.png", "+normalmap"],
+		"FanMain": ["models/lightmap5.png", "+traitnamehere"]
 	},
 	"Meshes": {
-		"FanMain": ["models/fanbot.gltf", "FanMain"]
+		"FanMain": ["models/fanbot.gltf", "FanMain"],
+		"FanHead": ["models/fanbot.gltf", "FanHead"],
+		"FanBlade": ["models/fanbot.gltf", "FanFan"]
 	},
 	"Audio": {
 	

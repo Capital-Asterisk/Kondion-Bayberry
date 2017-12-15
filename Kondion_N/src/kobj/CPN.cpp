@@ -111,7 +111,7 @@ void CPN_Mesh::render() {
   //glDrawArrays(GL_TRIANGLES, 0, meal->dataVertex.count);
   glDrawElements(GL_TRIANGLES, meal->dataIndexs.count, GL_UNSIGNED_SHORT,
                   (char *) NULL + meal->dataIndexs.offset);
-  printf("%u\n", meal->dataIndexs.offset);
+  //printf("%u\n", meal->dataIndexs.offset);
 
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);
