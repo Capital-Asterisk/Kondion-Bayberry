@@ -30,19 +30,23 @@ void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
   // I don't really know the true answer, i thought veritasium could answer that
 
   // magnitude of force
+  float dist, dot, amt;
   float mag = glm::length(force);
 
   if (mag == 0 || glm::isnan(mag)) return;
 
-  // distance from center of mass
-  float dist = glm::length(position);
-  // how much the force is pointed towards the center
-  float dot =
-      1.0f - glm::abs(glm::dot(glm::normalize(force), glm::normalize(position)));
-
-  // the sigmoid thing that calculates how much percent of stuff goes into
-  // angular stuff
-  float amt = (dist == 0.0f) ? 0.0f : (dist / ent->radialMass) / (ent->radialMass + dist / ent->radialMass) * dot;
+  if ((ent->physics & 64) == 64) {
+    // distance from center of mass
+    dist = glm::length(position);
+    // how much the force is pointed towards the center
+    dot =
+        1.0f - glm::abs(glm::dot(glm::normalize(force), glm::normalize(position)));
+    // the sigmoid thing that calculates how much percent of stuff goes into
+    // angular stuff
+    amt = (dist == 0.0f) ? 0.0f : (dist / ent->radialMass) /
+                                  (ent->radialMass + dist / ent->radialMass)
+                                  * dot;
+  }
 
   // amount of rotation
   // sqrt(f/0.5i) = v
@@ -50,13 +54,15 @@ void ApplyForce(KObj_Entity* ent, glm::vec3 position, glm::vec3 force) {
 
   // This mess calculates angular velocity added using mainly cross product
   // Reverse of the tangential velocity calculations
-  glm::quat bird = glm::angleAxis(
-      angVel / 32.0f,
-      glm::cross(glm::normalize(position), glm::normalize(force)) *
-          glm::mat3(ent->transform));
+  if ((ent->physics & 2) == 2) {
+    glm::quat bird = glm::angleAxis(
+        angVel / 32.0f,
+        glm::cross(glm::normalize(position), glm::normalize(force)) *
+            glm::mat3(ent->transform));
 
-  if (amt != 0.0f) {
-    ent->rotVelocity *= bird;
+    if (amt != 0.0f) {
+      ent->rotVelocity *= bird;
+    }
   }
   ent->velocity += force / ent->mass * (1.0f - amt);
 }
@@ -280,205 +286,211 @@ void PhysicsUpdate() {
         // TODO: there's a shorter way to do this.
 
         // Add up all the surrounding forces to get acceleration
-        for (uint16_t i = 0; i < KObj_Node::worldObject->forces.size(); i++) {
-          KObj::OKO_Force* f = static_cast<KObj::OKO_Force*>(
-              KObj_Node::all[KObj_Node::worldObject->forces[i]]);
-          // ent->velocity.x -= f->orientation[2][0] * steptime * f->strength;
-          // ent->velocity.y -= f->orientation[2][1] * steptime * f->strength;
-          // ent->velocity.z -= f->orientation[2][2] * steptime * f->strength;
-          // TODO: different types of forces
-          ent->acceleration.x += f->orientation[2][0] * f->strength;
-          ent->acceleration.y += f->orientation[2][1] * f->strength;
-          ent->acceleration.z += f->orientation[2][2] * f->strength;
-          // printf("vz: %f\n", velocity.z);
-          // Debug::printMatrix(f->orientation);
+        if ((ent->physics & 4) == 4) {
+          for (uint16_t i = 0; i < KObj_Node::worldObject->forces.size(); i++) {
+            KObj::OKO_Force* f = static_cast<KObj::OKO_Force*>(
+                KObj_Node::all[KObj_Node::worldObject->forces[i]]);
+            // ent->velocity.x -= f->orientation[2][0] * steptime * f->strength;
+            // ent->velocity.y -= f->orientation[2][1] * steptime * f->strength;
+            // ent->velocity.z -= f->orientation[2][2] * steptime * f->strength;
+            // TODO: different types of forces
+            ent->acceleration.x += f->orientation[2][0] * f->strength;
+            ent->acceleration.y += f->orientation[2][1] * f->strength;
+            ent->acceleration.z += f->orientation[2][2] * f->strength;
+            // printf("vz: %f\n", velocity.z);
+            // Debug::printMatrix(f->orientation);
+          }
         }
 
-        // glm::mat4x4 prevOrientation = glm::mat4x4(ent->orientation);
-
-        // d = vt + 1/2 * a * t^2
-        // done: include acceleration
-        ent->orientation[3][0] +=
-            ent->velocity.x * steptime +
-            (ent->acceleration.x * (steptime * steptime)) / 2;
-        ent->orientation[3][1] +=
-            ent->velocity.y * steptime +
-            (ent->acceleration.y * (steptime * steptime)) / 2;
-        ent->orientation[3][2] +=
-            ent->velocity.z * steptime +
-            (ent->acceleration.z * (steptime * steptime)) / 2;
+        if ((ent->physics & 1) == 1) {
+          ent->orientation[3][0] +=
+              ent->velocity.x * steptime +
+              (ent->acceleration.x * (steptime * steptime)) / 2;
+          ent->orientation[3][1] +=
+              ent->velocity.y * steptime +
+              (ent->acceleration.y * (steptime * steptime)) / 2;
+          ent->orientation[3][2] +=
+              ent->velocity.z * steptime +
+              (ent->acceleration.z * (steptime * steptime)) / 2;
+        }
 
         // TODO: all this should be in a separate loop
         // except for the terrain part... which is the only one there... uwu...
 
-        Physics::CollisionInfo ci;
-        KObj_Entity* terrain;
+        if ((ent->physics & 16) == 16) {
 
-        for (size_t j = 0; j < KObj_Node::worldObject->terrain.size(); j++) {
-          // printf(
-          //    "Terrain: %s, %s\n", ent->name.c_str(),
-          //    KObj_Node::all[KObj_Node::worldObject->terrain[j]]->name.c_str());
-          terrain = static_cast<KObj_Entity*>(
-              KObj_Node::all[KObj_Node::worldObject->terrain[j]]);
-          for (uint8_t k = 0; k < ent->components.size(); k++) {
-            for (uint8_t l = 0; l < terrain->components.size(); l++) {
-              
-              if (terrain != ent) {
+          Physics::CollisionInfo ci;
+          KObj_Entity* terrain;
 
-                // Clear ci first
-                ci.collided = false;
+          for (size_t j = 0; j < KObj_Node::worldObject->terrain.size(); j++) {
+            // printf(
+            //    "Terrain: %s, %s\n", ent->name.c_str(),
+            //    KObj_Node::all[KObj_Node::worldObject->terrain[j]]->name.c_str());
+            terrain = static_cast<KObj_Entity*>(
+                KObj_Node::all[KObj_Node::worldObject->terrain[j]]);
+            for (uint8_t k = 0; k < ent->components.size(); k++) {
+              for (uint8_t l = 0; l < terrain->components.size(); l++) {
+                
+                if (terrain != ent) {
 
-                // Go test the collision TODO: solve random segfault
+                  // Clear ci first
+                  ci.collided = false;
 
-                //printf("notanerrorA: %i %i %i %s\n", k, l, terrain->components.size(), terrain->name.c_str());
-                //printf("notanerrorB: %p\n", terrain->components[l]);
-                ent->components[k]->testCollision(*terrain->components[l], ci);
+                  // Go test the collision TODO: solve random segfault
 
-                // Collision detected!
-                if (ci.collided) {
-                  if (true || steptime >= ci.collideTime - 0.001) {
-                    // ent->orientation[3].x -= ci.normB.x * ci.sink;
-                    // ent->orientation[3].y -= ci.normB.y * ci.sink;
-                    // ent->orientation[3].z -= ci.normB.z * ci.sink;
+                  //printf("notanerrorA: %i %i %i %s\n", k, l, terrain->components.size(), terrain->name.c_str());
+                  //printf("notanerrorB: %p\n", terrain->components[l]);
+                  ent->components[k]->testCollision(*terrain->components[l], ci);
 
-                    // ent->orientation = prevOrientation;
+                  // Collision detected!
+                  if (ci.collided) {
+                    if (true || steptime >= ci.collideTime - 0.001) {
+                      // ent->orientation[3].x -= ci.normB.x * ci.sink;
+                      // ent->orientation[3].y -= ci.normB.y * ci.sink;
+                      // ent->orientation[3].z -= ci.normB.z * ci.sink;
 
-                    // ent->orientation[3][0] -= ent->velocity.x * steptime
-                    //    + (ent->acceleration.x * (steptime * steptime)) / 2;
-                    // ent->orientation[3][1] -= ent->velocity.y * steptime
-                    //    + (ent->acceleration.y * (steptime * steptime)) / 2;
-                    // ent->orientation[3][2] -= ent->velocity.z * steptime
-                    //    + (ent->acceleration.z * (steptime * steptime)) / 2;
+                      // ent->orientation = prevOrientation;
 
-                    if (precision > 2) {
-                      // TODO: the response I was trying to do previously but
-                      // gived up for now
-                    } else {
-                    
-                      // Calculate normal force velocity and other stuff
+                      // ent->orientation[3][0] -= ent->velocity.x * steptime
+                      //    + (ent->acceleration.x * (steptime * steptime)) / 2;
+                      // ent->orientation[3][1] -= ent->velocity.y * steptime
+                      //    + (ent->acceleration.y * (steptime * steptime)) / 2;
+                      // ent->orientation[3][2] -= ent->velocity.z * steptime
+                      //    + (ent->acceleration.z * (steptime * steptime)) / 2;
 
-                      ent->orientation[3].x += ci.normB.x * -ci.sink;
-                      ent->orientation[3].y += ci.normB.y * -ci.sink;
-                      ent->orientation[3].z += ci.normB.z * -ci.sink;
+                      if (precision > 2) {
+                        // TODO: the response I was trying to do previously but
+                        // gived up for now
+                      } else {
+                      
+                        // Calculate normal force velocity and other stuff
 
-                      float elasticity = 0.0f;
-                      float frictionMew = 0.3f;
+                        ent->orientation[3].x += ci.normB.x * -ci.sink;
+                        ent->orientation[3].y += ci.normB.y * -ci.sink;
+                        ent->orientation[3].z += ci.normB.z * -ci.sink;
 
-                      // Temporary stuff, remove soon
-                      //glm::vec3 temp =
-                      //    glm::vec3(ent->orientation
-                      //              * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
-                      //glm::vec3 tanVelX =
-                      //    glm::cross((glm::mat3(ent->orientation)
-                      //                  * glm::axis(ent->rotVelocity))
-                      //               * glm::angle(ent->rotVelocity) * 32.0f,
-                      //               temp);
+                        float elasticity = 0.0f;
+                        float frictionMew = 0.3f;
 
-                      // Tangental velocity at the spot
-                      glm::vec3 tanVel =
-                          glm::cross((glm::mat3(ent->orientation)  
-                                        * glm::axis(ent->rotVelocity))
-                                     * glm::angle(ent->rotVelocity) * 32.0f,
-                                     ci.spotA);
+                        // Temporary stuff, remove soon
+                        //glm::vec3 temp =
+                        //    glm::vec3(ent->orientation
+                        //              * glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+                        //glm::vec3 tanVelX =
+                        //    glm::cross((glm::mat3(ent->orientation)
+                        //                  * glm::axis(ent->rotVelocity))
+                        //               * glm::angle(ent->rotVelocity) * 32.0f,
+                        //               temp);
 
-                      // Normal force from normal, what else?
-                      glm::vec3 normalForce =
-                          ci.normB;// *
-                          //((-glm::dot(ci.normB, ent->velocity) * ent->mass +
-                          //  glm::max(-glm::dot(ci.normB, tanVel), 0.0f) *
-                          //      ent->radialMass) *
-                          // (elasticity + 1));
+                        // Tangental velocity at the spot
+                        glm::vec3 tanVel =
+                            glm::cross((glm::mat3(ent->orientation)  
+                                          * glm::axis(ent->rotVelocity))
+                                       * glm::angle(ent->rotVelocity) * 32.0f,
+                                       ci.spotA);
 
-                      normalForce *= glm::dot(-(1 + elasticity)
-                                                * (ent->velocity + tanVel),
-                                              ci.normB)
-                                     / (1.0f / ent->mass +
-                                         glm::dot((1.0f / ent->radialMass)
-                                                  * glm::cross(
-                                                      glm::cross(ci.spotA,
-                                                                 ci.normB),
-                                                      ci.spotA), ci.normB));
-                      //glm::dot((1.0f / ent->radialMass) *
-                      //((ci.spotA * ci.normB) * ci.spotA), ci.normB));
+                        // Normal force from normal, what else?
+                        glm::vec3 normalForce =
+                            ci.normB;// *
+                            //((-glm::dot(ci.normB, ent->velocity) * ent->mass +
+                            //  glm::max(-glm::dot(ci.normB, tanVel), 0.0f) *
+                            //      ent->radialMass) *
+                            // (elasticity + 1));
 
-                      // Force needed to stop the point (momentum)
-                      glm::vec3 pointForce =
-                          glm::normalize(ent->velocity + tanVel)
-                          * glm::length(ent->velocity * ent->mass
-                                        + tanVel * ent->radialMass);
+                        normalForce *= glm::dot(-(1 + elasticity)
+                                                  * (ent->velocity + tanVel),
+                                                ci.normB)
+                                       / (1.0f / ent->mass +
+                                           glm::dot((1.0f / ent->radialMass)
+                                                    * glm::cross(
+                                                        glm::cross(ci.spotA,
+                                                                   ci.normB),
+                                                        ci.spotA), ci.normB));
+                        //glm::dot((1.0f / ent->radialMass) *
+                        //((ci.spotA * ci.normB) * ci.spotA), ci.normB));
 
-                      // Velocity flattened towards the normal
-                      glm::vec3 frictionA =
-                          -pointForce +
-                          (ci.normB * glm::dot(ci.normB, pointForce));
-                      // frictionA but with forces
-                      glm::vec3 frictionB = glm::normalize(frictionA) *
-                                            glm::length(normalForce) *
-                                            frictionMew;
-                      glm::vec3 frictionForce = frictionB;
+                        // Force needed to stop the point (momentum)
+                        glm::vec3 pointForce =
+                            glm::normalize(ent->velocity + tanVel)
+                            * glm::length(ent->velocity * ent->mass
+                                          + tanVel * ent->radialMass);
 
-                      //if (glm::length(frictionA) == 0)
-                      //  frictionForce = glm::vec3(0.0f);
+                        // Velocity flattened towards the normal
+                        glm::vec3 frictionA =
+                            -pointForce +
+                            (ci.normB * glm::dot(ci.normB, pointForce));
+                        // frictionA but with forces
+                        glm::vec3 frictionB = glm::normalize(frictionA) *
+                                              glm::length(normalForce) *
+                                              frictionMew;
+                        glm::vec3 frictionForce = frictionB;
 
-                      // TODO Limit friction force somehow
-                      // This is temporary solution
-                      if (glm::length(frictionA) - glm::length(frictionB) < 0.0f)
-                        frictionForce = frictionA;
-                        //printf("EEEEEEE%f\n",
-                        //       glm::length(frictionA) - glm::length(frictionB));
-                      //  frictionForce *= 0;
+                        //if (glm::length(frictionA) == 0)
+                        //  frictionForce = glm::vec3(0.0f);
 
-                      //printf("thing: %4.2f (%4.2f, %4.2f, %4.2f)\n",
-                      //       glm::length(tanVel), tanVel.x, tanVel.y, tanVel.z);
+                        // TODO Limit friction force somehow
+                        // This is temporary solution
+                        if (glm::length(frictionA) - glm::length(frictionB) < 0.0f)
+                          frictionForce = frictionA;
+                          //printf("EEEEEEE%f\n",
+                          //       glm::length(frictionA) - glm::length(frictionB));
+                        //  frictionForce *= 0;
 
-                      //printf("%f\n", glm::length(frictionB));
+                        //printf("thing: %4.2f (%4.2f, %4.2f, %4.2f)\n",
+                        //       glm::length(tanVel), tanVel.x, tanVel.y, tanVel.z);
 
-                      //frictionB = -(tanVel - ent->velocity) +
-                      //    (ci.normB * glm::dot(ci.normB, (tanVel - ent->velocity)));
+                        //printf("%f\n", glm::length(frictionB));
 
-                      static_cast<KObj_Entity*>(KObj_Node::all[5])
-                          ->orientation[3]
-                          .x = ci.spotA.x + ent->orientation[3].x + pointForce.x * 2;
-                      static_cast<KObj_Entity*>(KObj_Node::all[5])
-                          ->orientation[3]
-                          .y = ci.spotA.y + ent->orientation[3].y + pointForce.y * 2;
-                      static_cast<KObj_Entity*>(KObj_Node::all[5])
-                          ->orientation[3]
-                          .z = ci.spotA.z + ent->orientation[3].z + pointForce.z * 2;
+                        //frictionB = -(tanVel - ent->velocity) +
+                        //    (ci.normB * glm::dot(ci.normB, (tanVel - ent->velocity)));
 
-                      static_cast<KObj_Entity*>(KObj_Node::all[6])
-                          ->orientation[3]
-                          .x = ci.spotA.x + ent->orientation[3].x;
-                      static_cast<KObj_Entity*>(KObj_Node::all[6])
-                          ->orientation[3]
-                          .y = ci.spotA.y + ent->orientation[3].y;
-                      static_cast<KObj_Entity*>(KObj_Node::all[6])
-                          ->orientation[3]
-                          .z = ci.spotA.z + ent->orientation[3].z;
+                        static_cast<KObj_Entity*>(KObj_Node::all[5])
+                            ->orientation[3]
+                            .x = ci.spotA.x + ent->orientation[3].x + pointForce.x * 2;
+                        static_cast<KObj_Entity*>(KObj_Node::all[5])
+                            ->orientation[3]
+                            .y = ci.spotA.y + ent->orientation[3].y + pointForce.y * 2;
+                        static_cast<KObj_Entity*>(KObj_Node::all[5])
+                            ->orientation[3]
+                            .z = ci.spotA.z + ent->orientation[3].z + pointForce.z * 2;
 
-                      // printf("F: %4.2f %4.2f (%4.2f, %4.2f, %4.2f)\n",
-                      //        tanVel, glm::length(force), force.x, force.y,
-                      //        force.z);
+                        static_cast<KObj_Entity*>(KObj_Node::all[6])
+                            ->orientation[3]
+                            .x = ci.spotA.x + ent->orientation[3].x;
+                        static_cast<KObj_Entity*>(KObj_Node::all[6])
+                            ->orientation[3]
+                            .y = ci.spotA.y + ent->orientation[3].y;
+                        static_cast<KObj_Entity*>(KObj_Node::all[6])
+                            ->orientation[3]
+                            .z = ci.spotA.z + ent->orientation[3].z;
 
-                      Physics::ApplyForce(ent, ci.spotA,
-                                          normalForce + frictionForce);
+                        // printf("F: %4.2f %4.2f (%4.2f, %4.2f, %4.2f)\n",
+                        //        tanVel, glm::length(force), force.x, force.y,
+                        //        force.z);
 
-                      // Physics::ApplyForce(ent, ci.spotA, ci.normB);
+                        Physics::ApplyForce(ent, ci.spotA,
+                                            normalForce + frictionForce);
+
+                        // Physics::ApplyForce(ent, ci.spotA, ci.normB);
+                      }
                     }
                   }
                 }
               }
             }
           }
+
         }
 
-        ent->velocity.x += ent->acceleration.x * steptime;
-        ent->velocity.y += ent->acceleration.y * steptime;
-        ent->velocity.z += ent->acceleration.z * steptime;
+        if ((ent->physics & 1) == 1) {
+          ent->velocity.x += ent->acceleration.x * steptime;
+          ent->velocity.y += ent->acceleration.y * steptime;
+          ent->velocity.z += ent->acceleration.z * steptime;
 
-        ent->acceleration.x = 0;
-        ent->acceleration.y = 0;
-        ent->acceleration.z = 0;
+          ent->acceleration.x = 0;
+          ent->acceleration.y = 0;
+          ent->acceleration.z = 0;
+        }
       }
     }
   }

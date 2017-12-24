@@ -185,8 +185,16 @@ class KObj_Entity : public KObj_Renderable {
 
   std::vector<KComponent*> components;
 
-  // 0: static
-  // 1: something else
+  // Physics byte mask
+  // 1   - velocity
+  // 2   - rotation velocity
+  // 4   - affected by forces
+  // 8   - 
+  // 16  - terrain collisions
+  // 32  - other object collisions
+  // 64  - torque from apply force
+  // 128 - 
+
   uint8_t physics;
 
   // physics stuff

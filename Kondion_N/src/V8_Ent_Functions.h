@@ -35,11 +35,11 @@ void Callback_Entity_ApplyForce(
   Local<Array> a = Local<Array>::Cast(args[0]);
   Local<Array> b = Local<Array>::Cast(args[1]);
   
-  KObj_Entity* pointer_this =
+  KObj_Entity* pointerThis =
       static_cast<KObj_Entity*>(Local<External>::Cast(
           args.This()->GetInternalField(0))->Value());
   
-  Physics::ApplyForce(pointer_this, glm::vec3(
+  Physics::ApplyForce(pointerThis, glm::vec3(
       a->Get(0)->NumberValue(),
       a->Get(1)->NumberValue(),
       a->Get(2)->NumberValue()), glm::vec3(
@@ -59,15 +59,15 @@ void Callback_Entity_Accelerate(
     return;
   //printf("eggs!");
   Local<Array> a = Local<Array>::Cast(args[0]);
-  KObj_Entity* pointer_this =
+  KObj_Entity* pointerThis =
       static_cast<KObj_Entity*>(Local<External>::Cast(
           args.This()->GetInternalField(0))->Value());
           
-  //Physics::applyForce(pointer_this, glm::vec3(a->Get(0)->NumberValue(), 0.0,
+  //Physics::applyForce(pointerThis, glm::vec3(a->Get(0)->NumberValue(), 0.0,
   //        a->Get(2)->NumberValue()), glm::vec3(0.0f, -0.004f, 0.0f));
-  pointer_this->acceleration.x += a->Get(0)->NumberValue();
-  pointer_this->acceleration.y += a->Get(1)->NumberValue();
-  pointer_this->acceleration.z += a->Get(2)->NumberValue();
+  pointerThis->acceleration.x += a->Get(0)->NumberValue();
+  pointerThis->acceleration.y += a->Get(1)->NumberValue();
+  pointerThis->acceleration.z += a->Get(2)->NumberValue();
 
 }
 
@@ -81,27 +81,27 @@ void Callback_Entity_AddComponent(const FunctionCallbackInfo<Value>& args) {
   // Check if arg0 is a component
   if (!f->HasInstance(args[0]))
     return;
-  KObj_Entity* pointer_this = static_cast<KObj_Entity*>(Local<External>::Cast(
+  KObj_Entity* pointerThis = static_cast<KObj_Entity*>(Local<External>::Cast(
       args.This()->GetInternalField(0))->Value());
   KComponent* pointer_arg0 = static_cast<KComponent*>(Local<External>::Cast(
       Local<Object>::Cast(args[0])->GetInternalField(0))->Value());
-  pointer_arg0->parent = pointer_this;
-  pointer_this->components.push_back(pointer_arg0);
+  pointer_arg0->parent = pointerThis;
+  pointerThis->components.push_back(pointer_arg0);
 }
 
 void Callback_Entity_GetVelocity(const FunctionCallbackInfo<Value>& args) {
   if (args.IsConstructCall() || args.Length() == 0
       || !(args[0]->IsFloat32Array() || args[0]->IsArray()))
     return;
-  KObj_Entity* pointer_this =
+  KObj_Entity* pointerThis =
           static_cast<KObj_Entity*>(Local<External>::Cast(
               args.This()->GetInternalField(0))->Value());
 
   Local<Float32Array> a = Local<Float32Array>::Cast(args[0]);
-  a->Set(0, Number::New(isolate, pointer_this->velocity.x));
-  a->Set(1, Number::New(isolate, pointer_this->velocity.y));
-  a->Set(2, Number::New(isolate, pointer_this->velocity.z));
-  //pointer_this->offset[0][0];
+  a->Set(0, Number::New(isolate, pointerThis->velocity.x));
+  a->Set(1, Number::New(isolate, pointerThis->velocity.y));
+  a->Set(2, Number::New(isolate, pointerThis->velocity.z));
+  //pointerThis->offset[0][0];
   //static_cast<Bird*>(pointer)->integrity = value->Int32Value();
 }
 
@@ -114,16 +114,16 @@ void Callback_Renderable_SetMaterial(const FunctionCallbackInfo<Value>& args) {
   // Check if argument is a material
   if (!f->HasInstance(args[0]))
     return;
-  KObj_Renderable* pointer_this = static_cast<KObj_Entity*>(Local<External>::Cast(
+  KObj_Renderable* pointerThis = static_cast<KObj_Entity*>(Local<External>::Cast(
       args.This()->GetInternalField(0))->Value());
   KMaterial* pointer_arg0 = static_cast<KMaterial*>(Local<External>::Cast(
       Local<Object>::Cast(args[0])->GetInternalField(0))->Value()); 
   uint16_t i = 0;
-  //printf("pointer: %p\n", pointer_this);
-  pointer_this->material = uint16_t(-1);
-  while (pointer_this->material == uint16_t(-1) && i != KMaterial::materials.size()) {
+  //printf("pointer: %p\n", pointerThis);
+  pointerThis->material = uint16_t(-1);
+  while (pointerThis->material == uint16_t(-1) && i != KMaterial::materials.size()) {
     if (KMaterial::materials[i] == pointer_arg0)
-      pointer_this->material = i;
+      pointerThis->material = i;
     i ++;
   }
   
@@ -133,15 +133,15 @@ void Callback_Entity_PhysLevel(const FunctionCallbackInfo<Value>& args) {
   if (args.IsConstructCall() || args.Length() == 0)
     return;
 
-  KObj_Entity* pointer_this = static_cast<KObj_Entity*>(Local<External>::Cast(
+  KObj_Entity* pointerThis = static_cast<KObj_Entity*>(Local<External>::Cast(
       args.This()->GetInternalField(0))->Value());
-  pointer_this->physics = uint8_t(args[0]->NumberValue());
+  pointerThis->physics = uint8_t(args[0]->NumberValue());
   //KObj_Node::worldObject
-  if (pointer_this->getParent() != NULL) {
-    if (KObj_Node::all[pointer_this->topObject]->getClass()
+  if (pointerThis->getParent() != NULL) {
+    if (KObj_Node::all[pointerThis->topObject]->getClass()
         == KObj::GKO_World::myClass) {
-      static_cast<KObj::GKO_World*>(KObj_Node::all[pointer_this->topObject])
-          ->terrain.push_back(pointer_this->allIndex);
+      static_cast<KObj::GKO_World*>(KObj_Node::all[pointerThis->topObject])
+          ->terrain.push_back(pointerThis->allIndex);
     }
   }
 
