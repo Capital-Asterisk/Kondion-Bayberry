@@ -217,10 +217,11 @@ class KObj_Entity : public KObj_Renderable {
   int getType() {
     return 4;
   }
-  
+
   void updateA();
   void parentTransform();
-  
+
+  //virtual void onCollide(KObj_Entity& with, Physics::CollisionInfo& ci);
   virtual void render();
 };
 
@@ -865,6 +866,8 @@ void DebugObjPrint(char* str);
 void Destroy();
 void Eval(const char* s);
 void Eval(const std::string& s);
+void EntityOnCollide(KObj_Entity& a, KObj_Entity& b, KComponent& ca,
+                      KComponent cb, Physics::CollisionInfo& ci);
 void GlobalUpdate();
 void Setup();
 void Start();

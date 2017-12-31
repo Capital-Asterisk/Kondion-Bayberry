@@ -346,6 +346,48 @@ void Eval(const char* s) {
   }
 }
 
+// The function that should be called when two entities collide
+void EntityOnCollide(KObj_Entity& a, KObj_Entity& b,
+                      KComponent& ca, KComponent cb, Physics::CollisionInfo& ci) {
+
+  // i think all of these should be done for all objects in a single loop
+  // for the amount of times the following functions are being called
+  Isolate::Scope isolate_scope(isolate);
+  HandleScope handle_scope(isolate);
+  Local<Context> context = Local<Context>::New(isolate, p_context);
+  Context::Scope context_scope(context);
+
+  Local<Object> o;
+  Local<Value> val;
+  Local<Function> f;
+
+  // Call both onCollide functions
+
+  // Gets the JS object
+  o = Local<Object>::New(isolate, *static_cast<Persistent<Object,
+            CopyablePersistentTraits<Object>>*>(a.jsObject));
+
+  // gets the jshidden functions array object index 1 (oncollide function)
+  val = Local<Array>::New(isolate, *static_cast<
+        Persistent<Array, CopyablePersistentTraits<Array>>*>(a.jsHidden))
+          ->Get(1);
+  // Check if an oncollide function exists
+  if (!val->IsUndefined()) {
+    //printf("woot\n");
+    f = Local<Function>::Cast(val);
+    f->Call(context, Local<Object>::New(isolate,
+        *static_cast<Persistent<Object, CopyablePersistentTraits<Object>>*>
+        (a.jsObject)),
+        0, NULL);
+  }
+
+  // Same thing here
+  o = Local<Object>::New(isolate, *static_cast<Persistent<Object,
+            CopyablePersistentTraits<Object>>*>(b.jsObject));
+
+  
+}
+
 void GlobalUpdate() {
   Isolate::Scope isolate_scope(isolate);
   HandleScope handle_scope(isolate);
@@ -545,6 +587,10 @@ void Setup() {
   kobj_entity->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "physLevel"),
       FunctionTemplate::New(isolate, Callback_Entity_PhysLevel));
+  kobj_entity->InstanceTemplate()->SetAccessor(
+      String::NewFromUtf8(isolate, "oncollide"),
+      Callback_KObj_Entity_GetOncollide,
+      Callback_KObj_Entity_SetOncollide);
 
 
   // Physics stuff
@@ -554,6 +600,9 @@ void Setup() {
   kobj_entity->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "getVelocity"),
       FunctionTemplate::New(isolate, Callback_Entity_GetVelocity));
+  kobj_entity->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "setVelocity"),
+      FunctionTemplate::New(isolate, Callback_Entity_SetVelocity));
   kobj_entity->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "thrustN"),
       FunctionTemplate::New(isolate, Callback_Entity_ApplyForce));

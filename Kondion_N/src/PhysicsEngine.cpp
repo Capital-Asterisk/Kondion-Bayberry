@@ -468,6 +468,11 @@ void PhysicsUpdate() {
                         //        tanVel, glm::length(force), force.x, force.y,
                         //        force.z);
 
+                        //if (ent->jsHidden[1] != NULL) {
+                          JS::EntityOnCollide(*ent, *terrain, *ent->components[k],
+                                              *terrain->components[l], ci);
+                        //}
+
                         Physics::ApplyForce(ent, ci.spotA,
                                             normalForce + frictionForce);
 

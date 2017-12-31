@@ -178,22 +178,24 @@ void KObj_Entity::updateA() {
 
 void KObj_Entity::parentTransform() {
   KObj_Oriented::parentTransform();
-  for (unsigned short i; i < components.size(); i++) {
+  for (uint16_t i; i < components.size(); i++) {
     components[i]->parent = this;
   }
 }
 
 void KObj_Entity::render() {
   glMultMatrixf(glm::value_ptr(transform));
-  for (unsigned short i; i < components.size(); i++) {
+  for (uint16_t i; i < components.size(); i++) {
     if (components[i]->renderable) {
       components[i]->render();
     } else {
       // do something
     }
-
   }
 }
+
+//void KObj_Entity::onCollide(KObj_Entity& with, Physics::CollisionInfo& ci) {
+//}
 
 double Delta() {
   return delta;
@@ -211,7 +213,7 @@ void Launch() {
   printf("Hello World\n");
 
   Window::Initialize();
-  Window::CreateWindow(1280, 720);
+  Window::CreateWindow(1060, 600);
 
   //worldObject = new KObj::GKO_World;
 

@@ -105,6 +105,22 @@ void Callback_Entity_GetVelocity(const FunctionCallbackInfo<Value>& args) {
   //static_cast<Bird*>(pointer)->integrity = value->Int32Value();
 }
 
+void Callback_Entity_SetVelocity(const FunctionCallbackInfo<Value>& args) {
+  if (args.IsConstructCall() || args.Length() == 0
+      || !(args[0]->IsFloat32Array() || args[0]->IsArray()))
+    return;
+
+  KObj_Entity* pointerThis =
+          static_cast<KObj_Entity*>(Local<External>::Cast(
+              args.This()->GetInternalField(0))->Value());
+
+  Local<Float32Array> a = Local<Float32Array>::Cast(args[0]);
+
+  pointerThis->velocity.x = a->Get(0)->NumberValue();
+  pointerThis->velocity.y = a->Get(1)->NumberValue();
+  pointerThis->velocity.z = a->Get(2)->NumberValue();
+}
+
 void Callback_Renderable_SetMaterial(const FunctionCallbackInfo<Value>& args) {
   if (args.IsConstructCall() || args.Length() == 0)
     return;
@@ -149,16 +165,14 @@ void Callback_Entity_PhysLevel(const FunctionCallbackInfo<Value>& args) {
 
 void Callback_KObj_Node_GetOnupdate(Local<String> property,
                                    const PropertyCallbackInfo<Value>& info) {
-  //Local<External> wrap = Local<External>::Cast(
-  //      info.Holder()->GetInternalField(0));
-  //void* pointer = wrap->Value();
-  if (Renderer::currentCamera == NULL)
-    return;
-  Persistent<Object, CopyablePersistentTraits<Object>>* p =
-      static_cast<Persistent<Object, CopyablePersistentTraits<Object>>*>(
-          Renderer::currentCamera->jsObject);
-  Local<Object> o = Local<Object>::New(isolate, *p);
-  info.GetReturnValue().Set(o);
+  KObj_Node* pointerThis = static_cast<KObj_Node*>(Local<External>::Cast(
+      info.Holder()->GetInternalField(0))->Value());
+
+  Persistent<Array, CopyablePersistentTraits<Array>>* p;
+  p = static_cast<Persistent<Array, CopyablePersistentTraits<Array>>*>
+        (pointerThis->jsHidden);
+  Local<Array> a = Local<Array>::New(isolate, *p);
+  info.GetReturnValue().Set(a->Get(0));
 }
 
 void Callback_KObj_Node_SetOnupdate(Local<String> property, Local<Value> value,
@@ -177,6 +191,35 @@ void Callback_KObj_Node_SetOnupdate(Local<String> property, Local<Value> value,
   a->Set(0, value);
   
   KObj_Node::worldObject->jsUpdate.push_back(pointerThis->allIndex);
+}
+
+void Callback_KObj_Entity_GetOncollide(Local<String> property,
+                                   const PropertyCallbackInfo<Value>& info) {
+  KObj_Node* pointerThis = static_cast<KObj_Node*>(Local<External>::Cast(
+      info.Holder()->GetInternalField(0))->Value());
+
+  Persistent<Array, CopyablePersistentTraits<Array>>* p;
+  p = static_cast<Persistent<Array, CopyablePersistentTraits<Array>>*>
+        (pointerThis->jsHidden);
+  Local<Array> a = Local<Array>::New(isolate, *p);
+  info.GetReturnValue().Set(a->Get(1));
+}
+
+void Callback_KObj_Entity_SetOncollide(Local<String> property, Local<Value> value,
+                                   const PropertyCallbackInfo<void>& info) {
+
+  if (!value->IsFunction())
+    return;
+
+  KObj_Node* pointerThis = static_cast<KObj_Node*>(Local<External>::Cast(
+      info.Holder()->GetInternalField(0))->Value());
+
+  Persistent<Array, CopyablePersistentTraits<Array>>* p;
+  p = static_cast<Persistent<Array, CopyablePersistentTraits<Array>>*>
+        (pointerThis->jsHidden);
+  Local<Array> a = Local<Array>::New(isolate, *p);
+  a->Set(1, value);
+
 }
 
 }

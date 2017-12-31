@@ -12,7 +12,7 @@ function Character() {
   obj.health = 100;
   obj.isActive = false;
   obj.onSwitchedTo = undefined;
-  obj.physLevel(1 | 4 | 16);
+  obj.physLevel(1 | 4 | 16 | 64);
   kdion.characters.push(obj);
   return obj;
 }
@@ -43,7 +43,6 @@ var quickMakeAFan = function(name, pos, velo) {
 
   mat4.fromTranslation(tm, [0.0, 4.11466, -0.27625]);
   blade.setMatrix(tm);
-  
 
   main.setData("FanMain");
   head.setData("FanHead");
@@ -58,6 +57,46 @@ var quickMakeAFan = function(name, pos, velo) {
   ent.setParent(kdion.World);
   ent.thrustN([0.0, 0.05, 0.0], velo);
   ent.setMaterial(flrmat);
+
+  ent.onupdate = function() {
+    if (this.isActive) {
+      if (kdion.input["DEBUGA"]) {
+        this.thrustN([0.0, 0.2, 0.0], [0.0, 1.0, 0.0]);
+      }
+
+      var foo = vec3.create();
+      var bar = vec3.create();
+
+      this.moving = (Math.abs(kdion.input["MOVE_X"])
+                      + Math.abs(kdion.input["MOVE_Y"])) > 0.1;
+
+      if (this.moving) {
+        kdion.camera.dirRt(foo);
+        kdion.camera.dirFd(bar);
+        foo[1] = 0;
+        bar[1] = 0;
+        vec3.normalize(foo, foo);
+        vec3.normalize(bar, bar);
+        vec3.scale(foo, foo, -kdion.input["MOVE_X"] * 30);
+        vec3.scale(bar, bar, -kdion.input["MOVE_Y"] * 30);
+        vec3.add(foo, foo, bar);
+        this.setVelocity([foo[0], 0.0, foo[2]]);
+      } else {
+        // Decelerate
+        this.getVelocity(foo);
+        vec3.negate(foo, foo);
+        //this.thrustN([0.0, 0.0, 0.0], foo);
+        kdion.debug.fooo = foo.toString();
+        
+      }
+    }
+  }
+
+  ent.oncollide = function() {
+    if (this.isActive)
+      kdion.debug.hhh = Math.random();
+  }
+
   return ent;
 }
 
@@ -80,7 +119,7 @@ kdion.initialize(function() {
   skymat = new KMaterial("sky");
   
   kdion.characters = [];
-  //kdion.characters.current = 0;
+  kdion.currentCharacter = 0;
   
   var tm = mat4.create();
   mat4.rotateY(tm, tm, Math.PI / 4 * 2);
@@ -98,7 +137,7 @@ kdion.initialize(function() {
   celi.setMatrix(tm);
   //wall.setMatrix();
   //mat4.fromScaling(tm, [4, 4, 4]);
-  //ground.addComponent(flat);
+  ground.addComponent(flat);
   ground.addComponent(wall);
   //ground.addComponent(celi);
   ground.translate(0.0, -9.0, 0.0);
@@ -173,13 +212,15 @@ kdion.globalUpdate(function() {
           Math.random() * 24.0 - 12.0]);
   }
 
-  kdion.debug.F = kdion.characters[0];
-  if (kdion.characters[0]) {
-    kdion.camera.pointAt(kdion.characters[0]);
+  kdion.debug.I = JSON.stringify(kdion.input);
+  kdion.debug.F = kdion.characters[kdion.currentCharacter];
+  if (kdion.characters[kdion.currentCharacter]) {
+    kdion.camera.pointAt(kdion.characters[kdion.currentCharacter]);
+    kdion.characters[kdion.currentCharacter].isActive = true;
   //  kdion.debug.F = kdion.characters[kdion.characters.current];
   }
 
-  flrmat.setUniform(2, Math.floor(Math.random() * 3) * 0 + 4);
+  flrmat.setUniform(2, Math.floor(Math.random() * 3) * 0 + 2);
   
 });
 
