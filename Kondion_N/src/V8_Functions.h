@@ -393,6 +393,36 @@ void Callback_KObj_SetParent(const FunctionCallbackInfo<Value>& args) {
   pointerThis->setParent(pointer_arg0);
 }
 
+void Callback_KObj_GetOnupdate(Local<String> property,
+                                   const PropertyCallbackInfo<Value>& info) {
+  KObj_Node* pointerThis = static_cast<KObj_Node*>(Local<External>::Cast(
+      info.Holder()->GetInternalField(0))->Value());
+
+  Persistent<Array, CopyablePersistentTraits<Array>>* p;
+  p = static_cast<Persistent<Array, CopyablePersistentTraits<Array>>*>
+        (pointerThis->jsHidden);
+  Local<Array> a = Local<Array>::New(isolate, *p);
+  info.GetReturnValue().Set(a->Get(0));
+}
+
+void Callback_KObj_SetOnupdate(Local<String> property, Local<Value> value,
+                                   const PropertyCallbackInfo<void>& info) {
+
+  if (!value->IsFunction())
+    return;
+
+  KObj_Node* pointerThis = static_cast<KObj_Node*>(Local<External>::Cast(
+      info.Holder()->GetInternalField(0))->Value());
+
+  Persistent<Array, CopyablePersistentTraits<Array>>* p;
+  p = static_cast<Persistent<Array, CopyablePersistentTraits<Array>>*>
+        (pointerThis->jsHidden);
+  Local<Array> a = Local<Array>::New(isolate, *p);
+  a->Set(0, value);
+  
+  KObj_Node::worldObject->jsUpdate.push_back(pointerThis->allIndex);
+}
+
 void Callback_GKO_World(const FunctionCallbackInfo<Value>& args) {
   HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {

@@ -449,6 +449,8 @@ class CollisionInfo {
 
   // Impact velocity from A-B relative to world, including rotations
   glm::vec3 impact;
+  glm::vec3 tanvelA;
+  glm::vec3 tenvelB;
   //double impactVelocity;
 };
 

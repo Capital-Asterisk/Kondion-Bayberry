@@ -97,49 +97,74 @@ void Callback_OKO_Translate(const FunctionCallbackInfo<v8::Value>& args) {
 }
 
 void Callback_OKO_PointAt(const FunctionCallbackInfo<v8::Value>& args) {
-  //// x, y, z, up x, up y, up z, origin
-  // at, up x, up y, up z, origin
+  //// [x, y, z], [up x, up y, up z], origin
+  // at, [up x, up y, up z], origin
   if (args.IsConstructCall())
     return;
+
+  // TODO: set these wwith arguments
+  glm::mat4 origin(1.0f);
+  glm::mat4 that(1.0f);
+  glm::vec4 up(0.0f, 1.0f, 0.0f, 0.0f);
 
   KObj_Oriented* pointer_this =
       static_cast<KObj_Oriented*>(Local<External>::Cast(
           args.This()->GetInternalField(0))->Value());
-  // point at the oriented object on the first argument
-  KObj_Oriented* pointer_that =
-      static_cast<KObj_Oriented*>(Local<External>::Cast(
-          args[0]->ToObject()->GetInternalField(0))->Value());
 
-  // TODO: set these wwith arguments
-  glm::mat4 origin(1);
-  glm::vec4 up(0.0f, 1.0f, 0.0f, 0.0f);
+  // TODO get origin here
 
-  // Remove translation from origin
-  origin[3][0] = 0;
-  origin[3][1] = 0;
-  origin[3][2] = 0;
+  // If args[0] is an array, or an oko
+  if (args[0]->IsArray() || args[0]->IsFloat32Array()) {
+    Local<Array> a = Local<Array>::Cast(args[0]);
+    that[3][0] = a->Get(0)->NumberValue();
+    that[3][1] = a->Get(1)->NumberValue();
+    that[3][2] = a->Get(2)->NumberValue();
+  } else {
+    KObj_Oriented* pointer_that =
+        static_cast<KObj_Oriented*>(Local<External>::Cast(args[0]->ToObject()
+                                      ->GetInternalField(0))->Value());
+    that = origin * pointer_that->orientation;
+  }
 
-  // TODO: Do something to origin to use "up"
-
-  // Multiply both by the origin
+  // Multiply by the origin
   pointer_this->orientation = origin * pointer_this->orientation;
-  glm::mat4 that = origin * pointer_that->orientation;
 
-  // TODO account for scale
-
-  // Create a rotation that points towards the target
-  glm::quat f(
-      glm::vec3(
-          -glm::atan(
-              (pointer_this->orientation[3][1] - that[3][1])
-                  / glm::length(
-                      glm::vec2(pointer_this->orientation[3][0] - that[3][0],
-                                pointer_this->orientation[3][2] - that[3][2]))),
-          glm::atan(pointer_this->orientation[3][0] - that[3][0],
-                    pointer_this->orientation[3][2] - that[3][2]),
-          0.0f));
+  // Create a rotation that points towards the target, make this more efficient
+  //glm::quat f(
+  //    glm::vec3(
+  //        -glm::atan(
+  //            (pointer_this->orientation[3][1] - that[3][1])
+  //                / glm::length(
+  //                    glm::vec2(pointer_this->orientation[3][0] - that[3][0],
+  //                              pointer_this->orientation[3][2] - that[3][2]))),
+  //        glm::atan(pointer_this->orientation[3][0] - that[3][0],
+  //                  pointer_this->orientation[3][2] - that[3][2]),
+  //        0.0f))
   // Then convert it to Mat4
-  glm::mat4 abird = glm::toMat4(f);
+  glm::mat4 abird(1.0f);
+  
+  up.x += glm::sin(float(TimeMs() / 10) / 31.4159) * 0.4f;
+  up.z += glm::cos(float(TimeMs() / 10) / 31.4159) * 0.4f;
+
+  
+  // Let's do this manually
+  // it's "initial - final" so it doesn't have to be negated later on
+  glm::vec3 np = glm::normalize(glm::vec3(pointer_this->orientation[3])
+                                  - glm::vec3(that[3]));
+  glm::vec3 cross = glm::cross(glm::vec3(up), np);
+  up = glm::vec4(glm::cross(np, cross), 0.0f);
+
+  abird[2][0] = np.x;
+  abird[2][1] = np.y;
+  abird[2][2] = np.z;
+
+  abird[1][0] = up.x;
+  abird[1][1] = up.y;
+  abird[1][2] = up.z;
+
+  abird[0][0] = cross.x;
+  abird[0][1] = cross.y;
+  abird[0][2] = cross.z;
 
   // Set the new matrix's translation to this object's translation
   abird[3][0] = pointer_this->orientation[3][0];
@@ -149,45 +174,9 @@ void Callback_OKO_PointAt(const FunctionCallbackInfo<v8::Value>& args) {
   // set this translation to the new one
   pointer_this->orientation = abird;
 
-  // inverse the origin
-  glm::inverse(origin);
-
   // Multiply by the inverse to undo the effects of the first origin multiplication.
-  pointer_this->orientation = origin * pointer_this->orientation;
+  pointer_this->orientation = glm::inverse(origin) * pointer_this->orientation;
 
-  //glm::vec4 direction(0, 0, -1, 0);
-  //direction = pointer_this->offset * direction;
-  //direction = glm::normalize(direction);
-
-  //glm::vec3 difference(pointer_that->offset[3][0],
-  //                       pointer_that->offset[3][1], pointer_that->offset[3][2]);
-  //difference -= glm::vec3(pointer_this->offset[3][0],
-  //                        pointer_this->offset[3][1], pointer_this->offset[3][2]);
-  //difference = glm::normalize(difference);
-
-  //glm::quat f = glm::rotation(glm::vec3(direction), difference);
-  //glm::rotate(f, 1.2f, glm::vec3(0.0f, 0.0f, 1.0f));
-  //pointer_this->offset *= glm::toMat4(f);
-
-  //pointer_this->offset = glm::rotate(pointer_this->offset, 0.1f, glm::vec3(0.0f, 0.0f, 1.0f));
-
-  ////direction = up;
-  ////direction = pointer_this->offset * direction;
-  ////direction = glm::normalize(direction);
-
-  //difference *= 0.02;
-  //pointer_this->offset[3][0] += difference.x;
-  //pointer_this->offset[3][1] += difference.y;
-  //pointer_this->offset[3][2] += difference.z;
-  //Debug::printMatrix(pointer_this->orientation);
-
-  //pointer_this->offset = glm::translate(pointer_this->offset, glm::vec3(
-  //    args[0]->NumberValue(),
-  //    args[1]->NumberValue(),
-  //    args[2]->NumberValue()));
-  //pointer_this->offset[3][0] = a->Get(0)->NumberValue();
-  //pointer_this->offset[3][1] += 0.02f;
-  //pointer_this->offset[3][2] = a->Get(2)->NumberValue();
 }
 
 void Callback_OKO_Rotate(const FunctionCallbackInfo<v8::Value>& args) {

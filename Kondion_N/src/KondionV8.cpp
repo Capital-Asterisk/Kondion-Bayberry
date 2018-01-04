@@ -533,8 +533,8 @@ void Setup() {
       FunctionTemplate::New(isolate, Callback_KObj_SetParent));
   kobj_node->InstanceTemplate()->SetInternalFieldCount(1);
   kobj_node->InstanceTemplate()->SetAccessor(
-      String::NewFromUtf8(isolate, "onupdate"), Callback_KObj_Node_GetOnupdate,
-      Callback_KObj_Node_SetOnupdate);
+      String::NewFromUtf8(isolate, "onupdate"), Callback_KObj_GetOnupdate,
+      Callback_KObj_SetOnupdate);
   //kobj_node->HasInstance(object)
 
   // ** Oriented

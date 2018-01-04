@@ -57,9 +57,10 @@ var quickMakeAFan = function(name, pos, velo) {
   ent.setParent(kdion.World);
   ent.thrustN([0.0, 0.05, 0.0], velo);
   ent.setMaterial(flrmat);
+  ent.collided = false;
 
   ent.onupdate = function() {
-    if (this.isActive) {
+    if (this.isActive && this.collided) {
       if (kdion.input["DEBUGA"]) {
         this.thrustN([0.0, 0.2, 0.0], [0.0, 1.0, 0.0]);
       }
@@ -86,13 +87,16 @@ var quickMakeAFan = function(name, pos, velo) {
         this.getVelocity(foo);
         vec3.negate(foo, foo);
         //this.thrustN([0.0, 0.0, 0.0], foo);
+        this.setVelocity([0.0, 0.0, 0.0]);
         kdion.debug.fooo = foo.toString();
         
       }
     }
+    this.collided = false;
   }
 
   ent.oncollide = function() {
+    this.collided = true;
     if (this.isActive)
       kdion.debug.hhh = Math.random();
   }
