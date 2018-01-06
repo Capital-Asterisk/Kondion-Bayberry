@@ -293,10 +293,13 @@ void DebugObjPrint(char* str) {
 }
 
 void Destroy() {
-  //Isolate::Scope isolate_scope(isolate);
+
+  // Reset all persists at the end to prevent a segfault
   p_kobj_node.Reset();
   p_oko_camera.Reset();
   p_context.Reset();
+
+  p_collisionInfo.Reset();
   p_component.Reset();
   p_material.Reset();
   p_gupdate.Reset();
@@ -358,8 +361,7 @@ void EntityOnCollide(KObj_Entity& a, KObj_Entity& b,
   Context::Scope context_scope(context);
 
   Local<Object> o;
-  Local<Value> val;
-  Local<Function> f;
+  Local<Function> func;
 
   // Call both onCollide functions
 
@@ -367,25 +369,31 @@ void EntityOnCollide(KObj_Entity& a, KObj_Entity& b,
   o = Local<Object>::New(isolate, *static_cast<Persistent<Object,
             CopyablePersistentTraits<Object>>*>(a.jsObject));
 
-  // gets the jshidden functions array object index 1 (oncollide function)
-  val = Local<Array>::New(isolate, *static_cast<
-        Persistent<Array, CopyablePersistentTraits<Array>>*>(a.jsHidden))
-          ->Get(1);
+  // get the jsHidden array from the native entity
+  Local<Array> jsHidden = Local<Array>::New(isolate, *static_cast<
+        Persistent<Array, CopyablePersistentTraits<Array>>*>(a.jsHidden));
+
   // Check if an oncollide function exists
-  if (!val->IsUndefined()) {
-    //printf("woot\n");
-    f = Local<Function>::Cast(val);
-    f->Call(context, Local<Object>::New(isolate,
+  if (!jsHidden->Get(1)->IsUndefined()) {
+
+    // Get the CollisionInfo from jsHidden
+    Local<Object> jsciObj = jsHidden->Get(2)->ToObject();
+    JSCI* jsci = static_cast<JSCI*>(Local<External>::Cast(
+                                        jsciObj->GetInternalField(0))->Value());
+
+    jsci->ea = &a;
+
+    func = Local<Function>::Cast(jsHidden->Get(1));
+    Local<Value> args[1] = { jsciObj };
+    func->Call(context, Local<Object>::New(isolate,
         *static_cast<Persistent<Object, CopyablePersistentTraits<Object>>*>
         (a.jsObject)),
-        0, NULL);
+        1, args);
   }
 
   // Same thing here
   o = Local<Object>::New(isolate, *static_cast<Persistent<Object,
             CopyablePersistentTraits<Object>>*>(b.jsObject));
-
-  
 }
 
 void GlobalUpdate() {
@@ -482,6 +490,15 @@ void Setup() {
   chicken->Inherit(bird);
   chicken->InstanceTemplate()->SetInternalFieldCount(1);
 
+  // Collision info
+  Local<FunctionTemplate> collisionInfo = FunctionTemplate::New(isolate,
+                                                       Callback_Kdion_Bird);
+  collisionInfo->InstanceTemplate()->SetInternalFieldCount(1);
+  collisionInfo->InstanceTemplate()->SetAccessor(
+      String::NewFromUtf8(isolate, "entA"),
+      Callback_CollisionInfo_GetEntA,
+      Callback_SetBlank);
+
   // Component
 
   Local<FunctionTemplate> kcomponent = FunctionTemplate::New(
@@ -535,6 +552,10 @@ void Setup() {
   kobj_node->InstanceTemplate()->SetAccessor(
       String::NewFromUtf8(isolate, "onupdate"), Callback_KObj_GetOnupdate,
       Callback_KObj_SetOnupdate);
+
+  kobj_node->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "toString"),
+      FunctionTemplate::New(isolate, Callback_KObj_ToString));
   //kobj_node->HasInstance(object)
 
   // ** Oriented
@@ -657,8 +678,6 @@ void Setup() {
 
   //global->Set(String::NewFromUtf8(isolate, "GKO_World"), gko_world);
 
-  // Run a test script
-
   // Create a new context with global included
   Local<Context> context = Context::New(Isolate::GetCurrent(), NULL, global);
   Context::Scope context_scope(context);
@@ -722,6 +741,8 @@ void Setup() {
   // Make persistent handles
   p_context = Persistent<Context, CopyablePersistentTraits<Context>>(isolate,
                                                                      context);
+  p_collisionInfo = Persistent<Function,
+       CopyablePersistentTraits<Function>>(isolate, collisionInfo->GetFunction());
   p_component = Persistent<FunctionTemplate,
        CopyablePersistentTraits<FunctionTemplate>>(isolate, kcomponent);
   p_material = Persistent<FunctionTemplate,

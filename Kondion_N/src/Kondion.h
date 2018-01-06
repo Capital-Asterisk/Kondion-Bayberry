@@ -105,7 +105,7 @@ class KObj_Node {
   uint32_t drawLayer;
   // The JS object that is bound
   void* jsObject;
-  // Hidden js object
+  // Hidden js object (onupdate, oncollide, 15: oncollide object)
   void* jsHidden;
   virtual int getType() {
     return 0;

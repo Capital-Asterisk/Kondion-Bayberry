@@ -38,6 +38,7 @@ Persistent<Array, CopyablePersistentTraits<Array>> p_gupdate;
 Persistent<Object, CopyablePersistentTraits<Object>> p_input;
 Persistent<Object, CopyablePersistentTraits<Object>> p_inputd;
 
+Persistent<Function, CopyablePersistentTraits<Function>> p_collisionInfo;
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_component;
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_material;
 Persistent<FunctionTemplate, CopyablePersistentTraits<FunctionTemplate>> p_rawsource;
@@ -67,6 +68,12 @@ class ArrayBufferAllocator : public ArrayBuffer::Allocator {
   }
 };
 
+struct JSCI {
+  KObj_Entity* ea, eb;
+  KComponent ca, cb;
+  Physics::CollisionInfo ci;
+};
+
 inline Local<String> jstr(const char* d) {
   return String::NewFromUtf8(isolate, d);
 }
@@ -89,6 +96,21 @@ void Callback_Kdion_Bird(const FunctionCallbackInfo<Value>& args) {
     args.This()->SetInternalField(0, External::New(isolate, new Bird()));
     args.GetReturnValue().Set(args.This());
   }
+}
+
+void Callback_CollisionInfo(const FunctionCallbackInfo<Value>& args) {
+  HandleScope handle_scope(isolate);
+  if (args.IsConstructCall()) {
+    args.This()->SetInternalField(0, External::New(isolate, new JSCI));
+    args.GetReturnValue().Set(args.This());
+  }
+}
+
+void Callback_CollisionInfo_GetEntA(Local<String> property,
+                                const PropertyCallbackInfo<Value>& info) {
+  //printf("p:%p\n", pointer);
+  // hohohohoho long line
+  info.GetReturnValue().Set(Local<Object>::New(isolate, *static_cast<Persistent<Object, CopyablePersistentTraits<Object>>*>(static_cast<JSCI*>(Local<External>::Cast(info.Holder()->GetInternalField(0))->Value())->ea->jsObject)));
 }
 
 void Callback_Component(const FunctionCallbackInfo<Value>& args) {
@@ -305,31 +327,28 @@ void Callback_Raw_ArrayBuff(const FunctionCallbackInfo<Value>& args) {
   args.GetReturnValue().Set(buff);
 }
 
+// Called when creating an entity from JS
 void Callback_KObj_Entity(const FunctionCallbackInfo<Value>& args) {
   HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {
     //printf("NEW: Entity\n");
+    Local<Context> context = Local<Context>::New(isolate, p_context);
     KObj_Entity* o = new KObj_Entity();
     o->jsObject = new Persistent<Object,
         CopyablePersistentTraits<Object>>(isolate, args.This());
     Local<Array> a = Array::New(isolate);
-    o->jsHidden = new Persistent<Object,
-        CopyablePersistentTraits<Object>>(isolate, a);
+    a->Set(2, Local<Function>::New(isolate, p_collisionInfo)->NewInstance(context).ToLocalChecked());
+    o->jsHidden = new Persistent<Array,
+        CopyablePersistentTraits<Array>>(isolate, a);
     //Kondion::world.push_back(o);
     args.This()->SetInternalField(0, External::New(isolate, o));
     args.GetReturnValue().Set(args.This());
   }
 }
 
-void Callback_Kdion_Blank(const FunctionCallbackInfo<Value>& args) {
-  //HandleScope handle_scope(isolate);
-  if (args.IsConstructCall()) {
-    //KObj_Entity* f = new KObj_Entity();
-    //f->components.push_back(new Component::CPN_Cube);
-    //Kondion::world.push_back(f);
-    //args.This()->SetInternalField(0, External::New(isolate, f));
-    args.GetReturnValue().Set(args.This());
-  }
+void Callback_SetBlank(Local<String> property, Local<Value> value,
+                                   const PropertyCallbackInfo<void>& info) {
+  printf("KONDION used SPLASH\n");
 }
 
 void Callback_KObj_SetName(const FunctionCallbackInfo<Value>& args) {
@@ -421,6 +440,16 @@ void Callback_KObj_SetOnupdate(Local<String> property, Local<Value> value,
   a->Set(0, value);
   
   KObj_Node::worldObject->jsUpdate.push_back(pointerThis->allIndex);
+}
+
+void Callback_KObj_ToString(const FunctionCallbackInfo<Value>& args) {
+  KObj_Entity* pointerThis =
+      static_cast<KObj_Entity*>(Local<External>::Cast(
+          args.This()->GetInternalField(0))->Value());
+  args.GetReturnValue().Set(String::NewFromUtf8(isolate, (std::string("[")
+                            + std::string(pointerThis->getClass())
+                            + std::string(": ") + pointerThis->name
+                            + std::string("]")).c_str()));
 }
 
 void Callback_GKO_World(const FunctionCallbackInfo<Value>& args) {

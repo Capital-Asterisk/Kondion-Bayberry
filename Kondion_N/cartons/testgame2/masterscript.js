@@ -95,8 +95,9 @@ var quickMakeAFan = function(name, pos, velo) {
     this.collided = false;
   }
 
-  ent.oncollide = function() {
+  ent.oncollide = function(ci) {
     this.collided = true;
+    kdion.debug.ci = ci.entA;
     if (this.isActive)
       kdion.debug.hhh = Math.random();
   }
