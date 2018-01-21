@@ -126,6 +126,13 @@ void Callback_OKO_PointAt(const FunctionCallbackInfo<v8::Value>& args) {
     that = origin * pointer_that->orientation;
   }
 
+  if (args[1]->IsArray() || args[1]->IsFloat32Array()) {
+    Local<Array> a = Local<Array>::Cast(args[1]);
+    up.x = a->Get(0)->NumberValue();
+    up.y = a->Get(1)->NumberValue();
+    up.z = a->Get(2)->NumberValue();
+  }
+
   // Multiply by the origin
   pointer_this->orientation = origin * pointer_this->orientation;
 
@@ -143,8 +150,8 @@ void Callback_OKO_PointAt(const FunctionCallbackInfo<v8::Value>& args) {
   // Then convert it to Mat4
   glm::mat4 abird(1.0f);
   
-  up.x += glm::sin(float(TimeMs() / 10) / 31.4159) * 0.4f;
-  up.z += glm::cos(float(TimeMs() / 10) / 31.4159) * 0.4f;
+  //up.x += glm::sin(float(TimeMs() / 10) / 31.4159) * 0.4f;
+  //up.z += glm::cos(float(TimeMs() / 10) / 31.4159) * 0.4f;
 
   
   // Let's do this manually
@@ -152,6 +159,76 @@ void Callback_OKO_PointAt(const FunctionCallbackInfo<v8::Value>& args) {
   glm::vec3 np = glm::normalize(glm::vec3(pointer_this->orientation[3])
                                   - glm::vec3(that[3]));
   glm::vec3 cross = glm::cross(glm::vec3(up), np);
+  up = glm::vec4(glm::cross(np, cross), 0.0f);
+
+  abird[2][0] = np.x;
+  abird[2][1] = np.y;
+  abird[2][2] = np.z;
+
+  abird[1][0] = up.x;
+  abird[1][1] = up.y;
+  abird[1][2] = up.z;
+
+  abird[0][0] = cross.x;
+  abird[0][1] = cross.y;
+  abird[0][2] = cross.z;
+
+  // Set the new matrix's translation to this object's translation
+  abird[3][0] = pointer_this->orientation[3][0];
+  abird[3][1] = pointer_this->orientation[3][1];
+  abird[3][2] = pointer_this->orientation[3][2];
+
+  // set this translation to the new one
+  pointer_this->orientation = abird;
+
+  // Multiply by the inverse to undo the effects of the first origin multiplication.
+  pointer_this->orientation = glm::inverse(origin) * pointer_this->orientation;
+
+}
+
+void Callback_OKO_PointDir(const FunctionCallbackInfo<v8::Value>& args) {
+  //// [x, y, z], [up x, up y, up z], origin
+  if (args.IsConstructCall())
+    return;
+
+  // TODO: set these wwith arguments
+  glm::mat4 origin(1.0f);
+  glm::mat4 that(1.0f);
+  glm::vec4 up(0.0f, 1.0f, 0.0f, 0.0f);
+
+  KObj_Oriented* pointer_this =
+      static_cast<KObj_Oriented*>(Local<External>::Cast(
+          args.This()->GetInternalField(0))->Value());
+
+  // TODO get origin here
+
+  // If args[0] is an array, or an oko
+  if (args[0]->IsArray() || args[0]->IsFloat32Array()) {
+    Local<Array> a = Local<Array>::Cast(args[0]);
+    that[3][0] = a->Get(0)->NumberValue();
+    that[3][1] = a->Get(1)->NumberValue();
+    that[3][2] = a->Get(2)->NumberValue();
+  } else
+    return;
+
+  if (args[1]->IsArray() || args[1]->IsFloat32Array()) {
+    Local<Array> a = Local<Array>::Cast(args[1]);
+    up.x = a->Get(0)->NumberValue();
+    up.y = a->Get(1)->NumberValue();
+    up.z = a->Get(2)->NumberValue();
+  }
+
+  // Multiply by the origin
+  pointer_this->orientation = origin * pointer_this->orientation;
+  glm::mat4 abird(1.0f);
+  
+  //up.x += glm::sin(float(TimeMs() / 10) / 31.4159) * 0.4f;
+  //up.z += glm::cos(float(TimeMs() / 10) / 31.4159) * 0.4f;
+
+  
+  // Same as above but with modifications
+  glm::vec3 np = glm::normalize(-glm::vec3(that[3]));
+  glm::vec3 cross = glm::normalize(glm::cross(glm::vec3(up), np));
   up = glm::vec4(glm::cross(np, cross), 0.0f);
 
   abird[2][0] = np.x;

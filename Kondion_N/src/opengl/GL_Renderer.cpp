@@ -18,6 +18,7 @@
 namespace Kondion {
 
 //std::vector<Resources::KTexture *> Resources::KTexture::textures;
+std::vector<KMaterial *> Kondion::KMaterial::materials;
 std::vector<Renderer::RenderPass*> Renderer::RenderPass::passes;
 
 namespace Renderer {

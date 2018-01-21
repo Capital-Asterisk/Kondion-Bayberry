@@ -40,7 +40,6 @@ double fps;
 }
 
 std::vector<KObj_Node *> KObj_Node::all;
-std::vector<KMaterial *> Kondion::KMaterial::materials;
 KObj::GKO_World* KObj_Node::worldObject;
 
 const char* KObj_Node::myClass = "Hex Editor, oh yeah!";
@@ -213,13 +212,13 @@ void Launch() {
   printf("Hello World\n");
 
   Window::Initialize();
-  Window::CreateWindow(1060, 600);
+  Window::CreateWindow(1280, 720);
 
   //worldObject = new KObj::GKO_World;
 
   Renderer::Setup();
   Input::Setup();
-  Resources::Setup();
+  Resources::Setup();	
 
   Kondion::GameLoop();
 

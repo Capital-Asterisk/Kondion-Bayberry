@@ -106,6 +106,7 @@ int CreateWindow(uint16_t width, uint16_t height) {
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 1);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
   //glfwWindowHint(GLFW_REFRESH_RATE, GLFW_DONT_CARE);
+  printf("GLFW Version: %s\n", glfwGetVersionString());
   int count;
   const GLFWvidmode* modes = glfwGetVideoModes(glfwGetPrimaryMonitor(), &count);
   for (int i = 0; i < count; i ++) {

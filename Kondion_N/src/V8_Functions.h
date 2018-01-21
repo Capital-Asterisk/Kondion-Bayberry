@@ -69,8 +69,10 @@ class ArrayBufferAllocator : public ArrayBuffer::Allocator {
 };
 
 struct JSCI {
-  KObj_Entity* ea, eb;
-  KComponent ca, cb;
+  KObj_Entity* ea;
+  KObj_Entity* eb;
+  KComponent* ca;
+  KComponent* cb;
   Physics::CollisionInfo ci;
 };
 
@@ -101,16 +103,35 @@ void Callback_Kdion_Bird(const FunctionCallbackInfo<Value>& args) {
 void Callback_CollisionInfo(const FunctionCallbackInfo<Value>& args) {
   HandleScope handle_scope(isolate);
   if (args.IsConstructCall()) {
-    args.This()->SetInternalField(0, External::New(isolate, new JSCI));
+    args.This()->SetInternalField(0, External::New(isolate, new JSCI()));
     args.GetReturnValue().Set(args.This());
   }
 }
 
 void Callback_CollisionInfo_GetEntA(Local<String> property,
                                 const PropertyCallbackInfo<Value>& info) {
-  //printf("p:%p\n", pointer);
   // hohohohoho long line
   info.GetReturnValue().Set(Local<Object>::New(isolate, *static_cast<Persistent<Object, CopyablePersistentTraits<Object>>*>(static_cast<JSCI*>(Local<External>::Cast(info.Holder()->GetInternalField(0))->Value())->ea->jsObject)));
+}
+
+void Callback_CollisionInfo_GetEntB(Local<String> property,
+                                const PropertyCallbackInfo<Value>& info) {
+  // hohohohoho long line
+  info.GetReturnValue().Set(Local<Object>::New(isolate, *static_cast<Persistent<Object, CopyablePersistentTraits<Object>>*>(static_cast<JSCI*>(Local<External>::Cast(info.Holder()->GetInternalField(0))->Value())->eb->jsObject)));
+}
+
+void Callback_CollisionInfo_GetNormB(const FunctionCallbackInfo<Value>& args) {
+  if (args.IsConstructCall() || args.Length() == 0
+      || !(args[0]->IsFloat32Array() || args[0]->IsArray()))
+    return;
+  JSCI* pointerThis = static_cast<JSCI*>(Local<External>::Cast(args.This()->GetInternalField(0))->Value());
+
+  //printf("E: %f %f %f\n", pointerThis->ci.normB.x, pointerThis->ci.normB.y, pointerThis->ci.normB.z);
+
+  Local<Float32Array> a = Local<Float32Array>::Cast(args[0]);
+  a->Set(0, Number::New(isolate, pointerThis->ci.normB.x));
+  a->Set(1, Number::New(isolate, pointerThis->ci.normB.y));
+  a->Set(2, Number::New(isolate, pointerThis->ci.normB.z));
 }
 
 void Callback_Component(const FunctionCallbackInfo<Value>& args) {

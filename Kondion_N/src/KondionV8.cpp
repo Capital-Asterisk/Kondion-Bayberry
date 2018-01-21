@@ -382,6 +382,7 @@ void EntityOnCollide(KObj_Entity& a, KObj_Entity& b,
                                         jsciObj->GetInternalField(0))->Value());
 
     jsci->ea = &a;
+    jsci->ci = ci;
 
     func = Local<Function>::Cast(jsHidden->Get(1));
     Local<Value> args[1] = { jsciObj };
@@ -492,12 +493,16 @@ void Setup() {
 
   // Collision info
   Local<FunctionTemplate> collisionInfo = FunctionTemplate::New(isolate,
-                                                       Callback_Kdion_Bird);
+                                                       Callback_CollisionInfo);
   collisionInfo->InstanceTemplate()->SetInternalFieldCount(1);
   collisionInfo->InstanceTemplate()->SetAccessor(
       String::NewFromUtf8(isolate, "entA"),
       Callback_CollisionInfo_GetEntA,
       Callback_SetBlank);
+  collisionInfo->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "getNormB"),
+      FunctionTemplate::New(isolate, Callback_CollisionInfo_GetNormB));
+
 
   // Component
 
@@ -578,6 +583,9 @@ void Setup() {
   kobj_oriented->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "pointAt"),
       FunctionTemplate::New(isolate, Callback_OKO_PointAt));
+  kobj_oriented->PrototypeTemplate()->Set(
+      String::NewFromUtf8(isolate, "pointDir"),
+      FunctionTemplate::New(isolate, Callback_OKO_PointDir));
 
   kobj_oriented->PrototypeTemplate()->Set(
       String::NewFromUtf8(isolate, "dirFd"),

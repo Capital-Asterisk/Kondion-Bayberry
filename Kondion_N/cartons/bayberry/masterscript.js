@@ -1,4 +1,4 @@
-kdion.error = kdion.log;
+  kdion.error = kdion.log;
 
 kdion.log("Loading Kondion Bayberry default JS carton");
 kdion.log("-> glmatrix...");
@@ -469,18 +469,17 @@ kdion.parseShader = function(code) {
       
       + "\nvoid main() {"
       + "\nif (floor(texture2D(coormats, texCoord.st).b * 65536.0) != id) discard;"
-      + "\nif (normalmode) {"
+      + "\n//if (normalmode) {"
       + "\n//normalvars"
       + "\n//normalout;"
-      + "\n} else {"
+      + "\n//} else {"
       + "\n//mainvars"
       + "\ngl_FragData[0]=vec4(0.0, 0.0, 1.0, 1.0);"
       + "\n//mainout;"
-      + "\n}"
+      + "\n//}"
       + "\n"
       + "\n}"
-      + "\n"
-      ;
+      + "\n";
       
     //kdion.log(final.result);
    

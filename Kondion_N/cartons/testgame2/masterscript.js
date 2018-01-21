@@ -58,6 +58,7 @@ var quickMakeAFan = function(name, pos, velo) {
   ent.thrustN([0.0, 0.05, 0.0], velo);
   ent.setMaterial(flrmat);
   ent.collided = false;
+  ent.ground = vec3.create();       
 
   ent.onupdate = function() {
     if (this.isActive && this.collided) {
@@ -78,10 +79,12 @@ var quickMakeAFan = function(name, pos, velo) {
         bar[1] = 0;
         vec3.normalize(foo, foo);
         vec3.normalize(bar, bar);
-        vec3.scale(foo, foo, -kdion.input["MOVE_X"] * 30);
-        vec3.scale(bar, bar, -kdion.input["MOVE_Y"] * 30);
+        vec3.scale(foo, foo, -kdion.input["MOVE_X"] * 3);
+        vec3.scale(bar, bar, -kdion.input["MOVE_Y"] * 3);
         vec3.add(foo, foo, bar);
-        this.setVelocity([foo[0], 0.0, foo[2]]);
+        this.setVelocity([foo[0] * 3, 0.0, foo[2] * 3]);
+        vec3.normalize(foo, foo);
+        this.pointDir([-foo[0], -foo[1], -foo[2]], this.ground);
       } else {
         // Decelerate
         this.getVelocity(foo);
@@ -98,6 +101,7 @@ var quickMakeAFan = function(name, pos, velo) {
   ent.oncollide = function(ci) {
     this.collided = true;
     kdion.debug.ci = ci.entA;
+    ci.getNormB(this.ground);
     if (this.isActive)
       kdion.debug.hhh = Math.random();
   }
