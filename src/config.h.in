@@ -1,0 +1,2 @@
+#define Kondion_VERSION_MAJOR @Kondion_VERSION_MAJOR@
+#define Kondion_VERSION_MINOR @Kondion_VERSION_MINOR@

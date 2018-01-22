@@ -1,1 +1,6 @@
-/logo.png
+/CMakeCache.txt
+/CMakeFiles
+/Makefile
+/buildrun.sh
+/cmake_install.cmake
+/debug.sh
